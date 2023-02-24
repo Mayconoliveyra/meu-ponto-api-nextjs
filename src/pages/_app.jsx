@@ -1,13 +1,13 @@
-import type { AppProps } from 'next/app'
-import { GlobalStyles } from "../styles/global-styles"
 import { ThemeProvider } from "styled-components"
-import { theme } from "../styles/theme"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { SessionProvider } from "next-auth/react"
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function App({ Component, pageProps }: AppProps) {
+import { GlobalStyles } from "../styles/global-styles"
+import { theme } from "../styles/theme"
+
+export default function App({ Component, pageProps }) {
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer

@@ -18,17 +18,22 @@ export const GlobalStyles = createGlobalStyle`
       padding: 0;
       margin: 0;
       box-sizing: border-box;
-      scroll-behavior: smooth !important;
+  }
+
+  body, input, textarea, select, button, a{
+    font-size: 1rem;
+    font-family: ${({ theme }) => theme.font.family.regular};
+    color: #0F1111;
   }
 
   @media (max-width: 1080px){
     html{
-      font-size: 93.75%; /* Converter o tamanho da font px 15 */
+      font-size: 93.75%;  /* 15px */
     }
   }
   @media (max-width: 720px){
     html{
-      font-size: 87.5%; /* Converter o tamanho da font px 14 */
+      font-size: 87.5%; /* 14px */
     }
   }
   body{
@@ -36,23 +41,6 @@ export const GlobalStyles = createGlobalStyle`
     min-height: 100vh;
   }
   
-  body, input, textarea, select, button, a{
-    font-size: ${({ theme }) => theme.font.sizes.xsmall};
-    font-family: ${({ theme }) => theme.font.family.regular};
-    color: #0F1111;
-  }
-
-  main {
-    max-width: ${({ theme }) => theme.width.large};
-    width: 100%;
-    margin: 0px auto;
-    min-height:calc( 100vh - 50px);
-    
-    display: flex;
-    flex-direction: column;
-    background: red;
-  }
- 
   h1, h2, h3, h4, h5, h6 {
     font-family: ${({ theme }) => theme.font.family.medium};
     font-weight: normal;

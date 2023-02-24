@@ -1,7 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = {
   reactStrictMode: true,
-  swcMinify: true,
+  images: {
+    domains: ['m.media-amazon.com'],
+    formats: ['image/avif', 'image/webp'],
+  }
 }
-
-module.exports = nextConfig
