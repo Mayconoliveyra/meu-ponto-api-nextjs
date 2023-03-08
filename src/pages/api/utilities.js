@@ -1,11 +1,11 @@
-import { getKnex } from '../../../knex'
+import getKnex from '../../../knex'
 
-function existOrError(value, msg) {
+const existOrError = (value, msg) => {
     if (!value) throw msg;
     if (Array.isArray(value) && value.length === 0) throw msg;
     if (typeof value === "string" && !value.trim()) throw msg;
 }
-function notExistOrError(value, msg) {
+const notExistOrError = (value, msg) => {
     try {
         existOrError(value, msg);
     } catch (msg) {
@@ -13,7 +13,7 @@ function notExistOrError(value, msg) {
     }
     throw msg;
 }
-async function notExistOrErrorDB({ table, column, data, id }, msg) {
+const notExistOrErrorDB = async ({ table, column, data, id }, msg) => {
     const dataDB = await app.db.raw(`
         SELECT * FROM 
         ${table} 
@@ -23,7 +23,7 @@ async function notExistOrErrorDB({ table, column, data, id }, msg) {
     notExistOrError(dataDB[0], msg)
     return
 }
-function utility_console(name = null, error = null, saveDB = true) {
+const utility_console = (name = null, error = null, saveDB = true) => {
     console.log("########################################")
     console.log(`Function: ${name}`);
     console.log(JSON.stringify(error));
@@ -45,7 +45,7 @@ function utility_console(name = null, error = null, saveDB = true) {
     }
 }
 
-return {
+export {
     existOrError,
     notExistOrError,
     notExistOrErrorDB,

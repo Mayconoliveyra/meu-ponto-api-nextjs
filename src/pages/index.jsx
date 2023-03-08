@@ -1,12 +1,18 @@
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import router from "next/router"
 import styled from "styled-components";
+import { signIn } from "next-auth/react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import { DoorOpen } from "react-bootstrap-icons"
 import * as Yup from "yup";
 import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
+import { getSession, signOut } from "next-auth/react";
+
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Main = styled.main`
     height: 100vh;
@@ -171,13 +177,39 @@ export default function Home() {
                             validationSchema={scheme}
                             initialValues={initialValues}
                             onSubmit={async (values, setValues) => {
-                                console.log(values)
+                                await axios.post("/api/auth/login", values)
+                                    .then(async () => {
+                                        const user = await signIn("credentials", {
+                                            redirect: false,
+                                            email: values.email,
+                                            password: values.senha,
+                                        });
+
+                                        if (!user.error) {
+                                            router.push("/dashboard")
+                                        } else {
+                                            router.reload()
+                                        }
+                                    })
+                                    .catch(res => {
+                                        /* Se status 400, significa que o erro foi tratado. */
+                                        if (res && res.response && res.response.status == 400) {
+                                            /* Se data=500, será exibido no toast */
+                                            if (res.response.data && res.response.data[500]) {
+                                                toast.error(res.response.data[500])
+                                            } else {
+                                                setValues.setErrors(res.response.data)
+                                            }
+                                        } else {
+                                            /* Mensagem padrão */
+                                            toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                                        }
+                                    })
                             }}
                         >
                             {({ setFieldValue, values, errors, touched, dirty }) => (
                                 <Form className="f-form" action="">
                                     <h1>FAZER LOGIN</h1>
-                                    {/*  <ShowMessage error={dirty ? errors : error} /> */}
                                     <GroupSC error={!!errors.email && touched.email}>
                                         <div className="d-label">
                                             <label htmlFor="email">Email</label>
@@ -220,6 +252,9 @@ export default function Home() {
                                     <div className="btn-entrar">
                                         <button type="submit"><DoorOpen /><b>ENTRAR</b></button>
                                     </div>
+                                    <div className="btn-entrar">
+                                        <button type="button" onClick={() => signOut()}><DoorOpen /><b>sair</b></button>
+                                    </div>
                                 </Form>
                             )}
                         </Formik>
@@ -233,7 +268,18 @@ export default function Home() {
     );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+    const { req } = context
+    const session = await getSession({ req })
+    if (session && session.id) {
+        return {
+            redirect: {
+                destination: "/dashboard",
+                permanent: false
+            }
+        }
+    }
+
     return {
         props: {},
     }

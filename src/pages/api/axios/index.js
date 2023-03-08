@@ -7,11 +7,10 @@ const api = (session = {}) => {
     ...session,
     iat: data,
     exp: data + (30),
-    /* exp: data + (60 * 60 * 24 * 30) */
   }
 
   return axios.create({
-    baseURL: URL_SERVER,
+    baseURL: process.env.URL_SERVER,
     headers: {
       "Authorization": `Bearer ${jwt.encode(payload, process.env.SECRET_KEY_SERVER)}`,
       "Access-Control-Allow-Origin": "*",
@@ -19,5 +18,4 @@ const api = (session = {}) => {
   })
 };
 
-
-export { api };
+export default api;

@@ -3,7 +3,8 @@ import config from '../knexfile.js'
 
 let conexao = null;
 
-export function getKnex() {
+
+const getKnex = () => {
     if (!conexao) {
         console.log("createConnection")
         conexao = knex(config)
@@ -12,3 +13,5 @@ export function getKnex() {
 
     return conexao
 }
+
+export { getKnex }
