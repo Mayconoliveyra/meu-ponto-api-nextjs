@@ -37,7 +37,7 @@ const Main = styled.main`
                 h1{
                     text-align:center;
                     margin-bottom: 4rem;
-                    font-family:${({ theme }) => theme.font.family.bold};
+                    /* font-family:${({ theme }) => theme.font.family.bold}; */
                     color: #111;
                 }
                 .d-recuperar{
@@ -45,7 +45,7 @@ const Main = styled.main`
                     justify-content: space-between;
                     align-items: center;
                     font-size: 1rem !important;
-                    font-family:${({ theme }) => theme.font.family.medium};
+                    /* font-family:${({ theme }) => theme.font.family.medium}; */
                     margin: 1rem 0;
                     margin-top: 0.5rem;
                     label{
@@ -61,7 +61,7 @@ const Main = styled.main`
                     }
                     a{
                         font-size: 1rem !important;
-                        font-family:${({ theme }) => theme.font.family.medium};
+                        /* font-family:${({ theme }) => theme.font.family.medium}; */
                         text-decoration: underline;
                     }
                 }
@@ -74,7 +74,7 @@ const Main = styled.main`
                         color: #ffffff;
                         background: linear-gradient(to bottom,#f7dfa5,#f0c14b);
                         border-color: #a88734 #9c7e31 #846a29;
-                        font-family:${({ theme }) => theme.font.family.bold};
+                       /*  font-family:${({ theme }) => theme.font.family.bold}; */
                         font-size: 1rem;
                         padding:  0.7rem 0;
                         width: 100%;
@@ -112,7 +112,7 @@ const GroupSC = styled.div`
   .d-label{
     padding: 0.4rem;
     label{
-      font-family:${({ theme }) => theme.font.family.bold};
+     /*  font-family:${({ theme }) => theme.font.family.bold}; */
       font-size: 1.4em;
     }
   }

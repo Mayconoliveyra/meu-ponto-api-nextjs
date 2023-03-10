@@ -1,31 +1,11 @@
 import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyles = createGlobalStyle`
-  @font-face {
-    font-family: 'roboto-regular';
-    src: url('/assets/font/Roboto-Regular.ttf') format('truetype');
-  }
-  @font-face {
-    font-family: 'roboto-medium';
-    src: url('/assets/font/Roboto-Medium.ttf') format('truetype');
-  }
-  @font-face {
-    font-family: 'roboto-bold';
-    src: url('/assets/font/Roboto-Bold.ttf') format('truetype');
-  }
-
   * {
       padding: 0;
       margin: 0;
       box-sizing: border-box;
   }
-
-  body, input, textarea, select, button, a{
-    font-size: 1rem;
-    font-family: ${({ theme }) => theme.font.family.regular};
-    color: #0F1111;
-  }
-
   @media (max-width: 1080px){
     html{
       font-size: 93.75%;  /* 15px */
@@ -36,22 +16,19 @@ export const GlobalStyles = createGlobalStyle`
       font-size: 87.5%; /* 14px */
     }
   }
-  body{
-    background: #EAEDED;
+  #__next{
+    font-size: 1rem;
+    font-family: sans-serif, 'Times New Roman', Times;
+    font-weight: normal;
+    color: #0F1111;
+
+    background: #E3E6E6;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: ${({ theme }) => theme.font.family.medium};
-    font-weight: normal;
-    margin: 0px;
-    padding: 0px;
-  }
-  p {
-    margin: 0px;
-    padding: 0px;
-  }
-  ul, ol {
+
+  p, ul, ol, h1, h2, h3, h4, h5, h6 {
     margin: 0px;
     padding: 0px;
   }
