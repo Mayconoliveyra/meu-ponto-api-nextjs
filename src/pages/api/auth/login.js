@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
         if (!modelo.senha.length >= 3) throw { senha: "A senha precisa ter no minimo 3 caracteres." }
 
-        const user = await knex("cadastro_funcionarios").where({ email: modelo.email }).first()
+        const user = await knex("cadastro_usuarios").where({ email: modelo.email }).first()
         if (!user) throw { email: "Email não encontrado" }
         if (user.bloqueado) return res.status(400).send({ 500: "Usuário bloqueado." })
 
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        /* const user = await knex("cadastro_funcionarios").where({ email: modelo.email }).first()
+        /* const user = await knex("cadastro_usuarios").where({ email: modelo.email }).first()
         const isMatch = bcrypt.compareSync(modelo.senha, user.senha)
         if (!isMatch) return res.status(400).send({ senha: "Senha incorreta" }) */
 

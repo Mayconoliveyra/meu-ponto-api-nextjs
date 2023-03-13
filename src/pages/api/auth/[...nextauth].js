@@ -11,7 +11,7 @@ export const authOptions = {
                     if (credentials && credentials.email && credentials.password) {
                         const knex = getKnex()
 
-                        const user = await knex("cadastro_funcionarios")
+                        const user = await knex("cadastro_usuarios")
                             .select("id", "nome", "email", "contato", "cep")
                             .where({ email: credentials.email }).first()
                         if (!user) throw { email: "Email não encontrado" }
@@ -32,7 +32,7 @@ export const authOptions = {
             try {
                 const knex = getKnex()
 
-                const user = await knex("cadastro_funcionarios")
+                const user = await knex("cadastro_usuarios")
                     .select("id", "nome", "email", "contato", "cep")
                     .where({ email: session.user.email }).first()
                 if (!user) throw { email: "Email não encontrado" }

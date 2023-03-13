@@ -22,7 +22,7 @@ export const GlobalStyles = createGlobalStyle`
     font-weight: normal;
     color: #0F1111;
 
-    background: #E3E6E6;
+    background: #F2F3F8;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
