@@ -9,6 +9,7 @@ exports.up = function (knex) {
 
             table.timestamp("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP")).nullable();
             table.timestamp('created_at').defaultTo(knex.fn.now())
+            table.timestamp("deleted_at").nullable();
         })
 };
 

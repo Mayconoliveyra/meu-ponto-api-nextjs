@@ -1,7 +1,14 @@
 import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
-import axios from "axios"
+import router from "next/router"
+import Modal from 'react-bootstrap/Modal';
+import moment from "moment"
+import 'moment/locale/pt-br'
+moment.locale('pt-br')
+
+import { api, showError } from "../../../global";
+import { useEffect, useState } from "react";
 
 const Main = styled.div`
     flex: 1;
@@ -87,12 +94,73 @@ const Main = styled.div`
         }
     }
 `
-
-export default function Dashboard({ session }) {
-    const handleRegitrarPonto = async () => {
-        await axios.post("/api/ponto/registrar", session)
+const ModalPonto = styled.div`
+    .div-marcacao{
+        display: flex;
+        justify-content: center;
+        margin: 1rem;
+        h1{
+            font-size: 1.7rem;
+            font-weight: bold;
+        }
     }
+    .div-hr{
+        display: flex;
+        justify-content: center;
+        margin: 3rem 0;
+        p{
+            font-size: 2rem;
+            font-style: italic;
+        }
+    }
+    .div-btn-ponto{
+        display: flex;
+        justify-content: center;
+        .btn-registrar{
+            font-weight: 600;
+            padding: 0.8rem;
+            /* margin-top: 2rem; */
+            width: 50%;
+            @media (max-width: 720px){
+                width: 100%;
+            }
 
+            background: linear-gradient(to bottom,#f7dfa5,#f0c14b);
+            border-color: #a88734 #9c7e31 #846a29;
+            box-shadow: 0 1px 0 rgb(#ffffff / 40%) inset;
+            color: #111;
+            border-style: solid;
+            border-width: 1px;
+        }
+
+    }
+`
+export default function Dashboard({ session, pontos }) {
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [horaAtual, setHoraAtual] = useState()
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const data = new Date();
+            setHoraAtual(moment(data).format('HH:mm:ss'))
+        }, 1000)
+
+        return () => clearInterval(intervalId);
+    }, [])
+
+    const handleRegitrarPonto = async () => {
+        const axios = await api(session);
+
+        await axios.post("ponto/registrar")
+            .then(() => {
+                handleClose()
+                router.reload()
+            })
+            .catch((error) => showError(error))
+    }
     return (
         <>
             <Head>
@@ -100,7 +168,7 @@ export default function Dashboard({ session }) {
             </Head>
             <Main>
                 <div className="div-registrar">
-                    <button type="button" className="btn-registrar" onClick={() => handleRegitrarPonto()}>
+                    <button type="button" className="btn-registrar" onClick={() => handleShow()}>
                         REGISTRAR PONTO
                     </button>
                 </div>
@@ -110,59 +178,73 @@ export default function Dashboard({ session }) {
                     </div>
                     <div className="div-dados">
                         <ul>
-                            <li>
-                                <span className="span-identificador">Indentificador: 1-1</span>
-                                <div className="d-registro">
-                                    <div className="d-ent-sai">
-                                        <span>Entrada</span>
-                                    </div>
-                                    <div className="div-data-hora">
-                                        <span>08:08</span>
-                                    </div>
-                                </div>
-                                <div className="d-registro">
-                                    <div className="d-ent-sai">
-                                        <span>Saida</span>
-                                    </div>
-                                    <div className="div-data-hora">
-                                        <span>12:02</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <span className="span-identificador">Indentificador: 1-2</span>
-                                <div className="d-registro">
-                                    <div className="d-ent-sai">
-                                        <span>Entrada</span>
-                                    </div>
-                                    <div className="div-data-hora">
-                                        <span>13:15</span>
-                                    </div>
-                                </div>
-                                <div className="d-registro">
-                                    <div className="d-ent-sai">
-                                        <span>Saida</span>
-                                    </div>
-                                    <div className="div-data-hora">
-                                        <span>...</span>
-                                    </div>
-                                </div>
-                            </li>
+                            {pontos.map((ponto => {
+                                return (
+                                    <li key={ponto.id}>
+                                        <span className="span-identificador">Indentificador: {ponto.id}</span>
+                                        <div className="d-registro">
+                                            <div className="d-ent-sai">
+                                                <span>Entrada</span>
+                                            </div>
+                                            <div className="div-data-hora">
+                                                <span>{moment(ponto.ponto_entrada).format('HH:mm')}</span>
+                                            </div>
+                                        </div>
+                                        <div className="d-registro">
+                                            <div className="d-ent-sai">
+                                                <span>Saida</span>
+                                            </div>
+                                            <div className="div-data-hora">
+                                                {ponto.ponto_saida ?
+                                                    <span>{moment(ponto.ponto_saida).format('HH:mm')}</span>
+                                                    :
+                                                    <span>...</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            }))}
                         </ul>
                     </div>
                 </div>
+
+                <Modal size="lg" show={show} onHide={handleClose} animation={false}>
+
+                    <Modal.Body>
+                        <ModalPonto>
+                            <div className="div-marcacao">
+                                <h1>Marcação de Ponto</h1>
+                            </div>
+                            <div className="div-hr">
+                                <p>
+                                    {horaAtual}
+                                </p>
+                            </div>
+                            <div className="div-btn-ponto">
+                                <button type="button" className="btn-registrar" onClick={() => handleRegitrarPonto()}>
+                                    CONFIRMAR
+                                </button>
+                            </div>
+                        </ModalPonto>
+                    </Modal.Body>
+                </Modal>
             </Main>
         </>
     );
 }
 
 export async function getServerSideProps(context) {
+
     try {
         const { req } = context
         const session = await getSession({ req })
         if (session && session.id) {
+            const axios = await api(session);
+            const pontos = await axios.get("ponto/get").then((res) => res.data)
+
             return {
-                props: { session },
+                props: { session, pontos },
             }
         }
 
