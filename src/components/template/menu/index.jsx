@@ -94,7 +94,7 @@ export default function Menu() {
                             Conta
                         </div>
                     </li>
-                    <li><Link href="/">Alterar Senha</Link></li>
+                    <li><Link href="/alteracaosenha">Alterar Senha</Link></li>
                     <li className="barra"></li>
                     <li>
                         <div className="div-titulo">
