@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 
 import { getKnex } from "../../../../knex"
 import { existOrError } from "../utilities"
-import { passport } from "../../../../global"
+import { passport, dataHoraAtual } from "../../../../global"
 
 const encryptPassword = password => {
     const salt = bcrypt.genSaltSync(11)
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
          } */
 
         await knex("cadastro_usuarios")
-            .update({ senha: encryptPassword(modelo.senha_new) })
+            .update({ senha: encryptPassword(modelo.senha_new), updated_at: dataHoraAtual() })
             .where({ id: usuario.id })
             .then(() => res.status(204).send())
             .catch((error) => {

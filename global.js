@@ -58,6 +58,10 @@ export function showSucesso(e) {
     }
 }
 
+export function dataHoraAtual() {
+    return new Date();
+}
+
 /* Converte as conulas "" em NULL. ex: {nome: ""} => {nome: NULL} */
 export function FormatObjNull(obj) {
     const objReturn = obj;
@@ -70,4 +74,4 @@ export function FormatObjNull(obj) {
     return objReturn
 }
 
-export default { api, passport, showError, showSucesso, FormatObjNull }
+export default { api, passport, showError, showSucesso, FormatObjNull, dataHoraAtual }

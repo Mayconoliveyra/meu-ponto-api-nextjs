@@ -109,6 +109,8 @@ const GroupSC = styled.div`
     }
 `
 export default function Dashboard({ session, pontos }) {
+    const [btnDisabled, setBtnDisabled] = useState(false)
+
     const scheme = Yup.object().shape({
         senha_old: Yup.string().nullable().label("Senha atual").required("É necessário informar sua senha atual."),
         senha_new: Yup.string().nullable().label("Senha").required("É necessário informar uma nova senha.")
@@ -135,6 +137,7 @@ export default function Dashboard({ session, pontos }) {
                             validationSchema={scheme}
                             initialValues={{ senha_old: '', senha_new: '', confirsenha: '' }}
                             onSubmit={async (values, setValues) => {
+                                setBtnDisabled(true)
                                 const axios = await api(session);
                                 await axios.post("conta/alterarsenha", values)
                                     .then(() => {
@@ -142,6 +145,7 @@ export default function Dashboard({ session, pontos }) {
                                         signOut()
                                     })
                                     .catch(res => {
+                                        setBtnDisabled(false)
                                         /* Se status 400, significa que o erro foi tratado. */
                                         if (res && res.response && res.response.status == 400) {
                                             /* Se data=500, será exibido no toast */
@@ -200,7 +204,7 @@ export default function Dashboard({ session, pontos }) {
                                     </GroupSC>
 
                                     <div className="btn-alterar">
-                                        <button disabled={!dirty} type="submit"><b>ALTERAR</b></button>
+                                        <button disabled={!dirty || btnDisabled} type="submit"><b>ALTERAR</b></button>
                                     </div>
                                 </Form>
                             )}

@@ -13,6 +13,7 @@ import { getSession } from "next-auth/react";
 
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 const Main = styled.main`
     height: 100vh;
@@ -155,6 +156,7 @@ const GroupSC = styled.div`
 `
 
 export default function Home() {
+    const [btnDisabled, setBtnDisabled] = useState(false)
     const initialValues = {
         email: '',
         senha: '',
@@ -176,6 +178,7 @@ export default function Home() {
                             validationSchema={scheme}
                             initialValues={initialValues}
                             onSubmit={async (values, setValues) => {
+                                setBtnDisabled(true)
                                 await axios.post("/api/conta/login", values)
                                     .then(async () => {
                                         const user = await signIn("credentials", {
@@ -191,6 +194,7 @@ export default function Home() {
                                         }
                                     })
                                     .catch(res => {
+                                        setBtnDisabled(false)
                                         /* Se status 400, significa que o erro foi tratado. */
                                         if (res && res.response && res.response.status == 400) {
                                             /* Se data=500, será exibido no toast */
@@ -249,7 +253,7 @@ export default function Home() {
                                     </div>
 
                                     <div className="btn-entrar">
-                                        <button type="submit"><DoorOpen /><b>ENTRAR</b></button>
+                                        <button disabled={btnDisabled} type="submit"><DoorOpen /><b>ENTRAR</b></button>
                                     </div>
                                 </Form>
                             )}

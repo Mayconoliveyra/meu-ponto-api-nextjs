@@ -1,14 +1,18 @@
 import { getKnex } from "../../../../knex"
-import { passport } from "../../../../global"
+import { passport, dataHoraAtual } from "../../../../global"
+import moment from "moment/moment"
 
 export default async function handler(req, res) {
     try {
         const auth = await passport(req)
         const knex = getKnex()
 
+        /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
+        const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+
         await knex("cadastro_pontos")
             .whereNull("deleted_at")
-            .whereRaw(`DATE(created_at) = CURDATE()`)
+            .whereRaw(`DATE(created_at) = '${dataAtualFormat}'`)
             .orderBy("id", "ASC")
             .then((pontos) => res.status(200).json(pontos))
             .catch((error) => {

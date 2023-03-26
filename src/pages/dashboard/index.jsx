@@ -136,6 +136,7 @@ const ModalPonto = styled.div`
     }
 `
 export default function Dashboard({ session, pontos }) {
+    const [btnDisabled, setBtnDisabled] = useState(false);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -152,8 +153,9 @@ export default function Dashboard({ session, pontos }) {
     }, [])
 
     const handleRegitrarPonto = async () => {
-        const axios = await api(session);
+        setBtnDisabled(true)
 
+        const axios = await api(session);
         await axios.post("ponto/registrar")
             .then(() => {
                 handleClose()
@@ -222,7 +224,7 @@ export default function Dashboard({ session, pontos }) {
                                 </p>
                             </div>
                             <div className="div-btn-ponto">
-                                <button type="button" className="btn-registrar" onClick={() => handleRegitrarPonto()}>
+                                <button disabled={btnDisabled} type="button" className="btn-registrar" onClick={() => handleRegitrarPonto()}>
                                     CONFIRMAR
                                 </button>
                             </div>
