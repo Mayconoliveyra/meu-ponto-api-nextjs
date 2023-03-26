@@ -25,13 +25,12 @@ export default async function handler(req, res) {
     }
 
     try {
-        /* const user = await knex("cadastro_usuarios").where({ email: modelo.email }).first()
+        const user = await knex("cadastro_usuarios").where({ email: modelo.email }).first()
         const isMatch = bcrypt.compareSync(modelo.senha, user.senha)
-        if (!isMatch) return res.status(400).send({ senha: "Senha incorreta" }) */
-
+        if (!isMatch) return res.status(400).send({ senha: "Senha incorreta" })
 
         return res.status(204).send()
     } catch (error) {
-        return res.status(400).send({ 500: "Senha incorreta" })
+        return res.status(400).send({ senha: "Senha incorreta" })
     }
 }

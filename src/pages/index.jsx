@@ -176,7 +176,7 @@ export default function Home() {
                             validationSchema={scheme}
                             initialValues={initialValues}
                             onSubmit={async (values, setValues) => {
-                                await axios.post("/api/auth/login", values)
+                                await axios.post("/api/conta/login", values)
                                     .then(async () => {
                                         const user = await signIn("credentials", {
                                             redirect: false,

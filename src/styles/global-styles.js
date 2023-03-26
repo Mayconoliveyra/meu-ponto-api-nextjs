@@ -48,10 +48,11 @@ export const GlobalStyles = createGlobalStyle`
   button {
     border: none;
     &:disabled {
-      background-color:#efefef4d !important;
+      background:#efefef4d !important;
       color:#1010104d !important;
       border: 1px solid #7676764d !important;
       opacity: 100% !important;
+      cursor: default;
     }
   }
 

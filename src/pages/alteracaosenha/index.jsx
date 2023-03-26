@@ -1,6 +1,7 @@
 import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import router from "next/router"
 
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -8,9 +9,9 @@ import * as Yup from "yup";
 import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
-
 import { api, showError } from "../../../global";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const Main = styled.div`
     flex: 1;
@@ -18,7 +19,6 @@ const Main = styled.div`
     flex-direction: column;
     padding: 2rem;
 
-   
     @media (max-width: 720px){
         padding: 0.5rem;
     }
@@ -27,63 +27,78 @@ const Main = styled.div`
         flex: 1;
         background: #fff;
         box-shadow: 0px 1px 15px 1px rgb(69 65 78 / 8%);
-        background-image: url(https://rhidv2.s3-sa-east-1.amazonaws.com/assets/metronic_v5.5.5/theme/classic/demos/default/assets/app/media/img/bg/bg-3.jpg);
-
         .div-exibir{
             max-width: 470px;
             margin: 0 auto;
+            @media (max-width: 720px){
+                padding: 1rem;
+            }
             .div-h1{
-                margin: 1.3rem auto;
+                margin: 1.5rem auto;
+                margin-bottom: 2rem;
                 h1{
                     font-size: 1.4rem;
                     font-weight: bold;
                     text-align: center;
                 }
             }
+            .btn-alterar{
+                margin: 0.5rem 0px;
+                margin-top: 2rem;
+                button{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center ;
+                    color: #ffffff;
+                    background: linear-gradient(to bottom,#f7dfa5,#f0c14b);
+                    border-color: #a88734 #9c7e31 #846a29;
+                    font-weight: bold;
+                    font-size: 1rem;
+                    padding:  0.7rem 0;
+                    width: 100%;
+                    text-transform: uppercase;
+                    border-radius: 0.25rem;
+                    color: #111;
+                    box-shadow: 0 1px 0 rgb(#ffffff / 40%) inset;
+                    border-style: solid;
+                    border-width: 1px;
+                }
+            }
         }
     }
 `
 const GroupSC = styled.div`
-  display:flex;
-  flex-direction: column;
-  margin-bottom: 0.5rem;
-  [data="label"]{
-    padding: 0.4rem;
-    label{
-     /*  font-family:${({ theme }) => theme.font.family.bold}; */
-      font-size: 1.4em;
+    display:flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+    .div-label{
+        padding: 0.4rem;
+        label{
+            font-weight: bold;
+            font-size: 1.1em;
+        }
     }
-    
-  }
-  [data="input"]{
-    border-top-color: #949494;
-    border: 0.1rem solid #a6a6a6;
-    box-shadow: 0 0.1rem 0 rgb(0 0 0 / 7%) inset;
-    border-radius: 0.3rem 0.3rem 0 0;
-    border-right-color: #949494;
-    border-bottom-color: #949494;
-    border-left-color: #949494;
-    border-color:${({ error }) => error && "#d00"};
-    box-shadow:${({ error }) => error && "0 0 0 0.2rem rgb(221 0 0 / 15%) inset;"};
-    input{
-      width: 100%;
-      background-color: transparent;
-      padding: 0.8rem;
-      padding-top: 0.9rem;
-      box-shadow: none;
-      border: 0;
-      font-size: 1.1rem;
+    .div-input{
+        border-top-color: #949494;
+        border: 0.1rem solid #a6a6a6;
+        box-shadow: 0 0.1rem 0 rgb(0 0 0 / 7%) inset;
+        border-radius: 0.3rem 0.3rem 0 0;
+        border-right-color: #949494;
+        border-bottom-color: #949494;
+        border-left-color: #949494;
+        border-color:${({ error }) => error && "#d00"};
+        box-shadow:${({ error }) => error && "0 0 0 0.2rem rgb(221 0 0 / 15%) inset;"};
+        input{
+            width: 100%;
+            background-color: transparent;
+            padding: 0.8rem;
+            padding-top: 0.9rem;
+            box-shadow: none;
+            border: 0;
+            font-size: 1.1rem;
+        }
     }
-    [data="show-password"]{
-      width: 100%;
-      padding: 0 10px 6px 10px;
-      span{
-        color: #555!important;
-        font-size: 0.9rem !important;
-      }
-    }
-  }
-  [data="error"]{
+    .div-error{
         font-size: 1rem;
         color: #e72626;
         margin-top: 0.0rem;
@@ -91,16 +106,17 @@ const GroupSC = styled.div`
             padding: 0px;
             margin: 0px;
         }
-  }
+    }
 `
 export default function Dashboard({ session, pontos }) {
     const scheme = Yup.object().shape({
-        senha: Yup.string().nullable().label("Senha").required("É necessário informar uma senha.")
+        senha_old: Yup.string().nullable().label("Senha atual").required("É necessário informar sua senha atual."),
+        senha_new: Yup.string().nullable().label("Senha").required("É necessário informar uma nova senha.")
             .matches(
                 /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/,
                 "Deve ter no mínimo 6 dígitos, 1 letra maiúscula, 1 minúscula e um número"
             ),
-        confirsenha: Yup.string().oneOf([Yup.ref("senha"), null], "A confirmação de senha não confere.")
+        confirsenha: Yup.string().oneOf([Yup.ref("senha_new"), null], "A confirmação de senha não confere.")
             .required("É necessário confirmar sua senha.").label("Confirmar senha")
     });
 
@@ -117,53 +133,75 @@ export default function Dashboard({ session, pontos }) {
                         </div>
                         <Formik
                             validationSchema={scheme}
-                            initialValues={{ senha: '', confirsenha: '', show_password: true }}
+                            initialValues={{ senha_old: '', senha_new: '', confirsenha: '' }}
                             onSubmit={async (values, setValues) => {
-
-
+                                const axios = await api(session);
+                                await axios.post("conta/alterarsenha", values)
+                                    .then(() => {
+                                        toast.success("Senha alterada com sucesso!")
+                                        signOut()
+                                    })
+                                    .catch(res => {
+                                        /* Se status 400, significa que o erro foi tratado. */
+                                        if (res && res.response && res.response.status == 400) {
+                                            /* Se data=500, será exibido no toast */
+                                            if (res.response.data && res.response.data[500]) {
+                                                toast.error(res.response.data[500])
+                                            } else {
+                                                setValues.setErrors(res.response.data)
+                                            }
+                                        } else {
+                                            /* Mensagem padrão */
+                                            toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                                        }
+                                    })
                             }}
                         >
                             {({ values, errors, touched, dirty }) => (
                                 <Form data="form" action="">
-                                    <GroupSC error={!!errors.senha && touched.senha}>
-                                        <div data="label">
-                                            <label htmlFor="senha">Senha atual</label>
+                                    <GroupSC error={!!errors.senha_old && touched.senha_old}>
+                                        <div className="div-label">
+                                            <label htmlFor="senha_old">Senha atual</label>
                                         </div>
-                                        <div data="input">
-                                            <Field name="senha" type="password" autoComplete='off' maxLength="55" />
+                                        <div className="div-input">
+                                            <Field name="senha_old" type="password" autoComplete='off' maxLength="55" />
                                         </div>
-                                        <div data="error">
+                                        <div className="div-error">
                                             <small>
-                                                <ErrorMessage name="senha" />
+                                                <ErrorMessage name="senha_old" />
                                             </small>
                                         </div>
                                     </GroupSC>
-                                    <GroupSC error={!!errors.senha && touched.senha}>
-                                        <div data="label">
-                                            <label htmlFor="senha">Nova senha</label>
+                                    <GroupSC error={!!errors.senha_new && touched.senha_new}>
+                                        <div className="div-label">
+                                            <label htmlFor="senha_new">Nova senha</label>
                                         </div>
-                                        <div data="input">
-                                            <Field name="senha" type="password" autoComplete='off' maxLength="55" />
+                                        <div className="div-input">
+                                            <Field name="senha_new" type="password" autoComplete='off' maxLength="55" />
                                         </div>
-                                        <div data="error">
+                                        <div className="div-error">
                                             <small>
-                                                <ErrorMessage name="senha" />
+                                                <ErrorMessage name="senha_new" />
                                             </small>
                                         </div>
                                     </GroupSC>
-                                    <GroupSC error={!!errors.senha && touched.senha}>
-                                        <div data="label">
-                                            <label htmlFor="senha">Confirmar nova senha</label>
+                                    <GroupSC error={!!errors.confirsenha && touched.confirsenha}>
+                                        <div className="div-label">
+                                            <label htmlFor="confirsenha">Confirmar nova senha</label>
                                         </div>
-                                        <div data="input">
-                                            <Field name="senha" type="password" autoComplete='off' maxLength="55" />
+                                        <div className="div-input">
+                                            <Field name="confirsenha" type="password" autoComplete='off' maxLength="55" />
                                         </div>
-                                        <div data="error">
+                                        <div className="div-error">
                                             <small>
-                                                <ErrorMessage name="senha" />
+                                                <ErrorMessage name="confirsenha" />
                                             </small>
                                         </div>
                                     </GroupSC>
+
+                                    <div className="btn-alterar">
+                                        <button disabled={!dirty} type="submit"><b>ALTERAR</b></button>
+                                    </div>
                                 </Form>
                             )}
                         </Formik>

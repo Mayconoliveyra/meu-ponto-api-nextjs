@@ -94,17 +94,17 @@ export default function Menu() {
                             Conta
                         </div>
                     </li>
-                    <li><Link href="/alteracaosenha">Alterar Senha</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/alteracaosenha">Alterar Senha</Link></li>
                     <li className="barra"></li>
                     <li>
                         <div className="div-titulo">
                             Ponto
                         </div>
                     </li>
-                    <li><Link href="/">Registrar Ponto</Link></li>
-                    <li><Link href="/">Visualizar Ponto</Link></li>
-                    <li><Link href="/">Espelho de Ponto</Link></li>
-                    <li><Link href="/">Comprovantes</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Registrar Ponto</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Visualizar Ponto</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Espelho de Ponto</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Comprovantes</Link></li>
                 </ul>
 
             </div>
