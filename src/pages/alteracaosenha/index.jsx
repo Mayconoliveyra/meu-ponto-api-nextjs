@@ -2,15 +2,14 @@ import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
-import router from "next/router"
 
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from "yup";
 import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
-import { api, showError } from "../../../global";
-import { useEffect, useState } from "react";
+import { api } from "../../../global";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 const Main = styled.div`
@@ -141,7 +140,6 @@ export default function Dashboard({ session, pontos }) {
                                 const axios = await api(session);
                                 await axios.post("conta/alterarsenha", values)
                                     .then(() => {
-                                        toast.success("Senha alterada com sucesso!")
                                         signOut()
                                     })
                                     .catch(res => {

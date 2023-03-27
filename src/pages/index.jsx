@@ -218,7 +218,7 @@ export default function Home() {
                                             <label htmlFor="email">Email</label>
                                         </div>
                                         <div className="d-input">
-                                            <Field name="email" type="email" maxLength="120" />
+                                            <Field name="email" autoComplete="on" type="email" maxLength="120" />
                                         </div>
                                         <div className="d-error">
                                             <small>
@@ -231,7 +231,7 @@ export default function Home() {
                                             <label htmlFor="senha">Senha</label>
                                         </div>
                                         <div className="d-input">
-                                            <Field name="senha" type="password" maxLength="255" />
+                                            <Field name="senha" autoComplete="on" type="password" maxLength="255" />
                                             {values.show_password && values.senha && (
                                                 <div className="d-show-password">
                                                     <span name="senha" value>{values.senha}</span>
@@ -249,7 +249,7 @@ export default function Home() {
                                         <label htmlFor="show_password" onClick={() => setFieldValue("show_password", !values.show_password)}>
                                             <Field name="show_password" type="checkbox" /><span>Mostrar senha</span>
                                         </label>
-                                        <Link href="/conta/recuperar">Esqueceu a senha?</Link>
+                                        {/* <Link href="/conta/recuperar">Esqueceu a senha?</Link> */}
                                     </div>
 
                                     <div className="btn-entrar">
