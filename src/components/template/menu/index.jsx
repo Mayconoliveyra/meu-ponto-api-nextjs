@@ -103,8 +103,13 @@ export default function Menu() {
                     </li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Registrar Ponto</Link></li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Visualizar Ponto</Link></li>
-                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Espelho de Ponto</Link></li>
-                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Comprovantes</Link></li>
+                    <li>
+                        <div className="div-titulo">
+                            Administrador
+                        </div>
+                    </li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Funcionários</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Pontos</Link></li>
                 </ul>
 
             </div>
