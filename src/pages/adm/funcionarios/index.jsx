@@ -1,16 +1,11 @@
 import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
-import { signOut } from "next-auth/react";
+import { PeopleFill, ChevronRight, PlusCircleDotted, Search } from "react-bootstrap-icons"
+import Link from "next/link"
 
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from "yup";
-import { pt } from "yup-locale-pt";
-Yup.setLocale(pt);
-
-import { api } from "../../../../global";
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { TituloForm } from "../../../components/formulario/titulo/components"
+import { CabecalhoForm } from "../../../components/formulario/cabecalho/components"
 
 const Main = styled.div`
     flex: 1;
@@ -19,7 +14,7 @@ const Main = styled.div`
     padding: 2rem;
 
     @media (max-width: 720px){
-        padding: 0.5rem;
+        padding: 0;
     }
 
     .div-alterar{
@@ -66,77 +61,52 @@ const Main = styled.div`
         }
     }
 `
-const GroupSC = styled.div`
-    display:flex;
-    flex-direction: column;
-    margin-bottom: 0.5rem;
-    .div-label{
-        padding: 0.4rem;
-        label{
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-    }
-    .div-input{
-        border-top-color: #949494;
-        border: 0.1rem solid #a6a6a6;
-        box-shadow: 0 0.1rem 0 rgb(0 0 0 / 7%) inset;
-        border-radius: 0.3rem 0.3rem 0 0;
-        border-right-color: #949494;
-        border-bottom-color: #949494;
-        border-left-color: #949494;
-        border-color:${({ error }) => error && "#d00"};
-        box-shadow:${({ error }) => error && "0 0 0 0.2rem rgb(221 0 0 / 15%) inset;"};
-        input{
-            width: 100%;
-            background-color: transparent;
-            padding: 0.8rem;
-            padding-top: 0.9rem;
-            box-shadow: none;
-            border: 0;
-            font-size: 1.1rem;
-        }
-    }
-    .div-error{
-        font-size: 1rem;
-        color: #e72626;
-        margin-top: 0.0rem;
-        small{
-            padding: 0px;
-            margin: 0px;
-        }
-    }
-`
 export default function AdmFuncionarios({ session, pontos }) {
+    const prefix = "funcionário"
+    const prefixRouter = "/portal/cadastros/produtos"
+
     return (
         <>
             <Head>
                 <title>Funcionários - Softconnect Tecnologia</title>
             </Head>
             <Main>
-                uu
+                <TituloForm title={`Listar ${prefix}s`} icon={<PeopleFill size={25} />}>
+                    <li>
+                        <Link href="/adm/dashboard">Início <ChevronRight height={10} /></Link>
+                    </li>
+                    <li>
+                        <Link href={prefixRouter}>{`${prefix[0].toUpperCase() + prefix.substring(1)}s`} <ChevronRight height={10} /></Link>
+                    </li>
+                    <li className="ativo">
+                        Listar
+                    </li>
+                </TituloForm>
+                <CabecalhoForm>
+                    <Link className="btn-adicionar" href={`${prefixRouter}/adicionar`}><PlusCircleDotted size={18} /><span>Adicionar</span></Link>
+                    <div className="div-input-pesquisa">
+                        <input placeholder="Buscar" type="text" />
+                        <button><Search size={18} /></button>
+                    </div>
+                </CabecalhoForm>
             </Main>
         </>
     );
 }
 
 export async function getServerSideProps(context) {
-    try {
-        const { req } = context
-        const session = await getSession({ req })
-        if (session && session.id && session.adm) {
-            return {
-                props: { session },
-            }
-        }
-
-        throw ""
-    } catch (error) {
+    const { req } = context
+    const session = await getSession({ req })
+    if (session && session.id && session.adm) {
         return {
-            redirect: {
-                destination: "/",
-                permanent: false
-            }
+            props: { session },
+        }
+    }
+
+    return {
+        redirect: {
+            destination: "/",
+            permanent: false
         }
     }
 }
