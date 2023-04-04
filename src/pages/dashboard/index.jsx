@@ -237,13 +237,12 @@ export default function Dashboard({ session, pontos }) {
 }
 
 export async function getServerSideProps(context) {
-
     try {
         const { req } = context
         const session = await getSession({ req })
         if (session && session.id) {
             const axios = await api(session);
-            const pontos = await axios.get("ponto/get").then((res) => res.data)
+            const pontos = await axios.get("ponto/get?_diario=false").then((res) => res.data)
 
             return {
                 props: { session, pontos },

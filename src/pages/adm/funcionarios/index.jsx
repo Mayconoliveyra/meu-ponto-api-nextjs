@@ -1,11 +1,15 @@
 import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
-import { PeopleFill, ChevronRight, PlusCircleDotted, Search } from "react-bootstrap-icons"
+import { PeopleFill, ChevronRight, PlusCircleDotted, Search, ExclamationTriangle } from "react-bootstrap-icons"
 import Link from "next/link"
 
 import { TituloForm } from "../../../components/formulario/titulo/components"
 import { CabecalhoForm } from "../../../components/formulario/cabecalho/components"
+
+import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm } from "../../../components/formulario/tabela/components";
+
+import { api } from "../../../../global";
 
 const Main = styled.div`
     flex: 1;
@@ -61,9 +65,26 @@ const Main = styled.div`
         }
     }
 `
-export default function AdmFuncionarios({ session, pontos }) {
+export default function AdmFuncionarios({ session, funcionarios, totalPags, _sort, _order, _page }) {
     const prefix = "funcionário"
     const prefixRouter = "/portal/cadastros/produtos"
+
+    const LinkHrefTable = (nomeExibir, columnDb) => {
+        return (
+            <Link href={`${prefixRouter}?_page=1&_sort=${columnDb}&_order=${_order == "DESC" ? "ASC" : "DESC"}`}>
+                {_sort == columnDb &&
+                    <>
+                        {_order == "DESC" ?
+                            <ArrowUp />
+                            :
+                            <ArrowDown />
+                        }
+                    </>
+                }
+                {nomeExibir}
+            </Link>
+        )
+    }
 
     return (
         <>
@@ -89,6 +110,59 @@ export default function AdmFuncionarios({ session, pontos }) {
                         <button><Search size={18} /></button>
                     </div>
                 </CabecalhoForm>
+
+                {funcionarios && funcionarios.length > 0 ?
+                    <TabelaForm>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <ThForm maxwidth="65px">
+                                        {LinkHrefTable("Cód.", "codigo_interno")}
+                                    </ThForm>
+                                    <ThForm maxwidth="100px">
+                                        {LinkHrefTable("CPF", "codigo_interno")}
+                                    </ThForm>
+                                    <ThForm maxwidth="9999px">
+                                        {LinkHrefTable("Nome", "nome")}
+                                    </ThForm>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {funcionarios.map((ponto => {
+                                    return (
+                                        <tr key={ponto.id}>
+                                            <TdForm maxwidth="65px">{ponto.id}</TdForm>
+                                            <TdForm maxwidth="100px">{ponto.cpf}</TdForm>
+                                            <TdForm maxwidth="9999px">{ponto.nome}</TdForm>
+                                        </tr>
+                                    )
+                                }))}
+                            </tbody>
+                        </table>
+                    </TabelaForm>
+                    :
+                    <VazioForm nome={prefix}>
+                        <div className="icon-vazio">
+                            <ExclamationTriangle size={75} />
+                        </div>
+                        <h3>Nenhum {prefix} foi encontrado(a)!</h3>
+                    </VazioForm >
+                }
+
+                {
+                    totalPags > 1 &&
+                    <PaginadorForm>
+                        {(() => {
+                            const links = [];
+                            for (let page = 1; page <= totalPags; page++) {
+                                links.push(
+                                    <Link key={page} className={_page == page ? 'active' : ''} href={`${prefixRouter}?_page=${page}&_sort=${_sort}&_order=${_order}`}>{page}</Link>
+                                );
+                            }
+                            return links;
+                        })()}
+                    </PaginadorForm>
+                }
             </Main>
         </>
     );
@@ -97,9 +171,13 @@ export default function AdmFuncionarios({ session, pontos }) {
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
+
     if (session && session.id && session.adm) {
+        const axios = await api(session);
+        const { funcionarios, totalPags } = await axios.get("adm/funcionarios/get").then((res) => res.data)
+
         return {
-            props: { session },
+            props: { session, funcionarios, totalPags },
         }
     }
 
