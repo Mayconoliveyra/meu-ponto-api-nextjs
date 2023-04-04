@@ -1,7 +1,7 @@
 import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
-import { PeopleFill, ChevronRight, PlusCircleDotted, Search, ExclamationTriangle } from "react-bootstrap-icons"
+import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, PlusCircleDotted, Search, ExclamationTriangle } from "react-bootstrap-icons"
 import Link from "next/link"
 
 import { TituloForm } from "../../../components/formulario/titulo/components"
@@ -18,7 +18,7 @@ const Main = styled.div`
     padding: 2rem;
 
     @media (max-width: 720px){
-        padding: 0;
+        padding: 0px;
     }
 
     .div-alterar{
@@ -65,9 +65,9 @@ const Main = styled.div`
         }
     }
 `
-export default function AdmFuncionarios({ session, funcionarios, totalPags, _sort, _order, _page }) {
+export default function AdmFuncionarios({ funcionarios, totalPags, _sort, _order, _page }) {
     const prefix = "funcionário"
-    const prefixRouter = "/portal/cadastros/produtos"
+    const prefixRouter = "/adm/funcionarios"
 
     const LinkHrefTable = (nomeExibir, columnDb) => {
         return (
@@ -117,10 +117,10 @@ export default function AdmFuncionarios({ session, funcionarios, totalPags, _sor
                             <thead>
                                 <tr>
                                     <ThForm maxwidth="65px">
-                                        {LinkHrefTable("Cód.", "codigo_interno")}
+                                        {LinkHrefTable("Cód.", "id")}
                                     </ThForm>
                                     <ThForm maxwidth="100px">
-                                        {LinkHrefTable("CPF", "codigo_interno")}
+                                        {LinkHrefTable("CPF", "cpf")}
                                     </ThForm>
                                     <ThForm maxwidth="9999px">
                                         {LinkHrefTable("Nome", "nome")}
@@ -174,10 +174,13 @@ export async function getServerSideProps(context) {
 
     if (session && session.id && session.adm) {
         const axios = await api(session);
-        const { funcionarios, totalPags } = await axios.get("adm/funcionarios/get").then((res) => res.data)
+
+        const { _sort = "id", _order = "DESC", _page = 1, _limit = 20 } = context.query;
+        const params = `?_page=${_page}&_limit=${_limit}&_sort=${_sort}&_order=${_order}`
+        const { funcionarios, totalPags } = await axios.get(`adm/funcionarios/get${params}`).then((res) => res.data)
 
         return {
-            props: { session, funcionarios, totalPags },
+            props: { funcionarios, totalPags, _sort, _order, _page, _limit },
         }
     }
 

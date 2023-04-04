@@ -180,16 +180,17 @@ const TableVWSC = styled.div`
     }
 `
 const PaginadorForm = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 10px 15px;
-    float: right;
+    flex-wrap: wrap;
     a{
         margin-top: 3px;
         background: #fafafa;
         color: #666;
         box-shadow: inset 0px -1px 0px 0px rgb(0 0 0 / 9%);
-        float: left;
-        padding: 6px 12px;
-        margin-left: -1px;
+        padding: 6px 14px;
         border: 1px solid #dddddd;
     }
     .active{
@@ -208,7 +209,6 @@ const VazioForm = styled.div`
     background: #fff;
     text-align: center;
     box-shadow: 0px 1px 15px 1px rgb(69 65 78 / 8%);
-    margin-top: 10px;
     color: #AAAAAA;
     .icon-vazio{
         display: flex;
@@ -225,18 +225,7 @@ const TableVW = ({ children }) => {
         </TableVWSC>
     )
 }
-const ThOne = ({ children, maxwidth, minwidth, padding, background, color, fontsize, fontweight }) => {
-    return (
-        <ThForm
-            padding={padding}
-            maxwidth={maxwidth} minwidth={minwidth}
-            background={background} color={color}
-            fontsize={fontsize} fontweight={fontweight}
-        >
-            <span>{children}</span>
-        </ThForm>
-    )
-}
+
 const TdForm = ({ children, maxwidth, minwidth, padding, background, color, fontsize, fontweight, element }) => {
     return (
         <TdFormSC
@@ -256,4 +245,4 @@ const TdForm = ({ children, maxwidth, minwidth, padding, background, color, font
     )
 }
 
-export { TabelaForm, ThForm, TdForm, ThOne, TableVW, PaginadorForm, VazioForm }
+export { TabelaForm, ThForm, TdForm, TableVW, PaginadorForm, VazioForm }
