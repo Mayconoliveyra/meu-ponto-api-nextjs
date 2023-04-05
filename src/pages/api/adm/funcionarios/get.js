@@ -34,7 +34,7 @@ export default async function handler(req, res) {
             .limit(limit).offset(page * limit - limit)
             .orderBy(sort, order)
 
-        return res.status(200).json({ funcionarios: funcionarios, totalPags: Math.ceil(totalPags / limit) })
+        return res.status(200).json({ datas: funcionarios, totalPags: Math.ceil(totalPags / limit) })
 
     } catch (error) {
         return res.status(400).send(error)

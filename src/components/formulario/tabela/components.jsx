@@ -6,6 +6,13 @@ const TabelaForm = styled.div`
     padding: 15px 15px;
     background: #fff;
     box-shadow: 0px 1px 15px 1px rgb(69 65 78 / 8%);
+
+    /* Desabilita selecionar o texto. */
+    -webkit-user-select:none;  
+    -moz-user-select:none;     
+    -ms-user-select:none;      
+    user-select:none;  
+
     table {
         width: 100%;
         display: flex;
@@ -33,6 +40,7 @@ const TabelaForm = styled.div`
                 border-bottom: 1px solid #dddddd;
                 text-align: left;
                 font-size: 12px;
+                cursor: pointer;
             }
             td:last-child{
                 border-right: none;
@@ -111,22 +119,19 @@ const TdFormSC = styled.td`
     font-weight:${({ fontweight }) => fontweight} !important;
 `
 /* Tabela de visualização de dados */
-const TableVWSC = styled.div`
+const TableVW = styled.div`
     display: flex;
-    padding: 20px 15px;
-    @media (max-width: 720px){
-        padding: 13px 5px;
-    }
+    height: calc(100vh - 65px - 63px);
     table {
         color: #333333 !important;
         width: 100%;
         display: flex;
         flex-direction: column;
+        overflow-x: hidden;
+        height: 100%;
         tbody, thead {
             display: flex;
             flex-direction: column;
-            border: 1px solid #dddddd;
-            border-bottom: none;
             border-spacing: 0;
             background-color: #ffffff;
         }
@@ -142,16 +147,14 @@ const TableVWSC = styled.div`
                 height: 37px;
                 flex: 1;
                 padding: 0 10px;
-                border-right: 1px solid #dddddd;
-                border-bottom: 1px solid #dddddd;
-                font-size: 13px;
-                @media (max-width: 720px){
-                    font-size: 11px;
-                }
+                border: 1px solid #dddddd;
+                border-bottom: none;
+                border-right: none;
+                font-size: 12px;
+                line-height: 14px;
 
                 .span-th-vw{
-                    font-weight: normal;
-                    font-family:${({ theme }) => theme.font.family.bold};
+                    font-weight: bold;
                     text-overflow: ellipsis;
                     white-space: normal;
                     display: -webkit-box;
@@ -172,10 +175,16 @@ const TableVWSC = styled.div`
             }
             th{
                 max-width: 200px;
+                @media (max-width: 720px){
+                    max-width: 150px;
+                }
             }
             td:last-child{
-                border-right: none;
+                border-right: 1px solid #dddddd;
             }
+        }
+        tr:last-child{
+            border-bottom: 1px solid #dddddd;
         }
     }
 `
@@ -218,14 +227,6 @@ const VazioForm = styled.div`
         margin-top: 10px;
     }
 `
-const TableVW = ({ children }) => {
-    return (
-        <TableVWSC>
-            {children}
-        </TableVWSC>
-    )
-}
-
 const TdForm = ({ children, maxwidth, minwidth, padding, background, color, fontsize, fontweight, element }) => {
     return (
         <TdFormSC

@@ -1,6 +1,9 @@
 import axios from "axios";
 const jwt = require("jwt-simple")
 import { toast } from "react-toastify";
+import moment from "moment"
+import 'moment/locale/pt-br'
+moment.locale('pt-br')
 
 /* const URL_SERVER = "http://10.0.0.200:3000/api/"; */
 const URL_SERVER = "http://localhost:3000/api/";
@@ -62,6 +65,11 @@ export function dataHoraAtual() {
     return new Date();
 }
 
+export function horaFormatada(date) {
+    if (!date) return ""
+    return moment(date).format('L HH:mm:ss')
+}
+
 /* Converte as conulas "" em NULL. ex: {nome: ""} => {nome: NULL} */
 export function FormatObjNull(obj) {
     const objReturn = obj;
@@ -74,4 +82,4 @@ export function FormatObjNull(obj) {
     return objReturn
 }
 
-export default { api, passport, showError, showSucesso, FormatObjNull, dataHoraAtual }
+export default { api, passport, showError, showSucesso, FormatObjNull, dataHoraAtual, horaFormatada }
