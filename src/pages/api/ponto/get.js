@@ -29,12 +29,12 @@ export default async function handler(req, res) {
         const id = req.params && parseInt(req.params.id) ? parseInt(req.params.id) : null;
         const search = req.query._search ? req.query._search : null
 
-        console.log("page: " + page)
+ /*        console.log("page: " + page)
         console.log("limit: " + limit)
         console.log("sort: " + sort)
         console.log("order: " + order)
         console.log("id: " + id)
-        console.log("search: " + search)
+        console.log("search: " + search) */
 
         /* Se 'true' retorna os pontos diario do usuario logado(utilizado na tela dashboard) */
         const getdiario = req.query._diario ? req.query._diario : null
