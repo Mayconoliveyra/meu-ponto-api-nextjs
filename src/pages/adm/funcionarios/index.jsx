@@ -72,6 +72,17 @@ const ModalAcoes = styled.div`
     display: flex;
     flex-direction: column;
     padding: 5px;
+    height: calc(100vh);
+    .modal-header{
+        height: 53px !important;
+        div,
+        .btn-close{
+            font-size: 16px !important;
+        }
+        .btn-close{
+            padding: 0 10px !important;
+        }
+    }
     .div-acoes{
         height: 65px;
         display: flex;
@@ -230,11 +241,10 @@ export default function AdmFuncionarios({ datas, totalPags, _sort, _order, _page
                 }
 
                 <Modal fullscreen show={show} onHide={handleClose} animation={false}>
-                    <Modal.Header closeButton>
-                        {/* <Modal.Title>Visualizando</Modal.Title> */}
-                    </Modal.Header>
-
                     <ModalAcoes>
+                        <Modal.Header className="modal-header" closeButton>
+                            <Modal.Title>Visualizando</Modal.Title>
+                        </Modal.Header>
                         <TableVW>
                             <table>
                                 <tbody>
@@ -406,6 +416,7 @@ export default function AdmFuncionarios({ datas, totalPags, _sort, _order, _page
                                             </span>
                                         </td>
                                     </tr>
+
                                 </tbody>
                             </table>
                         </TableVW>
@@ -427,7 +438,7 @@ export async function getServerSideProps(context) {
     if (session && session.id && session.adm) {
         const axios = await api(session);
 
-        const { _sort = "id", _order = "DESC", _page = 1, _limit = 10 } = context.query;
+        const { _sort = "id", _order = "DESC", _page = 1, _limit = 20 } = context.query;
         const params = `?_page=${_page}&_limit=${_limit}&_sort=${_sort}&_order=${_order}`
         const { datas, totalPags } = await axios.get(`adm/funcionarios/get${params}`).then((res) => res.data)
 

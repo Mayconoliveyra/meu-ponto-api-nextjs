@@ -121,14 +121,13 @@ const TdFormSC = styled.td`
 /* Tabela de visualização de dados */
 const TableVW = styled.div`
     display: flex;
-    height: calc(100vh - 65px - 63px);
+    height: calc(100vh - 190px);
     table {
         color: #333333 !important;
         width: 100%;
         display: flex;
         flex-direction: column;
         overflow-x: hidden;
-        height: 100%;
         tbody, thead {
             display: flex;
             flex-direction: column;
@@ -190,9 +189,11 @@ const TableVW = styled.div`
 `
 const PaginadorForm = styled.div`
     display: flex;
-    align-items: center;
+    flex: 1;
+    align-items: flex-end;
     justify-content: center;
     padding: 10px 15px;
+    padding-top: 20px;
     flex-wrap: wrap;
     a{
         margin-top: 3px;
