@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }) {
   const { pathname } = useRouter()
-  const defaultTemplate = { loading: false, showMenu: false }
+  const defaultTemplate = { loading: false, showMenu: false, adm: pageProps && pageProps.session && pageProps.session.adm ? 1 : 0 }
   const [template, setTemplate] = useState(defaultTemplate)
 
   /* Se showMenu ou showMenuLogin for verdadeiro, remove scroll do tbody */

@@ -103,15 +103,18 @@ export default function Menu() {
                     </li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Registrar Ponto</Link></li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Visualizar Ponto</Link></li>
-                    <li>
-                        <div className="div-titulo">
-                            Administrador
-                        </div>
-                    </li>
-                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/adm/funcionarios">Funcionários</Link></li>
-                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Pontos</Link></li>
+                    {!!template.adm &&
+                        <>
+                            <li>
+                                <div className="div-titulo">
+                                    Administrador
+                                </div>
+                            </li>
+                            <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/adm/funcionarios">Funcionários</Link></li>
+                            <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Pontos</Link></li>
+                        </>
+                    }
                 </ul>
-
             </div>
 
             <button className="btn-close" onClick={() => setTemplate({ ...template, showMenu: false })}>

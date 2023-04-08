@@ -12,7 +12,7 @@ export const authOptions = {
                         const knex = getKnex()
 
                         const user = await knex("cadastro_usuarios")
-                            .select("id", "nome", "email", "contato", "cep", "adm")
+                            .select("id", "nome", "email", "contato", "adm")
                             .where({ email: credentials.email }).first()
                         if (!user) throw { email: "Email não encontrado" }
                         if (user.bloqueado == "Sim") throw { bloqueado: "Usuário bloqueado." }
@@ -33,7 +33,7 @@ export const authOptions = {
                 const knex = getKnex()
 
                 const user = await knex("cadastro_usuarios")
-                    .select("id", "nome", "email", "contato", "cep", "adm")
+                    .select("id", "nome", "email", "contato", "adm")
                     .where({ email: session.user.email }).first()
                 if (!user) throw { email: "Email não encontrado" }
                 if (user.bloqueado == "Sim") throw { bloqueado: "Usuário bloqueado." }
