@@ -80,20 +80,14 @@ export default function AdmAdicionar({ session }) {
 
     const initialValues = {
         nome: "",
-        codigo_interno: "",
-        produto_ativo: "Sim",
-        estoque_atual: "",
-        estoque_minimo: "",
-        estoque_qtd_minima: "",
-        estoque_controle: "Não",
-        url_img: "",
-        img_1: "",
-        img_2: "",
-        img_3: "",
-        img_4: "",
-        preco: "",
-        preco_promocao: "",
-        promocao_ativa: "Não"
+        cpf: "",
+        rg: "Sim",
+        data_nasc: "",
+        email: "",
+        contato: "",
+        sexo: "Selecione",
+        bloqueado: "Não",
+        motivo_bloqueio: "",
     }
     const scheme = Yup.object().shape({
         nome: Yup.string().label("Nome do produto").nullable().required().trim(),
