@@ -405,7 +405,7 @@ export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
                                 :
                                 <button className="btn-excluir" type="button">Excluir</button>
                             }
-                            <Link className="btn-editar" href={`${prefixRouter}/adicionar/${dataVW.id}`}>Editar </Link>
+                            <Link className="btn-editar" href={`${prefixRouter}/editar/${dataVW.id}`}>Editar </Link>
                         </div>
                     </ModalAcoes>
                 </Modal>

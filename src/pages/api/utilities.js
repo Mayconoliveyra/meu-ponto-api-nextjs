@@ -1,4 +1,4 @@
-import getKnex from '../../../knex'
+import { getKnex } from "../../../knex";
 
 const existOrError = (value, msg) => {
     if (!value) throw msg;
@@ -14,7 +14,8 @@ const notExistOrError = (value, msg) => {
     throw msg;
 }
 const notExistOrErrorDB = async ({ table, column, data, id }, msg) => {
-    const dataDB = await app.db.raw(`
+    const knex = getKnex()
+    const dataDB = await knex.raw(`
         SELECT * FROM 
         ${table} 
         WHERE ${column} = '${data}' 

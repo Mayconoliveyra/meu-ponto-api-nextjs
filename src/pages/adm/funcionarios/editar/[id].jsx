@@ -74,23 +74,12 @@ const Main = styled.div`
     }
 `
 
-export default function AdmAdicionar({ session }) {
+export default function AdmEditar({ data, session }) {
     const prefix = "funcionário"
     const prefixRouter = "/adm/funcionarios"
 
     const [btnDisabled, setBtnDisabled] = useState(false);
 
-    const initialValues = {
-        nome: "",
-        cpf: "",
-        rg: "Sim",
-        data_nasc: "",
-        email: "",
-        contato: "",
-        sexo: "Selecione",
-        bloqueado: "Não",
-        motivo_bloqueio: "",
-    }
     const scheme = Yup.object().shape({
         nome: Yup.string().label("Nome").nullable().required().trim(),
         email: Yup.string().nullable().label("E-mail").required().email(),
@@ -105,10 +94,10 @@ export default function AdmAdicionar({ session }) {
     return (
         <>
             <Head>
-                <title>{`Adicionar ${prefix} - Softconnect Tecnologia`}</title>
+                <title>{`Editar ${prefix} - Softconnect Tecnologia`}</title>
             </Head>
             <Main>
-                <TituloForm title={`Adicionar ${prefix}`} icon={<PeopleFill size={25} />}>
+                <TituloForm title={`Editar ${prefix}`} icon={<PeopleFill size={25} />}>
                     <li>
                         <Link href="/adm/dashboard">Início <ChevronRight height={10} /></Link>
                     </li>
@@ -116,13 +105,13 @@ export default function AdmAdicionar({ session }) {
                         <Link href={prefixRouter}>{`${prefix[0].toUpperCase() + prefix.substring(1)}s`} <ChevronRight height={10} /></Link>
                     </li>
                     <li className="ativo">
-                        Adicionar
+                        Editar
                     </li>
                 </TituloForm>
 
                 <Formik
                     validationSchema={scheme}
-                    initialValues={initialValues}
+                    initialValues={data}
                     onSubmit={async (values, setValues) => {
                         setBtnDisabled(true)
                         const valuesFormat = FormatObjNull(values)
@@ -259,9 +248,13 @@ export async function getServerSideProps(context) {
     const session = await getSession({ req })
 
     if (session && session.id && session.adm) {
-
-        return {
-            props: { session },
+        const axios = await api(session);
+        const { id } = context.params;
+        const data = await axios.get(`adm/funcionarios/get?_id=${id}`).then((res) => res)
+        if (data && data.id) {
+            return {
+                props: { session, data },
+            }
         }
     }
 
