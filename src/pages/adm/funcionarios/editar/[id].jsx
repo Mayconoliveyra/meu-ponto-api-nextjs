@@ -116,7 +116,7 @@ export default function AdmEditar({ data, session }) {
                         setBtnDisabled(true)
                         const valuesFormat = FormatObjNull(values)
                         const axios = await api(session);
-                        await axios.post("adm/funcionarios/store", valuesFormat)
+                        await axios.put(`adm/funcionarios/store?_id=${data.id}`, valuesFormat)
                             .then(async () => {
                                 router.push(prefixRouter)
                             })
@@ -250,7 +250,8 @@ export async function getServerSideProps(context) {
     if (session && session.id && session.adm) {
         const axios = await api(session);
         const { id } = context.params;
-        const data = await axios.get(`adm/funcionarios/get?_id=${id}`).then((res) => res)
+        const data = await axios.get(`adm/funcionarios/get?_id=${id}`).then((res) => res.data)
+        console.log(data)
         if (data && data.id) {
             return {
                 props: { session, data },

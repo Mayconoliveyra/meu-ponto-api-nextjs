@@ -4,6 +4,7 @@ import { passport } from "../../../../../global"
 export default async function handler(req, res) {
     try {
         const auth = await passport(req)
+        if (!auth.adm) return res.status(500).send("Usuário não é ADM.")
         const knex = getKnex()
 
         const sortColuns = {
@@ -24,11 +25,12 @@ export default async function handler(req, res) {
         const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
         const search = req.query._search ? req.query._search : null
 
-        console.log(auth)
         if (id) {
             await knex("cadastro_usuarios")
+                .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
                 .where({ id: id })
                 .whereNull("deleted_at")
+                .first()
                 .then((funcionario) => res.status(200).json(funcionario))
                 .catch((error) => {
                     console.log("######## adm.funcionarios.get ########")
@@ -43,6 +45,7 @@ export default async function handler(req, res) {
                 .first()
 
             const funcionarios = await knex("cadastro_usuarios")
+                .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
                 .whereNull("deleted_at")
                 .limit(limit).offset(page * limit - limit)
                 .orderBy(sort, order)

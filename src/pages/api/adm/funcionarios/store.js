@@ -5,8 +5,10 @@ import { notExistOrErrorDB } from "../../utilities"
 export default async function handler(req, res) {
     try {
         const auth = await passport(req)
+        if (!auth.adm) return res.status(500).send("Usuário não é ADM.")
         const knex = getKnex()
-        const id = req.params && parseInt(req.params.id) ? parseInt(req.params.id) : null;
+
+        const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
 
         const modelo = {
             nome: req.body.nome,
@@ -39,6 +41,8 @@ export default async function handler(req, res) {
 
         } else {
             modelo.created_at = dataHoraAtual()
+            modelo.senha = "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS"  /* Senha padrão= 123456 */
+
             await knex("cadastro_usuarios")
                 .insert(modelo)
                 .then(() => res.status(204).send())
