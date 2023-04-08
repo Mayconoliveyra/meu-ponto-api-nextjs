@@ -239,16 +239,14 @@ export default function AdmAdicionar({ session }) {
                                     { value: "Sim", name: "Sim" },
                                     { value: "Não", name: "Não" },
                                 ]}
-                                md={6}
-                                xl={2}
+                                md={3}
                             />
                             <GroupOne
-                                error={!!errors.motivo && touched.motivo}
+                                error={!!errors.motivo_bloqueio && touched.motivo_bloqueio}
                                 label="Motivo de bloqueio"
-                                name="motivo"
-                                maxlength={120}
-                                md={4}
-                                xl={3}
+                                name="motivo_bloqueio"
+                                maxlength={255}
+                                md={9}
                             />
 
 

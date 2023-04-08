@@ -203,7 +203,7 @@ const GroupOne = ({ name, label, type = "text", required = false, autocomplete =
                                     guide={false}
                                     showMask={false}
                                     placeholder={placeholder}
-                                    d disabled={disabled == true || disabled == "true" || disabled == "1" || disabled == 1 ? true : false}
+                                    disabled={disabled == true || disabled == "true" || disabled == "1" || disabled == 1 ? true : false}
                                     required={required}
                                     value={field.value != undefined ? field.value : ""}
                                 />
