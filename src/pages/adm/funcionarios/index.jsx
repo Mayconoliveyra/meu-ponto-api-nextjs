@@ -13,6 +13,7 @@ import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from ".
 
 import { api } from "../../../../global";
 import { horaFormatada } from "../../../../global";
+import { useEffect } from "react";
 
 const Main = styled.div`
     flex: 1;
@@ -89,17 +90,20 @@ const ModalAcoes = styled.div`
         justify-content: space-between;
         align-items: center;
         padding: 16px;
-        max-width: 700px;
+        max-width: 600px;
         margin: 0 auto;
         width: 100%;
-        button{
+        button,a{
+            padding: 7px;
+            width: 35%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 13px;
             color: #ffffff;
             border-radius: 2px;
-            padding: 7px 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
             box-shadow: inset 0px -1px 0px 0px rgb(0 0 0 / 9%);
  
             &:disabled{
@@ -109,6 +113,15 @@ const ModalAcoes = styled.div`
                 margin-right: 4px;
             }
         }
+        .btn-excluir-1{
+            background-color: #ffc107;
+            border-color: #ffc107;
+            &:hover{
+                background-color: #ffca2c;
+                border-color: #ffc720;
+            }
+        }
+
         .btn-excluir{
             background-color: #dc3545;
             border-color: #dc3545;
@@ -127,10 +140,11 @@ const ModalAcoes = styled.div`
         }
     }
 `
-export default function AdmFuncionarios({ datas, totalPags, _sort, _order, _page }) {
+export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
     const prefix = "funcionário"
     const prefixRouter = "/adm/funcionarios"
     const [dataVW, setDataVW] = useState({});
+    const [btnExcluir, setBtnExcluir] = useState(10);
 
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [show, setShow] = useState(false);
@@ -140,9 +154,22 @@ export default function AdmFuncionarios({ datas, totalPags, _sort, _order, _page
     }
 
     const handleShow = (data) => {
+        setBtnExcluir(10)
         setDataVW(data)
         setShow(true);
     }
+
+    /* Conta 10s antes de habilitar o btn vermelho de excluir */
+    useEffect(() => {
+        let intervalId = null
+        if (btnExcluir <= 9 && btnExcluir > 0) {
+            intervalId = setTimeout(() => {
+                setBtnExcluir(btnExcluir - 1)
+            }, 1000)
+        }
+
+        return () => clearInterval(intervalId);
+    }, [btnExcluir])
 
     const LinkHrefTable = (nomeExibir, columnDb) => {
         return (
@@ -164,7 +191,7 @@ export default function AdmFuncionarios({ datas, totalPags, _sort, _order, _page
     return (
         <>
             <Head>
-                <title>Funcionários - Softconnect Tecnologia</title>
+                <title>{`Listar ${prefix} - Softconnect Tecnologia`}</title>
             </Head>
             <Main>
                 <TituloForm title={`Listar ${prefix}s`} icon={<PeopleFill size={25} />}>
@@ -421,8 +448,12 @@ export default function AdmFuncionarios({ datas, totalPags, _sort, _order, _page
                             </table>
                         </TableVW>
                         <div className="div-acoes">
-                            <button className="btn-excluir" type="button">Excluir</button>
-                            <button className="btn-editar" type="button">Editar</button>
+                            {btnExcluir >= 1 ?
+                                <button onClick={() => setBtnExcluir(9)} disabled={btnExcluir != 10} className="btn-excluir-1" type="button">Excluir({btnExcluir}s)</button>
+                                :
+                                <button className="btn-excluir" type="button">Excluir</button>
+                            }
+                            <Link className="btn-editar" href={`${prefixRouter}/adicionar/${dataVW.id}`}>Editar </Link>
                         </div>
                     </ModalAcoes>
                 </Modal>

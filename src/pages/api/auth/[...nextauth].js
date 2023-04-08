@@ -15,7 +15,7 @@ export const authOptions = {
                             .select("id", "nome", "email", "contato", "cep", "adm")
                             .where({ email: credentials.email }).first()
                         if (!user) throw { email: "Email não encontrado" }
-                        if (user.bloqueado) throw { bloqueado: "Usuário bloqueado." }
+                        if (user.bloqueado == "Sim") throw { bloqueado: "Usuário bloqueado." }
 
                         return user
                     }
@@ -36,7 +36,7 @@ export const authOptions = {
                     .select("id", "nome", "email", "contato", "cep", "adm")
                     .where({ email: session.user.email }).first()
                 if (!user) throw { email: "Email não encontrado" }
-                if (user.bloqueado) throw { bloqueado: "Usuário bloqueado." }
+                if (user.bloqueado == "Sim") throw { bloqueado: "Usuário bloqueado." }
 
                 if (user)
                     return { ...user }

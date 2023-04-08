@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
         const user = await knex("cadastro_usuarios").where({ email: modelo.email }).first()
         if (!user) throw { email: "Email não encontrado" }
-        if (user.bloqueado) return res.status(400).send({ 500: "Usuário bloqueado." })
+        if (user.bloqueado == "Sim") return res.status(400).send({ 500: "Usuário bloqueado." })
 
     } catch (error) {
         return res.status(400).send(error)

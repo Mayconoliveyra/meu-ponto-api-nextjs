@@ -11,19 +11,12 @@ exports.up = function (knex) {
             table.string("email").notNull().unique()
             table.string("senha")
             table.string("contato", 15)
+            table.enu("sexo", ["Selecione", "Masculino", "Feminino"]).notNull().defaultTo('Selecione')
 
-            table.string("cep", 9)
-            table.string("logradouro")
-            table.string("complemento")
-            table.string("bairro")
-            table.string("localidade")
-            table.string("uf")
-            table.string("numero")
-
-            table.boolean("bloqueado", 1).notNull().defaultTo(0)
+            table.enu("bloqueado", ["Sim", "Não"]).notNull().defaultTo('Não')
             table.string("motivo_bloqueio")
 
-            table.boolean("adm", 1).notNull().defaultTo(0) /* Acesso ao gestão */
+            table.boolean("adm", 1).notNull().defaultTo(0)
 
             table.timestamp("updated_at").nullable();
             table.timestamp('created_at').nullable();
