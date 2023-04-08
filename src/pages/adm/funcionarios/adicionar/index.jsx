@@ -2,7 +2,7 @@ import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
 import Alert from 'react-bootstrap/Alert';
-import { GeoAltFill, GearFill, PeopleFill, ChevronRight, PlusCircleDotted, Search, ExclamationTriangle } from "react-bootstrap-icons"
+import { GearFill, PeopleFill, ChevronRight } from "react-bootstrap-icons"
 import Link from "next/link"
 import { useState } from "react";
 import { Formik } from "formik";
@@ -11,7 +11,7 @@ import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
 import { TituloForm } from "../../../../components/formulario/titulo/components";
-import { FormOne, GroupOne, GroupMoney, GroupSelectOne, TitleFormOne, RowBtns } from "../../../../components/formulario/form/components";
+import { FormOne, GroupOne, GroupSelectOne } from "../../../../components/formulario/form/components";
 
 import { cpfMask, rgMask, nascimentoMask, telefoneMask } from "../../../../../masks"
 
@@ -227,10 +227,10 @@ export default function AdmAdicionar({ session }) {
                                 xl={3}
                             />
 
-                            <TitleFormOne>
+                            <div className="h4-titulo">
                                 <GearFill size={25} />
                                 <h4>Outros</h4>
-                            </TitleFormOne>
+                            </div>
 
                             <GroupSelectOne
                                 label="Bloqueado"
@@ -250,14 +250,9 @@ export default function AdmAdicionar({ session }) {
                             />
 
 
-                            {/*  <RowBtns>
-                                <ButtonVerde margin="0 7px 0 0">
-                                    <button type="submit"><Check size={23} /> Cadastrar</button>
-                                </ButtonVerde>
-                                <ButtonVermelho>
-                                    <button><X size={23} /> Cancelar</button>
-                                </ButtonVermelho>
-                            </RowBtns> */}
+                            <div className="div-btn-salvar">
+                                <button className="btn-salvar" type="submit">Cadastrar</button>
+                            </div>
                         </FormOne>
                     )}
                 </Formik>

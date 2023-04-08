@@ -34,24 +34,50 @@ const FormOneSC = styled.section`
     .alert {
         font-size: 0.8rem !important;
     }
-`;
-const FormTwoSC = styled.section`
-    @media (max-width: 720px){
-        padding: 0px;
-    }
-    form{
-        background: #ffffff;
-        margin-bottom: 20px;
-        border-radius: 3px;
-        width: 100%;
 
-        padding: 15px 10px;
-        border: solid 1px #dee2e6;
-        border-top: none;
+    .h4-titulo{
+        display: flex;
+        align-items: flex-end;
+        margin: 10px 0px;
+        h4{
+            font-weight: bold;
+            font-size: 15px;
+            margin-left: 6px;
+        }
     }
-    #row{
-        margin-right: 0px;
-        margin-left: 0px;
+    .div-btn-salvar{
+        display: flex;
+        align-items: center;
+        margin: 25px auto;
+        max-width: 500px;
+        button,a{
+            padding: 8px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #ffffff;
+            border-radius: 2px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: inset 0px -1px 0px 0px rgb(0 0 0 / 9%);
+ 
+            &:disabled{
+                cursor: default;
+            }
+            svg{
+                margin-right: 4px;
+            }
+        }
+        .btn-salvar{
+            background-color: #198754;
+            border-color: #198754;
+            &:hover{
+                background-color: #157347;
+                border-color: #146c43;
+            }
+        }
     }
 `;
 const GroupOneSC = styled.div`
@@ -102,31 +128,6 @@ const GroupOneSC = styled.div`
         color: #fe316c;
     }
 `;
-const TitleFormOneSC = styled.div`
-    display: flex;
-    align-items: flex-end;
-    margin: 10px 0px;
-    h4{
-        font-weight: bold;
-        font-size: 15px;
-        margin-left: 6px;
-    }
-`
-const TabsSC = styled.div`
-    padding: 20px 15px;
-    @media (max-width: 720px){
-        padding: 20px 0px;
-    }
-    .nav-tabs{
-        button{
-            color: #333333 !important;
-        }
-    }
-    .nav-link{
-        border-radius: 0px;
-        font-family:${({ theme }) => theme.font.family.medium} ;
-    }
-`
 const RowBtnsSC = styled.div`
     display: flex;
     align-items: center;
@@ -146,15 +147,6 @@ const FormOne = ({ children }) => {
                 <Row id="row">{children}</Row>
             </Form>
         </FormOneSC>
-    );
-};
-const FormTwo = ({ children }) => {
-    return (
-        <FormTwoSC>
-            <Form>
-                <Row id="row">{children}</Row>
-            </Form>
-        </FormTwoSC>
     );
 };
 const GroupOne = ({ name, label, type = "text", required = false, autocomplete = "off", maxlength = 255, mask = false, error = false, placeholder, disabled = false, xs, sm, md, lg, xl, xxl }) => {
@@ -292,13 +284,6 @@ const GroupSelectOne = ({ name, label, required = false, data = [], xs, sm, md, 
     );
 };
 
-const TitleFormOne = ({ children }) => {
-    return (
-        <TitleFormOneSC>
-            {children}
-        </TitleFormOneSC>
-    );
-};
 const RowBtns = ({ children }) => {
     return (
         <RowBtnsSC>
@@ -307,4 +292,4 @@ const RowBtns = ({ children }) => {
     );
 };
 
-export { FormOne, FormTwo, GroupOne, GroupMoney, GroupSelectOne, TitleFormOne, RowBtns }
+export { FormOne, GroupOne, GroupMoney, GroupSelectOne, RowBtns }

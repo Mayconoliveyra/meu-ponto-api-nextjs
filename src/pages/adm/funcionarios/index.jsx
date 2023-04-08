@@ -338,7 +338,19 @@ export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Telefone
+                                                Nascimento
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.data_nasc}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Contato
                                             </span>
                                         </th>
                                         <td>
@@ -350,72 +362,12 @@ export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                CEP
+                                                Sexo
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.cep}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Rua
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.logradouro}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Bairro
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.bairro}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Cidade
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.localidade}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                UF
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.uf}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Número
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.numero}
+                                                {dataVW.sexo}
                                             </span>
                                         </td>
                                     </tr>
