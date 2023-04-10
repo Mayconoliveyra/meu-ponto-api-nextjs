@@ -1,21 +1,18 @@
 import Head from "next/head";
 import styled from "styled-components";
-import { getSession } from "next-auth/react";
-import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, PlusCircleDotted, Search, ExclamationTriangle } from "react-bootstrap-icons"
-import Link from "next/link"
-import Modal from 'react-bootstrap/Modal';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import router from "next/router"
+import Link from "next/link"
+import { getSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import Modal from 'react-bootstrap/Modal';
+import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, PlusCircleDotted, Search, ExclamationTriangle } from "react-bootstrap-icons"
 
 import { TituloForm } from "../../../components/formulario/titulo/components"
 import { CabecalhoForm } from "../../../components/formulario/cabecalho/components"
-
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
-import { api } from "../../../../global";
-import { horaFormatada } from "../../../../global";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { api, horaFormatada } from "../../../../global";
 
 const prefix = "funcionário"
 const prefixRouter = "/adm/funcionarios"

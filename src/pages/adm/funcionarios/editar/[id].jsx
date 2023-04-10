@@ -1,12 +1,12 @@
 import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
+import { useState } from "react";
 import router from "next/router"
+import Link from "next/link"
 import Alert from 'react-bootstrap/Alert';
 import { GearFill, PeopleFill, ChevronRight } from "react-bootstrap-icons"
 import { toast } from "react-toastify";
-import Link from "next/link"
-import { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { pt } from "yup-locale-pt";
@@ -15,9 +15,8 @@ Yup.setLocale(pt);
 import { TituloForm } from "../../../../components/formulario/titulo/components";
 import { FormOne, GroupOne, GroupSelectOne } from "../../../../components/formulario/form/components";
 
-import { cpfMask, rgMask, nascimentoMask, telefoneMask } from "../../../../../masks"
-
 import { api, FormatObjNull } from "../../../../../global";
+import { cpfMask, rgMask, nascimentoMask, telefoneMask } from "../../../../../masks"
 
 const prefix = "funcionário"
 const prefixRouter = "/adm/funcionarios"
