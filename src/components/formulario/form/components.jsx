@@ -128,17 +128,6 @@ const GroupOneSC = styled.div`
         color: #fe316c;
     }
 `;
-const RowBtnsSC = styled.div`
-    display: flex;
-    align-items: center;
-    margin: 20px 0;
-    button{
-        min-width: 150px;
-    }
-    @media (max-width: 720px){
-        justify-content: space-around;
-    }
-`
 
 const FormOne = ({ children }) => {
     return (
@@ -284,12 +273,4 @@ const GroupSelectOne = ({ name, label, required = false, data = [], xs, sm, md, 
     );
 };
 
-const RowBtns = ({ children }) => {
-    return (
-        <RowBtnsSC>
-            {children}
-        </RowBtnsSC>
-    );
-};
-
-export { FormOne, GroupOne, GroupMoney, GroupSelectOne, RowBtns }
+export { FormOne, GroupOne, GroupMoney, GroupSelectOne }

@@ -1,5 +1,4 @@
 import styled from "styled-components"
-import { ExclamationTriangle } from "react-bootstrap-icons"
 
 const TabelaForm = styled.div`
     display: flex;
