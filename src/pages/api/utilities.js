@@ -24,6 +24,17 @@ const notExistOrErrorDB = async ({ table, column, data, id }, msg) => {
     notExistOrError(dataDB[0], msg)
     return
 }
+const existOrErrorDB = async ({ table, column, data }, msg) => {
+    const knex = getKnex()
+    const dataDB = await knex.raw(`
+        SELECT * FROM 
+        ${table} 
+        WHERE ${column} = '${data}' 
+        AND deleted_at IS NULL`)
+
+    existOrError(dataDB[0], msg)
+    return
+}
 const utility_console = (name = null, error = null, saveDB = true) => {
     console.log("########################################")
     console.log(`Function: ${name}`);
@@ -50,6 +61,7 @@ export {
     existOrError,
     notExistOrError,
     notExistOrErrorDB,
+    existOrErrorDB,
     utility_console
 };
 

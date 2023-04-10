@@ -19,6 +19,9 @@ import { cpfMask, rgMask, nascimentoMask, telefoneMask } from "../../../../../ma
 
 import { api, FormatObjNull } from "../../../../../global";
 
+const prefix = "funcionário"
+const prefixRouter = "/adm/funcionarios"
+
 const Main = styled.div`
     flex: 1;
     display: flex;
@@ -75,9 +78,6 @@ const Main = styled.div`
 `
 
 export default function AdmEditar({ data, session }) {
-    const prefix = "funcionário"
-    const prefixRouter = "/adm/funcionarios"
-
     const [btnDisabled, setBtnDisabled] = useState(false);
 
     const scheme = Yup.object().shape({
@@ -116,7 +116,7 @@ export default function AdmEditar({ data, session }) {
                         setBtnDisabled(true)
                         const valuesFormat = FormatObjNull(values)
                         const axios = await api(session);
-                        await axios.put(`adm/funcionarios/store?_id=${data.id}`, valuesFormat)
+                        await axios.put(`${prefixRouter}?_id=${data.id}`, valuesFormat)
                             .then(async () => {
                                 router.push(prefixRouter)
                             })
@@ -137,7 +137,7 @@ export default function AdmEditar({ data, session }) {
                         setBtnDisabled(false)
                     }}
                 >
-                    {({ errors, touched, values }) => (
+                    {({ errors, touched, values, dirty }) => (
                         <FormOne>
                             {alert1 &&
                                 <Alert variant="warning" onClose={() => setAlert1(false)} dismissible >
@@ -158,6 +158,7 @@ export default function AdmEditar({ data, session }) {
                                 error={!!errors.email && touched.email}
                                 label="E-mail"
                                 name="email"
+                                disabled
                                 required
                                 maxlength={120}
                                 md={6}
@@ -232,7 +233,7 @@ export default function AdmEditar({ data, session }) {
                             />
 
                             <div className="div-btn-salvar">
-                                <button disabled={btnDisabled} className="btn-salvar" type="submit">Cadastrar</button>
+                                <button disabled={btnDisabled || !dirty} className="btn-salvar" type="submit">Salvar</button>
                             </div>
                         </FormOne>
                     )}
@@ -250,8 +251,8 @@ export async function getServerSideProps(context) {
     if (session && session.id && session.adm) {
         const axios = await api(session);
         const { id } = context.params;
-        const data = await axios.get(`adm/funcionarios/get?_id=${id}`).then((res) => res.data)
-        console.log(data)
+        const data = await axios.get(`${prefixRouter}?_id=${id}`).then((res) => res.data)
+
         if (data && data.id) {
             return {
                 props: { session, data },

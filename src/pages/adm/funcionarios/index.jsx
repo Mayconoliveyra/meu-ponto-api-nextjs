@@ -5,6 +5,7 @@ import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, PlusCircleDotted, Search,
 import Link from "next/link"
 import Modal from 'react-bootstrap/Modal';
 import { useState } from "react";
+import router from "next/router"
 
 import { TituloForm } from "../../../components/formulario/titulo/components"
 import { CabecalhoForm } from "../../../components/formulario/cabecalho/components"
@@ -14,6 +15,10 @@ import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from ".
 import { api } from "../../../../global";
 import { horaFormatada } from "../../../../global";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
+
+const prefix = "funcionário"
+const prefixRouter = "/adm/funcionarios"
 
 const Main = styled.div`
     flex: 1;
@@ -140,9 +145,7 @@ const ModalAcoes = styled.div`
         }
     }
 `
-export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
-    const prefix = "funcionário"
-    const prefixRouter = "/adm/funcionarios"
+export default function AdmIndex({ session, datas, totalPags, _sort, _order, _page }) {
     const [dataVW, setDataVW] = useState({});
     const [btnExcluir, setBtnExcluir] = useState(10);
 
@@ -157,6 +160,28 @@ export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
         setBtnExcluir(10)
         setDataVW(data)
         setShow(true);
+    }
+    const handleExcluir = async (id) => {
+        setBtnDisabled(true)
+        const axios = await api(session);
+        await axios.delete(`${prefixRouter}?_id=${id}`)
+            .then(async () => {
+                router.reload()
+            })
+            .catch(res => {
+                setBtnDisabled(false)
+                /* Se status 400, significa que o erro foi tratado. */
+                if (res && res.response && res.response.status == 400) {
+                    /* Se data=500, será exibido no toast */
+                    if (res.response.data && res.response.data[500]) {
+                        toast.error(res.response.data[500])
+                    } else {
+                        toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                    }
+                } else {
+                    toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                }
+            })
     }
 
     /* Conta 10s antes de habilitar o btn vermelho de excluir */
@@ -374,6 +399,30 @@ export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
+                                                Bloqueado
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.bloqueado}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Motivo bloqueio
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.motivo_bloqueio}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
                                                 Cadastrado em
                                             </span>
                                         </th>
@@ -403,7 +452,7 @@ export default function AdmIndex({ datas, totalPags, _sort, _order, _page }) {
                             {btnExcluir >= 1 ?
                                 <button onClick={() => setBtnExcluir(9)} disabled={btnExcluir != 10} className="btn-excluir-1" type="button">Excluir({btnExcluir}s)</button>
                                 :
-                                <button className="btn-excluir" type="button">Excluir</button>
+                                <button disabled={btnDisabled} className="btn-excluir" onClick={() => handleExcluir(dataVW.id)} type="button">EXCLUIR</button>
                             }
                             <Link className="btn-editar" href={`${prefixRouter}/editar/${dataVW.id}`}>Editar </Link>
                         </div>
@@ -423,10 +472,10 @@ export async function getServerSideProps(context) {
 
         const { _sort = "id", _order = "DESC", _page = 1, _limit = 20 } = context.query;
         const params = `?_page=${_page}&_limit=${_limit}&_sort=${_sort}&_order=${_order}`
-        const { datas, totalPags } = await axios.get(`adm/funcionarios/get${params}`).then((res) => res.data)
+        const { datas, totalPags } = await axios.get(`${prefixRouter}${params}`).then((res) => res.data)
 
         return {
-            props: { datas, totalPags, _sort, _order, _page, _limit },
+            props: { session, datas, totalPags, _sort, _order, _page, _limit },
         }
     }
 

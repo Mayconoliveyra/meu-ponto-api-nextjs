@@ -19,6 +19,9 @@ import { cpfMask, rgMask, nascimentoMask, telefoneMask } from "../../../../../ma
 
 import { api, FormatObjNull } from "../../../../../global";
 
+const prefix = "funcionário"
+const prefixRouter = "/adm/funcionarios"
+
 const Main = styled.div`
     flex: 1;
     display: flex;
@@ -75,15 +78,12 @@ const Main = styled.div`
 `
 
 export default function AdmAdicionar({ session }) {
-    const prefix = "funcionário"
-    const prefixRouter = "/adm/funcionarios"
-
     const [btnDisabled, setBtnDisabled] = useState(false);
 
     const initialValues = {
         nome: "",
         cpf: "",
-        rg: "Sim",
+        rg: "",
         data_nasc: "",
         email: "",
         contato: "",
@@ -127,7 +127,7 @@ export default function AdmAdicionar({ session }) {
                         setBtnDisabled(true)
                         const valuesFormat = FormatObjNull(values)
                         const axios = await api(session);
-                        await axios.post("adm/funcionarios/store", valuesFormat)
+                        await axios.post(prefixRouter, valuesFormat)
                             .then(async () => {
                                 router.push(prefixRouter)
                             })
