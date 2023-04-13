@@ -144,15 +144,22 @@ const ModalAcoes = styled.div`
 `
 export default function AdmIndex({ session, datas, totalPags, _sort, _order, _page }) {
     const [dataVW, setDataVW] = useState({});
+    const [inputSearch, setInputSearch] = useState('')
     const [btnExcluir, setBtnExcluir] = useState(10);
-
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [show, setShow] = useState(false);
+
+    const handleInputSearch = (e) => {
+        if (e == 'Search' || e.key === 'Enter') {
+            console.log("oi")
+            router.push(`${prefixRouter}?_page=1&_sort=id&_order=DESC&_search=${inputSearch}`)
+        }
+    };
+
     const handleClose = () => {
         setDataVW({})
         setShow(false);
     }
-
     const handleShow = (data) => {
         setBtnExcluir(10)
         setDataVW(data)
@@ -230,8 +237,8 @@ export default function AdmIndex({ session, datas, totalPags, _sort, _order, _pa
                 <CabecalhoForm>
                     <Link className="btn-adicionar" href={`${prefixRouter}/adicionar`}><PlusCircleDotted size={18} /><span>Adicionar</span></Link>
                     <div className="div-input-pesquisa">
-                        <input placeholder="Buscar" type="text" />
-                        <button><Search size={18} /></button>
+                        <input value={inputSearch} onKeyUp={handleInputSearch} onChange={(e) => setInputSearch(e.target.value)} placeholder="Buscar" type="text" />
+                        <button type="button" onClick={() => handleInputSearch('Search')}><Search size={18} /></button>
                     </div>
                 </CabecalhoForm>
 
@@ -467,8 +474,8 @@ export async function getServerSideProps(context) {
     if (session && session.id && session.adm) {
         const axios = await api(session);
 
-        const { _sort = "id", _order = "DESC", _page = 1, _limit = 20 } = context.query;
-        const params = `?_page=${_page}&_limit=${_limit}&_sort=${_sort}&_order=${_order}`
+        const { _sort = "id", _order = "DESC", _page = 1, _limit = 20, _search } = context.query;
+        const params = `?_page=${_page}&_limit=${_limit}&_sort=${_sort}&_order=${_order}&_search=${_search}`
         const { datas, totalPags } = await axios.get(`${prefixRouter}${params}`).then((res) => res.data)
 
         return {

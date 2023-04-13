@@ -2,6 +2,64 @@ import { getKnex } from "../../../../../knex"
 import { passport, dataHoraAtual } from "../../../../../global"
 import { existOrError, notExistOrErrorDB, existOrErrorDB } from "../../utilities"
 
+const simplify = (text) => {
+    const removeFilter = [
+        "",
+        "a",
+        "e",
+        "i",
+        "o",
+        "u",
+        "ao",
+        "um",
+        "de",
+        "da",
+        "das",
+        "dos",
+        "que",
+        "para",
+        "um",
+        "nas",
+        "ter",
+        "com",
+        "tem",
+        "em",
+        "AND"];
+
+    const search = text
+        .normalize("NFD")
+        .replace(/[^a-zA-Z0-9\s]/g, "")
+        .trim()
+        .toLowerCase()
+        .split(' ');
+
+    const searchArray = search
+    let textAndReturn = ""
+
+    searchArray.map(elemento => {
+        /* Se tiver algum caracteres do removeFilter remover */
+        if (removeFilter.includes(elemento)) return
+
+        if (elemento.slice(-1) == 's') {
+            /* Remove o 's' do final da palavra. ex: lampadas, tintas...*/
+            textAndReturn = `${textAndReturn} 
+                id LIKE '%${elemento.slice(0, elemento.length - 1)}%' OR
+                cpf LIKE '%${elemento.slice(0, elemento.length - 1)}%' OR
+                nome LIKE '%${elemento.slice(0, elemento.length - 1)}%'
+            AND`;
+
+        } else {
+            textAndReturn = `${textAndReturn} 
+                id LIKE '%${elemento}%' OR
+                cpf LIKE '%${elemento}%' OR
+                nome LIKE '%${elemento}%' 
+            AND`;
+        }
+    });
+    /* Remover o AND do final da query */
+    return textAndReturn.slice(0, textAndReturn.length - 3)
+}
+
 export default async function handler(req, res) {
     try {
         const auth = await passport(req)
@@ -53,6 +111,24 @@ export default async function handler(req, res) {
                     });
 
             } else {
+                if (search) {
+                    console.log(simplify(search))
+                    const { totalPags } = await knex("cadastro_usuarios")
+                        .whereRaw(simplify(search))
+                        .count({ totalPags: "*" })
+                        .whereNull("deleted_at")
+                        .first()
+                    const funcionarios = await knex("cadastro_usuarios")
+                        .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
+                        .whereRaw(simplify(search))
+                        .whereRaw('deleted_at IS NULL')
+                        .limit(limit).offset(page * limit - limit)
+                        .orderBy('id', 'desc')
+
+
+                    return res.status(200).json({ datas: funcionarios, totalPags: Math.ceil(totalPags / limit) })
+                }
+
                 const { totalPags } = await knex("cadastro_usuarios")
                     .count({ totalPags: "*" })
                     .whereNull("deleted_at")

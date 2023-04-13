@@ -56,12 +56,11 @@ const utility_console = (name = null, error = null, saveDB = true) => {
             );
     }
 }
-
 export {
     existOrError,
     notExistOrError,
     notExistOrErrorDB,
     existOrErrorDB,
-    utility_console
+    utility_console,
 };
 
