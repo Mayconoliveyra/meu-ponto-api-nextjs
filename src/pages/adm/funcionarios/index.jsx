@@ -16,6 +16,7 @@ import { api, horaFormatada } from "../../../../global";
 
 const prefix = "funcionário"
 const prefixRouter = "/adm/funcionarios"
+const pageDefault = { _sort: "id", _order: "DESC", _page: 1, _limit: 20, _search: "" }
 
 const Main = styled.div`
     flex: 1;
@@ -142,20 +143,19 @@ const ModalAcoes = styled.div`
         }
     }
 `
-export default function AdmIndex({ session, datas, totalPags, _sort, _order, _page }) {
+export default function AdmIndex({ session, data, totalPags }) {
+    const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
+    const [pageTotalPags, setPageTotalPags] = useState(totalPags); /* Armazena total de pags */
+    const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
+    const [pageHanDisble, setPageHanDisble] = useState(false); /* Desabilita os filtros até a pagina terminad e ser carregada. */
+
     const [dataVW, setDataVW] = useState({});
     const [inputSearch, setInputSearch] = useState('')
     const [btnExcluir, setBtnExcluir] = useState(10);
     const [btnDisabled, setBtnDisabled] = useState(false);
+
+    /* MODAL */
     const [show, setShow] = useState(false);
-
-    const handleInputSearch = (e) => {
-        if (e == 'Search' || e.key === 'Enter') {
-            console.log("oi")
-            router.push(`${prefixRouter}?_page=1&_sort=id&_order=DESC&_search=${inputSearch}`)
-        }
-    };
-
     const handleClose = () => {
         setDataVW({})
         setShow(false);
@@ -165,6 +165,34 @@ export default function AdmIndex({ session, datas, totalPags, _sort, _order, _pa
         setDataVW(data)
         setShow(true);
     }
+
+    const handlePageFilter = async () => {
+        if (!pageHanDisble) {
+            setPageHanDisble(true)
+
+            const axios = await api(session);
+            const params = `?_page=${pageHandle._page}&_limit=${pageHandle._limit}&_sort=${pageHandle._sort}&_order=${pageHandle._order}&_search=${pageHandle._search}`
+            const { data, totalPags } = await axios.get(`${prefixRouter}${params} `).then((res) => res.data)
+            setPageData(data)
+            setPageTotalPags(totalPags)
+
+            setPageHanDisble(false)
+        }
+    };
+
+    const handleInputSearch = (e) => {
+        if (e == 'Search' || e.key === 'Enter') {
+            if (inputSearch) {
+                setPageHandle({ ...pageDefault, _search: inputSearch })
+            } else {
+                /* Exibe os valores padrão do primeiro carregamento da página */
+                setPageHandle({ ...pageDefault })
+                setPageData(data)
+                setPageTotalPags(totalPags)
+            }
+        }
+    };
+
     const handleExcluir = async (id) => {
         setBtnDisabled(true)
         const axios = await api(session);
@@ -188,6 +216,23 @@ export default function AdmIndex({ session, datas, totalPags, _sort, _order, _pa
             })
     }
 
+    const OrdeByTable = (nomeExibir, columnDb) => {
+        return (
+            <button type="button" onClick={() => setPageHandle({ ...pageDefault, _sort: columnDb, _order: pageHandle._order == "DESC" ? "ASC" : "DESC", _search: pageHandle._search })}>
+                {pageHandle._sort == columnDb &&
+                    <>
+                        {pageHandle._order == "DESC" ?
+                            <ArrowUp />
+                            :
+                            <ArrowDown />
+                        }
+                    </>
+                }
+                {nomeExibir}
+            </button>
+        )
+    }
+
     /* Conta 10s antes de habilitar o btn vermelho de excluir */
     useEffect(() => {
         let intervalId = null
@@ -200,22 +245,9 @@ export default function AdmIndex({ session, datas, totalPags, _sort, _order, _pa
         return () => clearInterval(intervalId);
     }, [btnExcluir])
 
-    const LinkHrefTable = (nomeExibir, columnDb) => {
-        return (
-            <Link href={`${prefixRouter}?_page=1&_sort=${columnDb}&_order=${_order == "DESC" ? "ASC" : "DESC"}`}>
-                {_sort == columnDb &&
-                    <>
-                        {_order == "DESC" ?
-                            <ArrowUp />
-                            :
-                            <ArrowDown />
-                        }
-                    </>
-                }
-                {nomeExibir}
-            </Link>
-        )
-    }
+    useEffect(() => {
+        handlePageFilter()
+    }, [pageHandle])
 
     return (
         <>
@@ -243,24 +275,24 @@ export default function AdmIndex({ session, datas, totalPags, _sort, _order, _pa
                 </CabecalhoForm>
 
                 {
-                    datas && datas.length > 0 ?
+                    pageData && pageData.length > 0 ?
                         <TabelaForm>
                             <table>
                                 <thead>
                                     <tr>
                                         <ThForm maxwidth="65px">
-                                            {LinkHrefTable("Cód.", "id")}
+                                            {OrdeByTable("Cód.", "id")}
                                         </ThForm>
                                         <ThForm maxwidth="100px">
-                                            {LinkHrefTable("CPF", "cpf")}
+                                            {OrdeByTable("CPF", "cpf")}
                                         </ThForm>
                                         <ThForm maxwidth="9999px">
-                                            {LinkHrefTable("Nome", "nome")}
+                                            {OrdeByTable("Nome", "nome")}
                                         </ThForm>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {datas.map((data => {
+                                    {pageData.map((data => {
                                         return (
                                             <tr key={data.id} onClick={() => handleShow(data)}>
                                                 <TdForm maxwidth="65px">{data.id}</TdForm>
@@ -282,13 +314,13 @@ export default function AdmIndex({ session, datas, totalPags, _sort, _order, _pa
                 }
 
                 {
-                    totalPags > 1 &&
+                    pageTotalPags > 1 &&
                     <PaginadorForm>
                         {(() => {
                             const links = [];
-                            for (let page = 1; page <= totalPags; page++) {
+                            for (let page = 1; page <= pageTotalPags; page++) {
                                 links.push(
-                                    <Link key={page} className={_page == page ? 'active' : ''} href={`${prefixRouter}?_page=${page}&_sort=${_sort}&_order=${_order}`}>{page}</Link>
+                                    <button type="button" key={page} className={pageHandle._page == page ? 'active' : ''} onClick={() => setPageHandle({ ...pageHandle, _page: page })}> {page}</button>
                                 );
                             }
                             return links;
@@ -473,13 +505,11 @@ export async function getServerSideProps(context) {
 
     if (session && session.id && session.adm) {
         const axios = await api(session);
-
-        const { _sort = "id", _order = "DESC", _page = 1, _limit = 20, _search } = context.query;
-        const params = `?_page=${_page}&_limit=${_limit}&_sort=${_sort}&_order=${_order}&_search=${_search}`
-        const { datas, totalPags } = await axios.get(`${prefixRouter}${params}`).then((res) => res.data)
+        const params = `?_page=${pageDefault._page}&_limit=${pageDefault._limit}&_sort=${pageDefault._sort}&_order=${pageDefault._order}&_search=${pageDefault._search}`
+        const { data, totalPags } = await axios.get(`${prefixRouter}${params} `).then((res) => res.data)
 
         return {
-            props: { session, datas, totalPags, _sort, _order, _page, _limit },
+            props: { session, data, totalPags },
         }
     }
 

@@ -67,7 +67,7 @@ const ThForm = styled.th`
     color: #333333;
     border-bottom-width: 2px;
 
-    span,a{
+    span, a, button{
         box-sizing: border-box;
         color: #333333;
         text-overflow: ellipsis;
@@ -77,6 +77,7 @@ const ThForm = styled.th`
         -webkit-box-orient: vertical;
         overflow: hidden;
         word-break: break-word;
+        background-color: transparent;
         svg{
             margin-bottom:3px;
         }
@@ -194,7 +195,7 @@ const PaginadorForm = styled.div`
     padding: 10px 15px;
     padding-top: 20px;
     flex-wrap: wrap;
-    a{
+    button{
         margin-top: 3px;
         background: #fafafa;
         color: #666;

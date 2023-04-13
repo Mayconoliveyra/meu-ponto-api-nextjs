@@ -57,7 +57,7 @@ const simplify = (text) => {
         }
     });
     /* Remover o AND do final da query */
-    return textAndReturn.slice(0, textAndReturn.length - 3)
+    return `(${textAndReturn.slice(0, textAndReturn.length - 3)})`
 }
 
 export default async function handler(req, res) {
@@ -97,6 +97,7 @@ export default async function handler(req, res) {
             const order = orderColuns[req.query._order] ? orderColuns[req.query._order] : 'ASC';
             const search = req.query._search ? req.query._search : null
 
+            /* Se tiver ID retornar o registro especifico. */
             if (id) {
                 await knex("cadastro_usuarios")
                     .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
@@ -111,36 +112,35 @@ export default async function handler(req, res) {
                     });
 
             } else {
+                /* Se tiver setado texto para pesquisa executa LIKE */
                 if (search) {
-                    console.log(simplify(search))
                     const { totalPags } = await knex("cadastro_usuarios")
                         .whereRaw(simplify(search))
+                        .whereRaw('deleted_at IS NULL')
                         .count({ totalPags: "*" })
-                        .whereNull("deleted_at")
                         .first()
                     const funcionarios = await knex("cadastro_usuarios")
                         .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
                         .whereRaw(simplify(search))
                         .whereRaw('deleted_at IS NULL')
                         .limit(limit).offset(page * limit - limit)
-                        .orderBy('id', 'desc')
+                        .orderBy(sort, order)
 
+                    return res.status(200).json({ data: funcionarios, totalPags: Math.ceil(totalPags / limit) })
+                } else {
+                    const { totalPags } = await knex("cadastro_usuarios")
+                        .count({ totalPags: "*" })
+                        .whereNull("deleted_at")
+                        .first()
 
-                    return res.status(200).json({ datas: funcionarios, totalPags: Math.ceil(totalPags / limit) })
+                    const funcionarios = await knex("cadastro_usuarios")
+                        .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
+                        .whereNull("deleted_at")
+                        .limit(limit).offset(page * limit - limit)
+                        .orderBy(sort, order)
+
+                    return res.status(200).json({ data: funcionarios, totalPags: Math.ceil(totalPags / limit) })
                 }
-
-                const { totalPags } = await knex("cadastro_usuarios")
-                    .count({ totalPags: "*" })
-                    .whereNull("deleted_at")
-                    .first()
-
-                const funcionarios = await knex("cadastro_usuarios")
-                    .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
-                    .whereNull("deleted_at")
-                    .limit(limit).offset(page * limit - limit)
-                    .orderBy(sort, order)
-
-                return res.status(200).json({ datas: funcionarios, totalPags: Math.ceil(totalPags / limit) })
             }
         }
 
