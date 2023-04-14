@@ -249,7 +249,6 @@ export default function Home() {
                                         <label htmlFor="show_password" onClick={() => setFieldValue("show_password", !values.show_password)}>
                                             <Field name="show_password" type="checkbox" /><span>Mostrar senha</span>
                                         </label>
-                                        {/* <Link href="/conta/recuperar">Esqueceu a senha?</Link> */}
                                     </div>
 
                                     <div className="btn-entrar">

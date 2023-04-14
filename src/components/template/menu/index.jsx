@@ -102,7 +102,7 @@ export default function Menu() {
                         </div>
                     </li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Registrar Ponto</Link></li>
-                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Visualizar Ponto</Link></li>
+                    <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/pontos">Visualizar Ponto</Link></li>
                     {!!template.adm &&
                         <>
                             <li>

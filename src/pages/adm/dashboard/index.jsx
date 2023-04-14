@@ -114,26 +114,22 @@ export default function ADMDashboard({ session, pontos }) {
 }
 
 export async function getServerSideProps(context) {
+    const { req } = context
+    const session = await getSession({ req })
+    if (session && session.id && session.adm) {
+        const axios = await api(session);
+        const pontos = await axios.get("ponto?_diario=true").then((res) => res.data)
 
-    try {
-        const { req } = context
-        const session = await getSession({ req })
-        if (session && session.id && session.adm) {
-            const axios = await api(session);
-            const pontos = await axios.get("ponto/get?_diario=false").then((res) => res.data)
-
-            return {
-                props: { session, pontos },
-            }
-        }
-
-        throw ""
-    } catch (error) {
         return {
-            redirect: {
-                destination: "/",
-                permanent: false
-            }
+            props: { session, pontos },
         }
     }
+
+    return {
+        redirect: {
+            destination: "/",
+            permanent: false
+        }
+    }
+
 }
