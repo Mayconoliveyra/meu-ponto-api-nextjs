@@ -149,7 +149,7 @@ export default function AdmIndex({ session, data, totalPags }) {
     const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
     const [pageHanDisble, setPageHanDisble] = useState(false); /* Desabilita os filtros até a pagina terminad e ser carregada. */
 
-    const [dataVW, setDataVW] = useState({});
+    const [dataVW, setDataVW] = useState({}); /* Amazena o registro para ser exibido no modal */
     const [inputSearch, setInputSearch] = useState('')
     const [btnExcluir, setBtnExcluir] = useState(10);
     const [btnDisabled, setBtnDisabled] = useState(false);
