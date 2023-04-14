@@ -156,7 +156,7 @@ export default function Dashboard({ session, pontos }) {
         setBtnDisabled(true)
 
         const axios = await api(session);
-        await axios.post("ponto/registrar")
+        await axios.post("ponto")
             .then(() => {
                 handleClose()
                 router.reload()
@@ -237,25 +237,21 @@ export default function Dashboard({ session, pontos }) {
 }
 
 export async function getServerSideProps(context) {
-    try {
-        const { req } = context
-        const session = await getSession({ req })
-        if (session && session.id) {
-            const axios = await api(session);
-            const pontos = await axios.get("ponto/get?_diario=false").then((res) => res.data)
+    const { req } = context
+    const session = await getSession({ req })
+    if (session && session.id) {
+        const axios = await api(session);
+        const pontos = await axios.get("ponto?_diario=true").then((res) => res.data)
 
-            return {
-                props: { session, pontos },
-            }
-        }
-
-        throw ""
-    } catch (error) {
         return {
-            redirect: {
-                destination: "/",
-                permanent: false
-            }
+            props: { session, pontos },
+        }
+    }
+
+    return {
+        redirect: {
+            destination: "/",
+            permanent: false
         }
     }
 }
