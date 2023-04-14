@@ -7,7 +7,7 @@ import moment from "moment"
 import 'moment/locale/pt-br'
 moment.locale('pt-br')
 
-import { api, showError } from "../../../global";
+import { api } from "../../../global";
 import { useEffect, useState } from "react";
 
 const Main = styled.div`
@@ -161,7 +161,6 @@ export default function Dashboard({ session, pontos }) {
                 handleClose()
                 router.reload()
             })
-            .catch((error) => showError(error))
     }
     return (
         <>

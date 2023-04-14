@@ -1,6 +1,5 @@
 import axios from "axios";
 const jwt = require("jwt-simple")
-import { toast } from "react-toastify";
 import moment from "moment"
 import 'moment/locale/pt-br'
 moment.locale('pt-br')
@@ -41,30 +40,12 @@ export function passport(req) {
     }
 }
 
-export function showError(e) {
-    if (e && e.response && e.response.data) {
-        toast.error(e.response.data)
-    } else if (typeof e === "string") {
-        toast.error(e)
-    } else {
-        toast.error("Houve um erro inesperado, por favor, tente novamente.")
-    }
-}
-
-export function showSucesso(e) {
-    if (e && e.response && e.response.data) {
-        toast.success(e.response.data)
-    } else if (typeof e === "string") {
-        toast.success(e)
-    } else {
-        toast.success("Operação realizada com sucesso!.")
-    }
-}
-
+/* Ultiliza no updated_at, created_at, deleted_at */
 export function dataHoraAtual() {
     return new Date();
 }
 
+/* Formata em ex:"08/04/2023 13:39:02" */
 export function horaFormatada(date) {
     if (!date) return ""
     return moment(date).format('L HH:mm:ss')
@@ -82,4 +63,4 @@ export function FormatObjNull(obj) {
     return objReturn
 }
 
-export default { api, passport, showError, showSucesso, FormatObjNull, dataHoraAtual, horaFormatada }
+export default { api, passport, FormatObjNull, dataHoraAtual, horaFormatada }
