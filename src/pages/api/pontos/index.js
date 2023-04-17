@@ -28,13 +28,17 @@ export default async function handler(req, res) {
             const order = orderColuns[req.query._order] ? orderColuns[req.query._order] : 'ASC';
             const search = req.query._search ? req.query._search : null
 
+            const dinicial = req.query._dinicial ? req.query._dinicial : null
+            const dfinal = req.query._dfinal ? req.query._dfinal : null
+
             /* Se 'true' retorna os pontos diario do usuario logado(utilizado na tela dashboard) */
             const getdiario = req.query._diario ? req.query._diario : null
             if (getdiario) {
                 /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
                 const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
 
-                await knex("cadastro_pontos")
+                await knex("vw_cadastro_pontos")
+                    .select("id", "ponto_entrada", "ponto_saida", "dif_hora", "dif_seg", "created_at", "updated_at")
                     .where({ id_usuario: auth.id })
                     .whereRaw(`DATE(ponto_entrada) = '${dataAtualFormat}'`)
                     .whereNull("deleted_at")
@@ -46,17 +50,25 @@ export default async function handler(req, res) {
                         return res.status(500).send()
                     });
             } else {
-                /* const { totalPags } = await knex("cadastro_pontos")
+                existOrError(dinicial, "Data inical deve ser informada.")
+                existOrError(dfinal, "Data final deve ser informada.")
+
+                const { totalPags } = await knex("vw_cadastro_pontos")
+                    .where({ id_usuario: auth.id })
                     .count({ totalPags: "*" })
+                    .whereRaw(`DATE(ponto_entrada) BETWEEN '${dinicial}' AND '${dfinal}'`)
                     .whereNull("deleted_at")
                     .first()
 
-                const pontos = await knex("cadastro_pontos")
+                const pontos = await knex("vw_cadastro_pontos")
+                    .select("id", "ponto_entrada", "ponto_saida", "dif_hora", "dif_seg", "created_at", "updated_at")
+                    .where({ id_usuario: auth.id })
+                    .whereRaw(`DATE(ponto_entrada) BETWEEN '${dinicial}' AND '${dfinal}'`)
                     .whereNull("deleted_at")
                     .limit(limit).offset(page * limit - limit)
                     .orderBy(sort, order)
 
-                return res.status(200).json({ pontos: pontos, totalPags: Math.ceil(totalPags / limit) }) */
+                return res.status(200).json({ data: pontos, totalPags: Math.ceil(totalPags / limit) })
             }
         } catch (error) {
             return res.status(400).send(error)

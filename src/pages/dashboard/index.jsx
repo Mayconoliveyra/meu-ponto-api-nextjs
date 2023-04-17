@@ -156,7 +156,7 @@ export default function Dashboard({ session, pontos }) {
         setBtnDisabled(true)
 
         const axios = await api(session);
-        await axios.post("ponto")
+        await axios.post("pontos")
             .then(() => {
                 handleClose()
                 router.reload()
@@ -240,7 +240,7 @@ export async function getServerSideProps(context) {
     const session = await getSession({ req })
     if (session && session.id) {
         const axios = await api(session);
-        const pontos = await axios.get("ponto?_diario=true").then((res) => res.data)
+        const pontos = await axios.get("pontos?_diario=true").then((res) => res.data)
 
         return {
             props: { session, pontos },

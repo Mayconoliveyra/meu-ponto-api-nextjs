@@ -7,6 +7,9 @@ exports.up = function (knex) {
             table.timestamp('ponto_entrada').nullable()
             table.timestamp('ponto_saida').nullable()
 
+            table.timestamp('ponto_entrada_old').nullable()
+            table.timestamp('ponto_saida_old').nullable()
+
             table.timestamp("updated_at").nullable();
             table.timestamp('created_at').nullable();
             table.timestamp("deleted_at").nullable();
