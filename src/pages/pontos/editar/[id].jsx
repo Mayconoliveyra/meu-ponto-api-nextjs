@@ -76,9 +76,10 @@ export default function Editar({ data, session }) {
     const [btnDisabled, setBtnDisabled] = useState(false);
 
     const scheme = Yup.object().shape({
-        tipo_ajuste: Yup.string().label("Tipo de ajuste").nullable().required().trim(),
-        ponto_entrada: Yup.string().nullable().label("Entrada").required(),
-        ponto_saida: Yup.string().nullable().label("Saída").required(),
+        tipo_alteracao: Yup.string().label("Tipo de ajuste").nullable().required().trim(),
+        data: Yup.string().nullable().label("Data").required(),
+        h_entrada: Yup.string().nullable().label("Entrada").required(),
+        h_saida: Yup.string().nullable().label("Saída").required(),
     });
 
     return (
@@ -126,19 +127,30 @@ export default function Editar({ data, session }) {
                             />
 
                             <GroupOne
-                                error={!!errors.ponto_entrada && touched.ponto_entrada}
-                                label="Entrada"
-                                name="ponto_entrada"
-                                type="datetime-local"
+                                error={!!errors.data && touched.data}
+                                label="Data"
+                                name="data"
+                                type="date"
                                 required
+                                disabled={values.tipo_alteracao != "Data" && values.tipo_alteracao != "Data e Hora"}
                                 md={6}
                             />
                             <GroupOne
-                                error={!!errors.ponto_saida && touched.ponto_saida}
-                                label="Saída"
-                                name="ponto_saida"
-                                type="datetime-local"
+                                error={!!errors.h_entrada && touched.h_entrada}
+                                label="Entrada"
+                                name="h_entrada"
+                                type="time"
                                 required
+                                disabled={values.tipo_alteracao != "Hora" && values.tipo_alteracao != "Data e Hora"}
+                                md={6}
+                            />
+                            <GroupOne
+                                error={!!errors.h_saida && touched.h_saida}
+                                label="Saída"
+                                name="h_saida"
+                                type="time"
+                                required
+                                disabled={values.tipo_alteracao != "Hora" && values.tipo_alteracao != "Data e Hora"}
                                 md={6}
                             />
                             <div className="div-btn-salvar">
@@ -157,7 +169,7 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
-    if (session && session.id && session.adm) {
+    if (session && session.id) {
         const axios = await api(session);
         const { id } = context.params;
         const data = await axios.get(`${prefixRouter}?_id=${id}`).then((res) => res.data)

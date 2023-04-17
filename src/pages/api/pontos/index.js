@@ -13,8 +13,12 @@ export default async function handler(req, res) {
         try {
             const sortColuns = {
                 id: "id",
-                nome: "nome",
-                cpf: "cpf"
+                data: "data",
+                h_entrada: "h_entrada",
+                h_saida: "h_saida",
+                tipo_alteracao: "tipo_alteracao",
+                dif_hora: "dif_hora",
+                dif_seg: "dif_seg",
             }
             const orderColuns = {
                 ASC: "ASC",

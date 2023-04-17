@@ -359,12 +359,15 @@ export default function Ponto({ session, data, totalPags }) {
                                             {OrdeByTable("Cód.", "id")}
                                         </ThForm>
                                         <ThForm maxwidth="120px">
-                                            {OrdeByTable("Entrada", "ponto_entrada")}
+                                            {OrdeByTable("Data", "data")}
+                                        </ThForm>
+                                        <ThForm maxwidth="120px">
+                                            {OrdeByTable("Entrada", "h_entrada")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Saída", "ponto_saida")}
+                                            {OrdeByTable("Saída", "h_saida")}
                                         </ThForm>
-                                        <ThForm maxwidth="130px">
+                                        <ThForm maxwidth="9999px">
                                             {OrdeByTable("H. T.", "dif_hora")}
                                         </ThForm>
                                     </tr>
@@ -374,9 +377,10 @@ export default function Ponto({ session, data, totalPags }) {
                                         return (
                                             <tr key={data.id} onClick={() => handleShow(data)}>
                                                 <TdForm maxwidth="65px">{data.id}</TdForm>
-                                                <TdForm maxwidth="120px">{horaFormatada(data.ponto_entrada)}</TdForm>
-                                                <TdForm maxwidth="130px">{horaFormatada(data.ponto_saida)}</TdForm>
-                                                <TdForm maxwidth="130px">{data.dif_hora}</TdForm>
+                                                <TdForm maxwidth="120px">{moment(data.data).format('DD/MM/YY')}</TdForm>
+                                                <TdForm maxwidth="120px">{data.h_entrada}</TdForm>
+                                                <TdForm maxwidth="130px">{data.h_saida}</TdForm>
+                                                <TdForm maxwidth="9999px">{data.dif_hora}</TdForm>
                                             </tr>
                                         )
                                     }))}
@@ -430,12 +434,24 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
+                                                Data
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {moment(data.data).format('DD/MM/YY')}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
                                                 Entrada
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {horaFormatada(dataVW.ponto_entrada)}
+                                                {dataVW.h_entrada}
                                             </span>
                                         </td>
                                     </tr>
@@ -447,7 +463,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {horaFormatada(dataVW.ponto_saida)}
+                                                {dataVW.h_saida}
                                             </span>
                                         </td>
                                     </tr>
@@ -466,12 +482,24 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
+                                                OLD Data
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {data.data_old ? moment(data.data_old).format('DD/MM/YY') : ""}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
                                                 OLD Entrada
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {horaFormatada(dataVW.ponto_entrada)}
+                                                {dataVW.h_entrada_old}
                                             </span>
                                         </td>
                                     </tr>
@@ -483,35 +511,10 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {horaFormatada(dataVW.ponto_saida)}
+                                                {dataVW.h_saida_old}
                                             </span>
                                         </td>
                                     </tr>
-                                    {/*  <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Cadastrado em
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {horaFormatada(dataVW.created_at)}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Modificado em
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {horaFormatada(dataVW.updated_at)}
-                                            </span>
-                                        </td>
-                                    </tr> */}
-
                                 </tbody>
                             </table>
                         </TableVW>
@@ -534,7 +537,7 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
-    if (session && session.id && session.adm) {
+    if (session && session.id) {
         const axios = await api(session);
         const params = `?_page=${pageDefault._page}&_limit=${pageDefault._limit}&_sort=${pageDefault._sort}&_order=${pageDefault._order}&_dinicial=${pageDefault._dinicial}&_dfinal=${pageDefault._dfinal}`
         const { data, totalPags } = await axios.get(`${prefixRouter}${params} `).then((res) => res.data)
