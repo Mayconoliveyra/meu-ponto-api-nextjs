@@ -188,7 +188,7 @@ export default function Dashboard({ session, pontos }) {
                                                 <span>Entrada</span>
                                             </div>
                                             <div className="div-data-hora">
-                                                <span>{moment(ponto.ponto_entrada).format('HH:mm')}</span>
+                                                <span>{ponto.h_entrada.slice(0, 5)}</span>
                                             </div>
                                         </div>
                                         <div className="d-registro">
@@ -196,8 +196,8 @@ export default function Dashboard({ session, pontos }) {
                                                 <span>Saida</span>
                                             </div>
                                             <div className="div-data-hora">
-                                                {ponto.ponto_saida ?
-                                                    <span>{moment(ponto.ponto_saida).format('HH:mm')}</span>
+                                                {ponto.h_saida ?
+                                                    <span>{ponto.h_saida.slice(0, 5)}</span>
                                                     :
                                                     <span>...</span>
                                                 }
