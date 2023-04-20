@@ -1,5 +1,5 @@
-import knex from 'knex'
-import config from '../knexfile.js'
+const knex = require("knex")
+const config = require("../knexfile.js")
 
 let conexao = global.pg
 if (!conexao) conexao = global.pg = {}
@@ -14,4 +14,4 @@ const getKnex = () => {
     return conexao.instance
 }
 
-export { getKnex }
+module.exports = { getKnex }

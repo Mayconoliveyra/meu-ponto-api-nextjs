@@ -37,7 +37,8 @@
     "passport-jwt": "4.0.1",
     "react-toastify": "9.1.1",
     "yup": "0.32.11",
-    "yup-locale-pt": "0.0.9"
+    "yup-locale-pt": "0.0.9",
+    "node-cron": "3.0.2"
   },
   "devDependencies": {
     "babel-plugin-styled-components": "2.0.7"

@@ -1,14 +1,14 @@
-import axios from "axios";
+const axios = require("axios")
 const jwt = require("jwt-simple")
-import moment from "moment"
-import 'moment/locale/pt-br'
+const moment = require("moment")
+require("moment/locale/pt-br")
 moment.locale('pt-br')
 
 /* const URL_SERVER = "http://10.0.0.200:3000/api/"; */
 const URL_SERVER = "http://localhost:3000/api/";
 const SECRET_KEY_SERVER = "H9vLGUXfVErDcSyUu6pKF2jdkANZsqvHt7KcifD8DaiwZ";
 
-export function api(session = {}) {
+function api(session = {}) {
     const data = Math.floor(Date.now() / 1000)
     const payload = {
         ...session,
@@ -25,7 +25,7 @@ export function api(session = {}) {
     })
 };
 
-export function passport(req) {
+function passport(req) {
     try {
         if (!req.headers || !req.headers.authorization) throw "[1] Autenticação inválida"
         const body = jwt.decode(req.headers.authorization, SECRET_KEY_SERVER);
@@ -41,18 +41,18 @@ export function passport(req) {
 }
 
 /* Ultiliza no updated_at, created_at, deleted_at */
-export function dataHoraAtual() {
+function dataHoraAtual() {
     return new Date();
 }
 
 /* Formata em ex:"08/04/2023 13:39:02" */
-export function horaFormatada(date) {
+function horaFormatada(date) {
     if (!date) return ""
     return moment(date).format('L HH:mm:ss')
 }
 
 /* Converte as conulas "" em NULL. ex: {nome: ""} => {nome: NULL} */
-export function FormatObjNull(obj) {
+function FormatObjNull(obj) {
     const objReturn = obj;
     Object.keys(obj).forEach(key => {
         if (!isNaN(obj[key])) objReturn[key] = Number(obj[key]);
@@ -63,4 +63,4 @@ export function FormatObjNull(obj) {
     return objReturn
 }
 
-export default { api, passport, FormatObjNull, dataHoraAtual, horaFormatada }
+module.exports = { api, passport, FormatObjNull, dataHoraAtual, horaFormatada }

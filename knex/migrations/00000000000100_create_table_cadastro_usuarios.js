@@ -22,6 +22,16 @@ exports.up = function (knex) {
             table.timestamp('created_at').nullable();
             table.timestamp("deleted_at").nullable();
         })
+        .then(function () {
+            return knex("cadastro_usuarios").insert([
+                {
+                    nome: "Maycon Deyvid Brito de Oliveira",
+                    email: "fabrica@softcomtecnologia.com.br",
+                    senha: "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS",
+                    adm: true
+                }
+            ])
+        })
 };
 
 exports.down = function (knex) {

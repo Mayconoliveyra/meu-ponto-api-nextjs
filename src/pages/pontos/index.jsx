@@ -24,7 +24,7 @@ import { api } from "../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/pontos"
-const pageDefault = { _sort: "id", _order: "DESC", _page: 1, _limit: 20, _dinicial: moment().subtract(7, 'days').format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD') }
+const pageDefault = { _sort: "data", _order: "ASC", _page: 1, _limit: 31, _dinicial: moment().subtract(7, 'days').format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD') }
 
 const Main = styled.div`
     flex: 1;
@@ -355,9 +355,6 @@ export default function Ponto({ session, data, totalPags }) {
                             <table>
                                 <thead>
                                     <tr>
-                                        <ThForm maxwidth="65px">
-                                            {OrdeByTable("Cód.", "id")}
-                                        </ThForm>
                                         <ThForm maxwidth="120px">
                                             {OrdeByTable("Data", "data")}
                                         </ThForm>
@@ -376,7 +373,6 @@ export default function Ponto({ session, data, totalPags }) {
                                     {pageData.map((data => {
                                         return (
                                             <tr key={data.id} onClick={() => handleShow(data)}>
-                                                <TdForm maxwidth="65px">{data.id}</TdForm>
                                                 <TdForm maxwidth="120px">{moment(data.data).format('DD/MM/YY')}</TdForm>
                                                 <TdForm maxwidth="120px">{data.h_entrada}</TdForm>
                                                 <TdForm maxwidth="130px">{data.h_saida}</TdForm>

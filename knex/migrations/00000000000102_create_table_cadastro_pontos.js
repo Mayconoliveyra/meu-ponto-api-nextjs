@@ -4,7 +4,7 @@ exports.up = function (knex) {
             table.increments("id").primary();
             table.integer('id_usuario').unsigned().notNull().references('id').inTable('cadastro_usuarios')
 
-            table.date('data').nullable()
+            table.date('data').notNull().references('data').inTable('calendario')
             table.time('h_entrada').nullable()
             table.time('h_saida').nullable()
 
@@ -18,7 +18,7 @@ exports.up = function (knex) {
             table.timestamp("solicitado_em").nullable();
 
             table.integer('id_user_alt') /* ID do usuario que confirmou a alteração */
-            table.string("nome_user_alt").notNull(); /* nome do usuario que confirmou a alteração */
+            table.string("nome_user_alt") /* nome do usuario que confirmou a alteração */
 
             table.timestamp("updated_at").nullable();
             table.timestamp('created_at').nullable();
