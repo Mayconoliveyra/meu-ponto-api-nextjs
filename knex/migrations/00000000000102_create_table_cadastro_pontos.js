@@ -5,26 +5,39 @@ exports.up = function (knex) {
             table.integer('id_usuario').unsigned().notNull().references('id').inTable('cadastro_usuarios')
 
             table.date('data').notNull().references('data').inTable('calendario')
-            table.time('h_entrada').nullable()
-            table.time('h_saida').nullable()
+            table.time('entrada1').nullable()
+            table.time('saida1').nullable()
+            table.time('entrada2').nullable()
+            table.time('saida2').nullable()
 
-            table.enu("tipo_alteracao", ["Selecione", "Data", "Hora", "Data e Hora", "Outras"]).defaultTo('Selecione')
-            table.string("outras_alteracao")
+            table.time('acrescentar_hrs').nullable()
+            table.string("msg_acrescentar")
 
-            table.date('data_old').nullable()
-            table.time('h_entrada_old').nullable()
-            table.time('h_saida_old').nullable()
+            table.time('subtrair_hrs').nullable()
+            table.string("msg_subtrair")
 
-            table.timestamp("solicitado_em").nullable();
+            table.string("msg_alteracao")
+            table.boolean("alterado", 1).notNull().defaultTo(0)
 
-            table.integer('id_user_alt') /* ID do usuario que confirmou a alteração */
-            table.string("nome_user_alt") /* nome do usuario que confirmou a alteração */
+            table.boolean("p_folga", 1).notNull().defaultTo(0)
+            table.boolean("p_feriado", 1).notNull().defaultTo(0)
+            table.boolean("p_falta", 1).notNull().defaultTo(0)
 
-            table.timestamp("updated_at").nullable();
-            table.timestamp('created_at').nullable();
-            table.timestamp("deleted_at").nullable();
+            table.timestamp("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP"));
         })
 };
+
+/* table.date('data_old').nullable() */
+/* table.time('h_entrada').nullable()
+table.time('h_saida').nullable() */
+/* table.time('h_entrada').nullable()
+table.time('h_saida').nullable() */
+/* table.enu("tipo_alteracao", ["Selecione", "Data", "Hora", "Data e Hora", "Outras"]).defaultTo('Selecione') */
+/* table.timestamp("solicitado_em").nullable(); */
+/* table.integer('id_user_alt')  */
+/* table.string("nome_user_alt")  */
+/* table.timestamp('created_at').nullable();
+table.timestamp("deleted_at").nullable(); */
 
 exports.down = function (knex) {
     return knex.schema.dropTable("cadastro_pontos");
