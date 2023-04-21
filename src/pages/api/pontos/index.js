@@ -9,6 +9,9 @@ export default async function handler(req, res) {
 
     const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
 
+    /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
+    const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+
     if (req.method === 'GET') {
         try {
             const sortColuns = {
@@ -38,16 +41,11 @@ export default async function handler(req, res) {
             /* Se 'getdiario' tiver setado com algum valor retornar os pontos diario.(utilizado na tela dashboard) */
             const getdiario = req.query._diario ? req.query._diario : null
             if (getdiario) {
-                /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
-                const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
-
                 await knex("vw_cadastro_pontos")
-                    .select("id", "data", "h_entrada", "h_saida", "tipo_alteracao", "outras_alteracao", "data_old", "h_entrada_old", "h_saida_old", "solicitado_em", "id_user_alt", "nome_user_alt", "dif_hora", "dif_seg", "created_at", "updated_at")
-                    .where({ id_usuario: auth.id })
-                    .whereRaw(`DATE(data) = '${dataAtualFormat}'`)
-                    .whereNull("deleted_at")
-                    .orderBy("id", "ASC")
-                    .then((pontos) => res.status(200).json(pontos))
+                    .select()
+                    .where({ id_usuario: auth.id, data: dataAtualFormat })
+                    .first()
+                    .then((ponto) => res.status(200).json(ponto))
                     .catch((error) => {
                         console.log("######## ponto.get.diario ########")
                         console.log(error)
@@ -75,14 +73,12 @@ export default async function handler(req, res) {
                         .where({ id_usuario: auth.id })
                         .count({ totalPags: "*" })
                         .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}'`)
-                        .whereNull("deleted_at")
                         .first()
 
                     const pontos = await knex("vw_cadastro_pontos")
-                        .select("id", "data", "h_entrada", "h_saida", "tipo_alteracao", "outras_alteracao", "data_old", "h_entrada_old", "h_saida_old", "solicitado_em", "id_user_alt", "nome_user_alt", "dif_hora", "dif_seg", "created_at", "updated_at")
+                        .select()
                         .where({ id_usuario: auth.id })
                         .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}'`)
-                        .whereNull("deleted_at")
                         .limit(limit).offset(page * limit - limit)
                         .orderBy(sort, order)
 
@@ -97,43 +93,58 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
             /* Verifica se tem algum ponto em aberto. (se ponto_saida = null, significa que ta em aberto.) */
-            const ponto = await knex("cadastro_pontos")
-                .where({ h_saida: null })
-                .whereNull("deleted_at")
+            const ponto = await knex("vw_cadastro_pontos")
+                .where({ id_usuario: auth.id, data: dataAtualFormat })
                 .first()
 
-            /* Se ponto existir, então o vai ser finalizado */
-            if (ponto) {
+            existOrError(ponto, `Não foi encontrado ponto com a data atual: ${dataAtualFormat}`)
+
+            if (!ponto.entrada1) {
                 await knex("cadastro_pontos")
-                    .update({ h_saida: dataHoraAtual() })
+                    .update({ entrada1: dataHoraAtual() })
                     .where({ id: ponto.id })
                     .then(() => res.status(204).send())
                     .catch((error) => {
-                        console.log("######## ponto.registrar ########")
+                        console.log("######## ponto.registrar[ponto.entrada1] ########")
                         console.log(error)
                         return res.status(500).send()
                     });
-            } else {
-                const modelo = {
-                    id_usuario: auth.id,
-                    data: dataHoraAtual(),
-                    h_entrada: dataHoraAtual(),
-                    h_saida: null,
-                    created_at: dataHoraAtual(),
-                }
+            } else
+                if (!ponto.saida1) {
+                    await knex("cadastro_pontos")
+                        .update({ saida1: dataHoraAtual() })
+                        .where({ id: ponto.id })
+                        .then(() => res.status(204).send())
+                        .catch((error) => {
+                            console.log("######## ponto.registrar[ponto.saida1] ########")
+                            console.log(error)
+                            return res.status(500).send()
+                        });
+                } else
+                    if (!ponto.entrada2) {
+                        await knex("cadastro_pontos")
+                            .update({ entrada2: dataHoraAtual() })
+                            .where({ id: ponto.id })
+                            .then(() => res.status(204).send())
+                            .catch((error) => {
+                                console.log("######## ponto.registrar[ponto.entrada2] ########")
+                                console.log(error)
+                                return res.status(500).send()
+                            });
+                    } else
+                        if (!ponto.saida2) {
+                            await knex("cadastro_pontos")
+                                .update({ saida2: dataHoraAtual() })
+                                .where({ id: ponto.id })
+                                .then(() => res.status(204).send())
+                                .catch((error) => {
+                                    console.log("######## ponto.registrar[ponto.saida2] ########")
+                                    console.log(error)
+                                    return res.status(500).send()
+                                });
+                        }
 
-                existOrError(modelo.id_usuario, '[id_usuario] não pode ser nulo.')
-
-                await knex("cadastro_pontos")
-                    .insert(modelo)
-                    .then(() => res.status(204).send())
-                    .catch((error) => {
-                        console.log("######## ponto.registrar ########")
-                        console.log(error)
-                        return res.status(500).send()
-                    });
-            }
-
+            existOrError(false, `O registro do ponto já foi finalizado.`)
         } catch (error) {
             return res.status(400).send(error)
         }

@@ -9,6 +9,7 @@ moment.locale('pt-br')
 
 import { api } from "../../../global";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const Main = styled.div`
     flex: 1;
@@ -74,11 +75,6 @@ const Main = styled.div`
                     padding: 0.2rem 0.5rem;
                     margin-bottom: 1rem;
 
-                    .span-identificador{
-                        font-size: 0.8rem;
-                        font-style: italic;
-                    }
-
                     .d-registro{
                         display: flex;
                         padding: 0.5rem;
@@ -135,7 +131,7 @@ const ModalPonto = styled.div`
 
     }
 `
-export default function Dashboard({ session, pontos }) {
+export default function Dashboard({ session, pDiario }) {
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -161,6 +157,15 @@ export default function Dashboard({ session, pontos }) {
                 handleClose()
                 router.reload()
             })
+            .catch(res => {
+                /* Se status 400, significa que o erro foi tratado. */
+                if (res && res.response && res.response.status == 400) {
+                    toast.error(res.response.data)
+                } else {
+                    toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                }
+            })
+        setBtnDisabled(false)
     }
     return (
         <>
@@ -169,43 +174,68 @@ export default function Dashboard({ session, pontos }) {
             </Head>
             <Main>
                 <div className="div-registrar">
-                    <button type="button" className="btn-registrar" onClick={() => handleShow()}>
+                    <button type="button" disabled={pDiario.saida2} className="btn-registrar" onClick={() => handleShow()}>
                         REGISTRAR PONTO
                     </button>
                 </div>
                 <div className="div-historico">
                     <div className="div-cabecalho">
-                        <span>Ponto diário</span>
+                        <span>{moment(pDiario.data).format('LL')}</span>
                     </div>
                     <div className="div-dados">
                         <ul>
-                            {pontos.map((ponto => {
-                                return (
-                                    <li key={ponto.id}>
-                                        <span className="span-identificador">Indentificador: {ponto.id}</span>
-                                        <div className="d-registro">
-                                            <div className="d-ent-sai">
-                                                <span>Entrada</span>
-                                            </div>
-                                            <div className="div-data-hora">
-                                                <span>{ponto.h_entrada.slice(0, 5)}</span>
-                                            </div>
-                                        </div>
-                                        <div className="d-registro">
-                                            <div className="d-ent-sai">
-                                                <span>Saida</span>
-                                            </div>
-                                            <div className="div-data-hora">
-                                                {ponto.h_saida ?
-                                                    <span>{ponto.h_saida.slice(0, 5)}</span>
-                                                    :
-                                                    <span>...</span>
-                                                }
-                                            </div>
-                                        </div>
-                                    </li>
-                                )
-                            }))}
+                            <li>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Entrada 1</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pDiario.entrada1 ?
+                                            <span>{pDiario.entrada1.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Saida 1</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pDiario.saida1 ?
+                                            <span>{pDiario.saida1.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Entrada 2</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pDiario.entrada2 ?
+                                            <span>{pDiario.entrada2.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Saida 2</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pDiario.saida2 ?
+                                            <span>{pDiario.saida2.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -240,10 +270,10 @@ export async function getServerSideProps(context) {
     const session = await getSession({ req })
     if (session && session.id) {
         const axios = await api(session);
-        const pontos = await axios.get("pontos?_diario=true").then((res) => res.data)
+        const pDiario = await axios.get("pontos?_diario=true").then((res) => res.data)
 
         return {
-            props: { session, pontos },
+            props: { session, pDiario },
         }
     }
 
