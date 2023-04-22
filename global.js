@@ -5,7 +5,7 @@ require("moment/locale/pt-br")
 moment.locale('pt-br')
 
 /* const URL_SERVER = "http://10.0.0.200:3000/api/"; */
-const URL_SERVER = "http://localhost:3000/api/";
+const URL_SERVER = "https://localhost:3000/api/";
 const SECRET_KEY_SERVER = "H9vLGUXfVErDcSyUu6pKF2jdkANZsqvHt7KcifD8DaiwZ";
 
 function api(session = {}) {
