@@ -18,7 +18,6 @@ function api(session = {}) {
         headers: {
             "Authorization": `${jwt.encode(payload, SECRET_KEY_SERVER)}`,
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "X-Requested-With, content-type"
         },
     })
 };

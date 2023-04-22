@@ -11,7 +11,7 @@ const encryptPassword = password => {
 
 export default async function handler(req, res) {
     try {
-        /* const auth = await passport(req) */
+        const auth = await passport(req)
         const knex = getKnex()
 
         const modelo = {
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         if (modelo.senha_new != modelo.confirsenha) throw { confirsenha: 'A confirmação de senha não confere.' }
 
         const usuario = await knex("cadastro_usuarios")
-            .where({ id: 1 })
+            .where({ id: auth.id })
             .whereNull("deleted_at")
             .first()
 
