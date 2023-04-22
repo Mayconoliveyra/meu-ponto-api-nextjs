@@ -13,10 +13,10 @@ module.exports = {
         min: 0,
         max: 7
     },
-    /* migrations: {
+    migrations: {
         directory: './knex/migrations',
     },
     seeds: {
         directory: './knex/seeds',
-    }, */
+    },
 }
