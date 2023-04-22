@@ -12,6 +12,8 @@ import { api } from "../../../global";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import axios from "axios";
+
 const Main = styled.div`
     flex: 1;
     display: flex;
@@ -137,8 +139,8 @@ export default function Dashboard({ session, pontos }) {
                             initialValues={{ senha_old: '', senha_new: '', confirsenha: '' }}
                             onSubmit={async (values, setValues) => {
                                 setBtnDisabled(true)
-                                const axios = await api(session);
-                                await axios.post("conta/alterarsenha", values)
+                                /* const axios = await api(session); */
+                                await axios.post("/api/conta/alterarsenha", values)
                                     .then(() => {
                                         signOut()
                                     })
