@@ -359,13 +359,19 @@ export default function Ponto({ session, data, totalPags }) {
                                             {OrdeByTable("Data", "data")}
                                         </ThForm>
                                         <ThForm maxwidth="120px">
-                                            {OrdeByTable("Entrada", "h_entrada")}
+                                            {OrdeByTable("Ent. 1", "entrada1")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Saída", "h_saida")}
+                                            {OrdeByTable("Saída 1", "saida1")}
+                                        </ThForm>
+                                        <ThForm maxwidth="120px">
+                                            {OrdeByTable("Ent. 2", "entrada2")}
+                                        </ThForm>
+                                        <ThForm maxwidth="130px">
+                                            {OrdeByTable("Saída 2", "saida2")}
                                         </ThForm>
                                         <ThForm maxwidth="9999px">
-                                            {OrdeByTable("H. T.", "dif_hora")}
+                                            {OrdeByTable("H. T.", "dif_total")}
                                         </ThForm>
                                     </tr>
                                 </thead>
@@ -374,9 +380,11 @@ export default function Ponto({ session, data, totalPags }) {
                                         return (
                                             <tr key={data.id} onClick={() => handleShow(data)}>
                                                 <TdForm maxwidth="120px">{moment(data.data).format('DD/MM/YY')}</TdForm>
-                                                <TdForm maxwidth="120px">{data.h_entrada}</TdForm>
-                                                <TdForm maxwidth="130px">{data.h_saida}</TdForm>
-                                                <TdForm maxwidth="9999px">{data.dif_hora}</TdForm>
+                                                <TdForm maxwidth="120px">{data.entrada1 && data.entrada1.slice(0, 5)}</TdForm>
+                                                <TdForm maxwidth="130px">{data.saida1 && data.saida1.slice(0, 5)}</TdForm>
+                                                <TdForm maxwidth="120px">{data.entrada2 && data.entrada2.slice(0, 5)}</TdForm>
+                                                <TdForm maxwidth="130px">{data.saida2 && data.saida2.slice(0, 5)}</TdForm>
+                                                <TdForm maxwidth="9999px">{data.dif_total && data.contabilizar ? data.dif_total.slice(0, 5) : ""}</TdForm>
                                             </tr>
                                         )
                                     }))}
