@@ -1,3 +1,4 @@
+const { NEXTAUTH_SECRET } = require("../../../../credentials")
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -66,6 +67,6 @@ export const authOptions = {
             }
         }
     },
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: NEXTAUTH_SECRET,
 }
 export default (req, res) => NextAuth(req, res, authOptions)

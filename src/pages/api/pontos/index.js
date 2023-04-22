@@ -142,9 +142,9 @@ export default async function handler(req, res) {
                                     console.log(error)
                                     return res.status(500).send()
                                 });
+                        } else {
+                            existOrError(false, `O registro do ponto já foi finalizado.`)
                         }
-
-            existOrError(false, `O registro do ponto já foi finalizado.`)
         } catch (error) {
             return res.status(400).send(error)
         }

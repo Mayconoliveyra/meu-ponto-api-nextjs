@@ -1,12 +1,9 @@
+const { URL_SERVER, SECRET_KEY_SERVER } = require("./credentials")
 const axios = require("axios")
 const jwt = require("jwt-simple")
 const moment = require("moment")
 require("moment/locale/pt-br")
 moment.locale('pt-br')
-
-/* const URL_SERVER = "http://10.0.0.200:3000/api/"; */
-const URL_SERVER = "https://localhost:3000/api/";
-const SECRET_KEY_SERVER = "H9vLGUXfVErDcSyUu6pKF2jdkANZsqvHt7KcifD8DaiwZ";
 
 function api(session = {}) {
     const data = Math.floor(Date.now() / 1000)
@@ -51,7 +48,7 @@ function horaFormatada(date) {
     return moment(date).format('L HH:mm:ss')
 }
 
-/* Converte as conulas "" em NULL. ex: {nome: ""} => {nome: NULL} */
+/* Converte as colunas "" em NULL. ex: {nome: ""} => {nome: NULL} */
 function FormatObjNull(obj) {
     const objReturn = obj;
     Object.keys(obj).forEach(key => {
