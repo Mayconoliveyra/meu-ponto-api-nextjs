@@ -8,7 +8,7 @@ const getKnex = () => {
     if (!conexao.instance) {
         console.log("createConnection")
         conexao.instance = knex(config)
-        conexao.instance.migrate.latest()
+        /* conexao.instance.migrate.latest() */
     }
 
     return conexao.instance
