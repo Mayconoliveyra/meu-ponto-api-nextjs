@@ -170,7 +170,7 @@ export async function getServerSideProps(context) {
     if (session && session.id && session.adm) {
         const knex = getKnex();
         /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
-        const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+        const dataAtualFormat = moment(dataHoraAtual()).add(3, 'hours').format('YYYY-MM-DD');
 
         const pontos = await knex("vw_cadastro_pontos")
             .select()
