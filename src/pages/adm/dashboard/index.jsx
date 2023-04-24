@@ -115,7 +115,6 @@ export default function ADMDashboard({ session, pontos }) {
 
 import { getKnex } from "../../../../knex"
 import { dataHoraAtual } from "../../../../global";
-import moment from "moment/moment";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
