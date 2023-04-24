@@ -215,22 +215,19 @@ export default function Dashboard({ session, pontos }) {
 }
 
 export async function getServerSideProps(context) {
-    try {
-        const { req } = context
-        const session = await getSession({ req })
-        if (session && session.id) {
-            return {
-                props: { session },
-            }
-        }
+    const { req } = context
+    const session = await getSession({ req })
 
-        throw ""
-    } catch (error) {
+    if (session && session.id) {
         return {
-            redirect: {
-                destination: "/",
-                permanent: false
-            }
+            props: { session },
+        }
+    }
+
+    return {
+        redirect: {
+            destination: "/",
+            permanent: false
         }
     }
 }

@@ -113,15 +113,24 @@ export default function ADMDashboard({ session, pontos }) {
     );
 }
 
+import { getKnex } from "../../../../knex"
+import { dataHoraAtual } from "../../../../global";
+import moment from "moment/moment";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
     if (session && session.id && session.adm) {
-        const axios = await api(session);
-        const pontos = await axios.get("pontos?_diario=true").then((res) => res.data)
+        const knex = getKnex();
+        /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
+        const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+
+        const pDiario = await knex("vw_cadastro_pontos")
+            .select()
+            .where({ id_usuario: session.id, data: dataAtualFormat })
+            .first()
 
         return {
-            props: { session, pontos },
+            props: { session, pDiario },
         }
     }
 
