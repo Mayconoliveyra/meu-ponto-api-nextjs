@@ -265,12 +265,12 @@ export default function Dashboard({ session, pDiario }) {
     );
 }
 
-import { loadGetPonto } from "../../lib/pontoDiario";
+import { loadGetPontoDiario } from "../../lib/ponto";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
     if (session && session.id) {
-        const pDiario = await loadGetPonto()
+        const pDiario = await loadGetPontoDiario()
 
         return {
             props: { session, pDiario },

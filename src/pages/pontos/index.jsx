@@ -537,17 +537,29 @@ export default function Ponto({ session, data, totalPags }) {
     );
 }
 
+import { getKnex } from "../../../knex";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
     if (session && session.id) {
-        const axios = await api(session);
-        const params = `?_page=${pageDefault._page}&_limit=${pageDefault._limit}&_sort=${pageDefault._sort}&_order=${pageDefault._order}&_dinicial=${pageDefault._dinicial}&_dfinal=${pageDefault._dfinal}`
-        const { data, totalPags } = await axios.get(`${prefixRouter}${params} `).then((res) => res.data)
+        const knex = getKnex()
+
+        const { totalPags } = await knex("vw_cadastro_pontos")
+            .where({ id_usuario: session.id })
+            .count({ totalPags: "*" })
+            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
+            .first()
+
+        const pontos = await knex("vw_cadastro_pontos")
+            .select()
+            .where({ id_usuario: session.id })
+            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
+            .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
+            .orderBy(pageDefault._sort, pageDefault._order)
 
         return {
-            props: { session, data, totalPags },
+            props: { session, data: pontos, totalPags: Math.ceil(totalPags / pageDefault._limit) },
         }
     }
 

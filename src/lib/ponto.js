@@ -2,7 +2,7 @@ import { getKnex } from "../../knex"
 import { dataHoraAtual } from "../../global"
 import moment from "moment/moment"
 
-export async function loadGetPonto() {
+export async function loadGetPontoDiario() {
     /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
     const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
     const knex = getKnex()

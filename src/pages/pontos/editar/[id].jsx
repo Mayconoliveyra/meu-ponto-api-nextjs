@@ -12,7 +12,7 @@ Yup.setLocale(pt);
 import { TituloForm } from "../../../components/formulario/titulo/components";
 import { FormOne, GroupOne, GroupSelectOne } from "../../../components/formulario/form/components";
 
-import { api, FormatObjNull } from "../../../../global";
+import { FormatObjNull } from "../../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/pontos"
@@ -165,14 +165,19 @@ export default function Editar({ data, session }) {
     );
 }
 
+import { getKnex } from "../../../../knex";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
     if (session && session.id) {
-        const axios = await api(session);
+        const knex = getKnex()
         const { id } = context.params;
-        const data = await axios.get(`${prefixRouter}?_id=${id}`).then((res) => res.data)
+
+        const data = await knex("vw_cadastro_pontos")
+            .select()
+            .where({ id_usuario: session.id, id: id })
+            .first()
 
         if (data && data.id) {
             return {
