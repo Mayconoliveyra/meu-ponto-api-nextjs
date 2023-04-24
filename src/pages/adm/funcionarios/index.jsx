@@ -499,17 +499,26 @@ export default function AdmIndex({ session, data, totalPags }) {
     );
 }
 
+import { getKnex } from "../../../../knex";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
     if (session && session.id && session.adm) {
-        const axios = await api(session);
-        const params = `?_page=${pageDefault._page}&_limit=${pageDefault._limit}&_sort=${pageDefault._sort}&_order=${pageDefault._order}&_search=${pageDefault._search}`
-        const { data, totalPags } = await axios.get(`${prefixRouter}${params} `).then((res) => res.data)
+        const knex = getKnex()
+        const { totalPags } = await knex("cadastro_usuarios")
+            .count({ totalPags: "*" })
+            .whereNull("deleted_at")
+            .first()
+
+        const funcionarios = await knex("cadastro_usuarios")
+            .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
+            .whereNull("deleted_at")
+            .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
+            .orderBy(pageDefault._sort, pageDefault._order)
 
         return {
-            props: { session, data, totalPags },
+            props: { session, data: funcionarios, totalPags: Math.ceil(totalPags / pageDefault._limit) },
         }
     }
 

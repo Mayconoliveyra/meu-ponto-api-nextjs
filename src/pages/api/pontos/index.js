@@ -7,6 +7,8 @@ export default async function handler(req, res) {
     const auth = await passport(req)
     const knex = getKnex()
 
+    const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
+
     if (req.method === 'GET') {
         try {
             const sortColuns = {

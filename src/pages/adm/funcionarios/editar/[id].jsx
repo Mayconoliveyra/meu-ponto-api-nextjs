@@ -243,14 +243,20 @@ export default function AdmEditar({ data, session }) {
     );
 }
 
+import { getKnex } from "../../../../../knex";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
     if (session && session.id && session.adm) {
-        const axios = await api(session);
+        const knex = getKnex();
         const { id } = context.params;
-        const data = await axios.get(`${prefixRouter}?_id=${id}`).then((res) => res.data)
+
+        const data = await knex("cadastro_usuarios")
+            .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
+            .where({ id: id })
+            .whereNull("deleted_at")
+            .first()
 
         if (data && data.id) {
             return {
