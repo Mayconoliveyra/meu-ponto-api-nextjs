@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Link from "next/link";
 import Image from "next/image";
 import router from "next/router"
 import styled from "styled-components";
@@ -11,7 +10,7 @@ import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 import { getSession } from "next-auth/react";
 
-import axios from "axios";
+import { apiClient } from "../../global"
 import { toast } from "react-toastify";
 import { useState } from "react";
 
@@ -179,7 +178,8 @@ export default function Home() {
                             initialValues={initialValues}
                             onSubmit={async (values, setValues) => {
                                 setBtnDisabled(true)
-                                await axios.post("/api/conta/login", values)
+                                const axios = await apiClient();
+                                await axios.post("conta/login", values)
                                     .then(async () => {
                                         const user = await signIn("credentials", {
                                             redirect: false,

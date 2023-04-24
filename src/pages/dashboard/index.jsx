@@ -7,7 +7,7 @@ import moment from "moment"
 import 'moment/locale/pt-br'
 moment.locale('pt-br')
 
-import { api } from "../../../global";
+import { apiClient, apiServer } from "../../../global";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -151,7 +151,7 @@ export default function Dashboard({ session, pDiario }) {
     const handleRegitrarPonto = async () => {
         setBtnDisabled(true)
 
-        const axios = await api(session);
+        const axios = await apiClient(session);
         await axios.post("pontos")
             .then(() => {
                 handleClose()
@@ -269,7 +269,7 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
     if (session && session.id) {
-        const axios = await api(session);
+        const axios = await apiServer(session);
         const pDiario = await axios.get("pontos?_diario=true").then((res) => res.data)
 
         return {
