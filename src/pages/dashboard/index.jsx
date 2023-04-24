@@ -265,12 +265,23 @@ export default function Dashboard({ session, pDiario }) {
     );
 }
 
-import { loadGetPontoDiario } from "../../lib/ponto";
+
+import { getKnex } from "../../../knex";
+import { dataHoraAtual } from "../../../global";
+import moment from "moment/moment"
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
+
     if (session && session.id) {
-        const pDiario = await loadGetPontoDiario()
+        const knex = getKnex();
+        /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
+        const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+
+        const pDiario = await knex("vw_cadastro_pontos")
+            .select()
+            .where({ id_usuario: session.id, data: dataAtualFormat })
+            .first()
 
         return {
             props: { session, pDiario },
