@@ -265,7 +265,7 @@ export default function Dashboard({ session, pDiario }) {
     );
 }
 
-import { loadPosts } from '../../lib/load-posts'
+import { loadPosts } from "../../lib/load-posts";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })

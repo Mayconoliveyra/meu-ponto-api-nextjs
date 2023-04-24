@@ -1,7 +1,17 @@
+import { getKnex } from "../../knex"
+import { dataHoraAtual } from "../../global"
+
+import moment from "moment/moment"
+
 export async function loadPosts() {
-    // Call an external API endpoint to get posts
-    const res = await fetch("http://127.0.0.1:3000/api/pontos?_diario=true");
-    const data = await res.json()
+    /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
+    const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+    const knex = getKnex()
+
+    const data = await knex("vw_cadastro_pontos")
+        .select()
+        .where({ id_usuario: 1, data: dataAtualFormat })
+        .first()
 
     return data
 }
