@@ -1,4 +1,4 @@
-const { URL_SERVER, SECRET_KEY_SERVER } = require("./credentials")
+const { SECRET_KEY_SERVER } = require("./credentials")
 const axios = require("axios")
 const jwt = require("jwt-simple")
 const moment = require("moment")
@@ -14,7 +14,7 @@ function api(session = {}) {
     }
 
     return axios.create({
-        baseURL: URL_SERVER,
+        baseURL: process.env.NEXT_PUBLIC_URL_SERVER,
         headers: {
             "Authorization": `${jwt.encode(payload, SECRET_KEY_SERVER)}`,
             "Access-Control-Allow-Origin": "*",
