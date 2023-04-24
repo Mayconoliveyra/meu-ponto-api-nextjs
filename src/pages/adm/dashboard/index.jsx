@@ -78,7 +78,7 @@ export default function ADMDashboard({ session, pontos }) {
                     </div>
                     <div className="div-dados">
                         <ul>
-                            {pontos.map((ponto => {
+                            {/*  {pontos.map((ponto => {
                                 return (
                                     <li key={ponto.id}>
                                         <span className="span-identificador">Indentificador: {ponto.id}</span>
@@ -104,7 +104,60 @@ export default function ADMDashboard({ session, pontos }) {
                                         </div>
                                     </li>
                                 )
-                            }))}
+                            }))} */}
+
+                            <li>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Entrada 1</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pontos.entrada1 ?
+                                            <span>{pontos.entrada1.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Saida 1</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pontos.saida1 ?
+                                            <span>{pontos.saida1.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Entrada 2</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pontos.entrada2 ?
+                                            <span>{pontos.entrada2.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="d-registro">
+                                    <div className="d-ent-sai">
+                                        <span>Saida 2</span>
+                                    </div>
+                                    <div className="div-data-hora">
+                                        {pontos.saida2 ?
+                                            <span>{pontos.saida2.slice(0, 5)}</span>
+                                            :
+                                            <span>...</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -123,13 +176,13 @@ export async function getServerSideProps(context) {
         /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
         const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
 
-        const pDiario = await knex("vw_cadastro_pontos")
+        const pontos = await knex("vw_cadastro_pontos")
             .select()
             .where({ id_usuario: session.id, data: dataAtualFormat })
             .first()
 
         return {
-            props: { session, pDiario },
+            props: { session, pontos },
         }
     }
 
