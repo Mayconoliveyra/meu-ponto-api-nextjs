@@ -4,7 +4,7 @@ import { passport, dataHoraAtual } from "../../../../global"
 import moment from "moment/moment"
 
 export default async function handler(req, res) {
-    const auth = await passport(req)
+    /* const auth = await passport(req) */
     const knex = getKnex()
 
     const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
             if (getdiario) {
                 await knex("vw_cadastro_pontos")
                     .select()
-                    .where({ id_usuario: auth.id, data: dataAtualFormat })
+                    .where({ id_usuario: 1, data: dataAtualFormat })
                     .first()
                     .then((ponto) => res.status(200).json(ponto))
                     .catch((error) => {

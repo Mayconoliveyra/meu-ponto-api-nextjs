@@ -269,8 +269,12 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
     if (session && session.id) {
-        const axios = await apiServer(session);
-        const pDiario = await axios.get("pontos?_diario=true").then((res) => res.data).catch(error => console.log(error))
+        const response = await fetch("http://localhost:3000/api/pontos?_diario=true");
+        const pDiario = await response.json();
+
+
+      /*   const axios = await apiServer(session);
+        const pDiario = await axios.get("pontos?_diario=true").then((res) => res.data).catch(error => console.log(error)) */
 
         return {
             props: { session, pDiario },
