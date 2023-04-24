@@ -4,8 +4,6 @@ import { getSession } from "next-auth/react";
 import router from "next/router"
 import Modal from 'react-bootstrap/Modal';
 import moment from "moment"
-import 'moment/locale/pt-br'
-moment.locale('pt-br')
 
 import { api } from "../../../global";
 import { useEffect, useState } from "react";
@@ -141,8 +139,7 @@ export default function Dashboard({ session, pDiario }) {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            const data = new Date();
-            setHoraAtual(moment(data).format('HH:mm:ss'))
+            setHoraAtual(moment(dataHoraAtual()).format('HH:mm:ss'))
         }, 1000)
 
         return () => clearInterval(intervalId);
@@ -274,7 +271,6 @@ export async function getServerSideProps(context) {
 
     if (session && session.id) {
         const knex = getKnex();
-        /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
         const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
 
         const pDiario = await knex("vw_cadastro_pontos")

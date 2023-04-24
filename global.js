@@ -39,7 +39,9 @@ function passport(req) {
 
 /* Ultiliza no updated_at, created_at, deleted_at */
 function dataHoraAtual() {
-    return new Date();
+    const date = new Date();
+    date.setHours(date.getHours() - 3)
+    return date;
 }
 
 /* Formata em ex:"08/04/2023 13:39:02" */

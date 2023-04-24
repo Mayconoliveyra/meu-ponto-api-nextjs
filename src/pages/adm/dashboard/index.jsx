@@ -2,10 +2,6 @@ import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
 import moment from "moment"
-import 'moment/locale/pt-br'
-moment.locale('pt-br')
-
-import { api } from "../../../../global";
 
 const Main = styled.div`
     flex: 1;
