@@ -30,7 +30,7 @@ function apiServer(session = {}) {
     }
 
     return axios.create({
-        baseURL: "http://localhost:3000/api/",
+        baseURL: "https://ponto-sooty.vercel.app:3000/api/",
         headers: {
             "Authorization": `${jwt.encode(payload, SECRET_KEY_SERVER)}`,
             "Access-Control-Allow-Origin": "*",
