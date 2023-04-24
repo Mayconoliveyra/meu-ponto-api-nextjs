@@ -269,7 +269,7 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
     if (session && session.id) {
-        const response = await fetch("http://localhost:3000/api/pontos?_diario=true");
+        const response = await fetch("http://127.0.0.1:3000/api/pontos?_diario=true");
         const pDiario = await response.json();
 
 
