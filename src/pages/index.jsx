@@ -10,7 +10,7 @@ import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 import { getSession } from "next-auth/react";
 
-import { apiClient } from "../../global"
+import { api } from "../../global"
 import { toast } from "react-toastify";
 import { useState } from "react";
 
@@ -178,7 +178,7 @@ export default function Home() {
                             initialValues={initialValues}
                             onSubmit={async (values, setValues) => {
                                 setBtnDisabled(true)
-                                const axios = await apiClient();
+                                const axios = await api();
                                 await axios.post("conta/login", values)
                                     .then(async () => {
                                         const user = await signIn("credentials", {

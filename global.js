@@ -5,7 +5,7 @@ const moment = require("moment")
 require("moment/locale/pt-br")
 moment.locale('pt-br')
 
-function apiClient(session = {}) {
+function api(session = {}) {
     const data = Math.floor(Date.now() / 1000)
     const payload = {
         ...session,
@@ -15,22 +15,6 @@ function apiClient(session = {}) {
 
     return axios.create({
         baseURL: "/api/",
-        headers: {
-            "Authorization": `${jwt.encode(payload, SECRET_KEY_SERVER)}`,
-            "Access-Control-Allow-Origin": "*",
-        },
-    })
-};
-function apiServer(session = {}) {
-    const data = Math.floor(Date.now() / 1000)
-    const payload = {
-        ...session,
-        iat: data,
-        exp: data + (30),
-    }
-
-    return axios.create({
-        baseURL: "http://localhost:3000/api/",
         headers: {
             "Authorization": `${jwt.encode(payload, SECRET_KEY_SERVER)}`,
             "Access-Control-Allow-Origin": "*",
@@ -76,4 +60,4 @@ function FormatObjNull(obj) {
     return objReturn
 }
 
-module.exports = { apiClient, apiServer, passport, FormatObjNull, dataHoraAtual, horaFormatada }
+module.exports = { api, passport, FormatObjNull, dataHoraAtual, horaFormatada }

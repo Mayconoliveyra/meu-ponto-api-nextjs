@@ -4,13 +4,10 @@ import { passport, dataHoraAtual } from "../../../../global"
 import moment from "moment/moment"
 
 export default async function handler(req, res) {
-    /* const auth = await passport(req) */
+    const auth = await passport(req)
     const knex = getKnex()
 
     const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
-
-    /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
-    const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
 
     if (req.method === 'GET') {
         try {
@@ -38,53 +35,39 @@ export default async function handler(req, res) {
             const dinicial = req.query._dinicial ? req.query._dinicial : null
             const dfinal = req.query._dfinal ? req.query._dfinal : null
 
-            /* Se 'getdiario' tiver setado com algum valor retornar os pontos diario.(utilizado na tela dashboard) */
-            const getdiario = req.query._diario ? req.query._diario : null
-            if (getdiario) {
+            if (id) {
                 await knex("vw_cadastro_pontos")
-                    .select()
-                    .where({ id_usuario: 1, data: dataAtualFormat })
+                    .select("id", "data", "h_entrada", "h_saida", "tipo_alteracao", "outras_alteracao", "data_old", "h_entrada_old", "h_saida_old", "solicitado_em", "id_user_alt", "nome_user_alt", "dif_hora", "dif_seg", "created_at", "updated_at")
+                    .where({ id_usuario: auth.id, id: id })
+                    .whereNull("deleted_at")
                     .first()
-                    .then((ponto) => res.status(200).json(ponto))
+                    .then((pontos) => res.status(200).json(pontos))
                     .catch((error) => {
-                        console.log("######## ponto.get.diario ########")
+                        console.log("######## ponto.GET.id ########")
                         console.log(error)
                         return res.status(500).send()
                     });
+
             } else {
-                if (id) {
-                    await knex("vw_cadastro_pontos")
-                        .select("id", "data", "h_entrada", "h_saida", "tipo_alteracao", "outras_alteracao", "data_old", "h_entrada_old", "h_saida_old", "solicitado_em", "id_user_alt", "nome_user_alt", "dif_hora", "dif_seg", "created_at", "updated_at")
-                        .where({ id_usuario: auth.id, id: id })
-                        .whereNull("deleted_at")
-                        .first()
-                        .then((pontos) => res.status(200).json(pontos))
-                        .catch((error) => {
-                            console.log("######## ponto.GET.id ########")
-                            console.log(error)
-                            return res.status(500).send()
-                        });
+                existOrError(dinicial, "Data inical deve ser informada.")
+                existOrError(dfinal, "Data final deve ser informada.")
 
-                } else {
-                    existOrError(dinicial, "Data inical deve ser informada.")
-                    existOrError(dfinal, "Data final deve ser informada.")
+                const { totalPags } = await knex("vw_cadastro_pontos")
+                    .where({ id_usuario: auth.id })
+                    .count({ totalPags: "*" })
+                    .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}'`)
+                    .first()
 
-                    const { totalPags } = await knex("vw_cadastro_pontos")
-                        .where({ id_usuario: auth.id })
-                        .count({ totalPags: "*" })
-                        .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}'`)
-                        .first()
+                const pontos = await knex("vw_cadastro_pontos")
+                    .select()
+                    .where({ id_usuario: auth.id })
+                    .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}'`)
+                    .limit(limit).offset(page * limit - limit)
+                    .orderBy(sort, order)
 
-                    const pontos = await knex("vw_cadastro_pontos")
-                        .select()
-                        .where({ id_usuario: auth.id })
-                        .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}'`)
-                        .limit(limit).offset(page * limit - limit)
-                        .orderBy(sort, order)
-
-                    return res.status(200).json({ data: pontos, totalPags: Math.ceil(totalPags / limit) })
-                }
+                return res.status(200).json({ data: pontos, totalPags: Math.ceil(totalPags / limit) })
             }
+
         } catch (error) {
             console.log(error)
             return res.status(400).send(error)
@@ -93,6 +76,9 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
+            /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
+            const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+
             /* Verifica se tem algum ponto em aberto. (se ponto_saida = null, significa que ta em aberto.) */
             const ponto = await knex("vw_cadastro_pontos")
                 .where({ id_usuario: auth.id, data: dataAtualFormat })
