@@ -362,13 +362,13 @@ export default function Ponto({ session, data, totalPags }) {
                                             {OrdeByTable("Ent. 1", "entrada1")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Saída 1", "saida1")}
+                                            {OrdeByTable("Sai. 1", "saida1")}
                                         </ThForm>
                                         <ThForm maxwidth="120px">
                                             {OrdeByTable("Ent. 2", "entrada2")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Saída 2", "saida2")}
+                                            {OrdeByTable("Sai. 2", "saida2")}
                                         </ThForm>
                                         <ThForm maxwidth="9999px">
                                             {OrdeByTable("H. T.", "dif_total")}
@@ -384,7 +384,7 @@ export default function Ponto({ session, data, totalPags }) {
                                                 <TdForm maxwidth="130px">{data.saida1 && data.saida1.slice(0, 5)}</TdForm>
                                                 <TdForm maxwidth="120px">{data.entrada2 && data.entrada2.slice(0, 5)}</TdForm>
                                                 <TdForm maxwidth="130px">{data.saida2 && data.saida2.slice(0, 5)}</TdForm>
-                                                <TdForm maxwidth="9999px">{data.dif_total && data.contabilizar ? data.dif_total.slice(0, 5) : ""}</TdForm>
+                                                <TdForm maxwidth="9999px">{data.dif_total && data.contabilizar == 'Sim' ? data.dif_total.slice(0, 5) : ""}</TdForm>
                                             </tr>
                                         )
                                     }))}
@@ -426,18 +426,6 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Código
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.id}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
                                                 Data
                                             </span>
                                         </th>
@@ -450,75 +438,149 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Entrada
+                                                Entrada 1
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.h_entrada}
+                                                {dataVW.entrada1}
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Saída
+                                                Saída 1
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.h_saida}
+                                                {dataVW.saida1}
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Horas trabalhadas
+                                                Hrs 1
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.dif_hora}
+                                                {dataVW.e1_s1}
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                OLD Data
+                                                Entrada 2
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {data.data_old ? moment(data.data_old).format('DD/MM/YY') : ""}
+                                                {dataVW.entrada2}
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                OLD Entrada
+                                                Saída 2
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.h_entrada_old}
+                                                {dataVW.saida2}
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                OLD Saída
+                                                Hrs 2
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.h_saida_old}
+                                                {dataVW.e2_s2}
                                             </span>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Acrescentado
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.acrescentar_hrs}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Subtraído
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.subtrair_hrs}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Hrs total
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.contabilizar == 'Sim' ? dataVW.dif_total : ""}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Contabilizar
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.contabilizar}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Obs
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.msg_contabilizar}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {!!dataVW.calendario_folga || !!dataVW.calendario_feriado &&
+                                        <tr>
+                                            <th>
+                                                <span className="span-th-vw">
+                                                    Calendário
+                                                </span>
+                                            </th>
+                                            <td>
+                                                <span className="span-td-vw">
+                                                    {dataVW.calendario_texto}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
                                 </tbody>
                             </table>
                         </TableVW>

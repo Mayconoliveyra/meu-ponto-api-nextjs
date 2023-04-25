@@ -16,12 +16,8 @@ exports.up = function (knex) {
             table.time('subtrair_hrs').nullable()
             table.string("msg_subtrair")
 
-            table.string("msg_alteracao")
-            table.boolean("alterado", 1).notNull().defaultTo(0)
-
-            table.boolean("p_folga", 1).notNull().defaultTo(0)
-            table.boolean("p_feriado", 1).notNull().defaultTo(0)
-            table.boolean("p_falta", 1).notNull().defaultTo(0)
+            table.enu("contabilizar", ["Sim", "Não"]).notNull().defaultTo('Sim')
+            table.string("msg_contabilizar")
 
             table.timestamp("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP"));
         })
