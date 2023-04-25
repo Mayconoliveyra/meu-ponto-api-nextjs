@@ -98,7 +98,7 @@ const ModalAcoes = styled.div`
     .div-acoes{
         height: 65px;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         padding: 16px;
         max-width: 600px;
@@ -585,11 +585,6 @@ export default function Ponto({ session, data, totalPags }) {
                             </table>
                         </TableVW>
                         <div className="div-acoes">
-                            {btnExcluir >= 1 ?
-                                <button onClick={() => setBtnExcluir(9)} disabled={btnExcluir != 10} className="btn-excluir-1" type="button">Excluir({btnExcluir}s)</button>
-                                :
-                                <button disabled={btnDisabled} className="btn-excluir" onClick={() => handleExcluir(dataVW.id)} type="button">EXCLUIR</button>
-                            }
                             <Link className="btn-editar" href={`${prefixRouter}/editar/${dataVW.id}`}>Editar </Link>
                         </div>
                     </ModalAcoes>
