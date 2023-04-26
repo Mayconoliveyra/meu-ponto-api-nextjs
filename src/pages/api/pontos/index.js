@@ -7,8 +7,6 @@ export default async function handler(req, res) {
     const auth = await passport(req)
     const knex = getKnex()
 
-    const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
-
     if (req.method === 'GET') {
         try {
             const sortColuns = {
@@ -30,7 +28,6 @@ export default async function handler(req, res) {
             const limit = parseInt(req.query._limit) ? parseInt(req.query._limit) : 20;
             const sort = sortColuns[req.query._sort] ? sortColuns[req.query._sort] : 'id';
             const order = orderColuns[req.query._order] ? orderColuns[req.query._order] : 'ASC';
-            const search = req.query._search ? req.query._search : null
 
             const dinicial = req.query._dinicial ? req.query._dinicial : null
             const dfinal = req.query._dfinal ? req.query._dfinal : null
