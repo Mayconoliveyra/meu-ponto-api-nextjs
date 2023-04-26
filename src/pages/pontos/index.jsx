@@ -409,9 +409,14 @@ export default function Ponto({ session, data, totalPags }) {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td>
+                                            <h4>1º TURNO</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Entrada 1
+                                                Entrada
                                             </span>
                                         </th>
                                         <td>
@@ -423,7 +428,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Saída 1
+                                                Saída
                                             </span>
                                         </th>
                                         <td>
@@ -435,7 +440,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Hrs 1
+                                                Total
                                             </span>
                                         </th>
                                         <td>
@@ -445,9 +450,14 @@ export default function Ponto({ session, data, totalPags }) {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td>
+                                            <h4>2º TURNO</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Entrada 2
+                                                Entrada
                                             </span>
                                         </th>
                                         <td>
@@ -459,7 +469,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Saída 2
+                                                Saída
                                             </span>
                                         </th>
                                         <td>
@@ -471,13 +481,18 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Hrs 2
+                                                Total
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
                                                 {horaForm(dataVW.e2_s2)}
                                             </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4></h4>
                                         </td>
                                     </tr>
                                     <tr>
@@ -507,7 +522,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Hrs total
+                                                Total do dia
                                             </span>
                                         </th>
                                         <td>
