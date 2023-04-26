@@ -13,12 +13,7 @@ exports.up = function (knex) {
             table.time('acrescentar_hrs').nullable()
             table.time('subtrair_hrs').nullable()
 
-            table.string("motivo_solicitacao", 255)
-
-            table.enu("contabilizar", ["Sim", "Não"]).notNull().defaultTo('Sim')
-            table.string("msg_contabilizar")
-
-            table.timestamp("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP"));
+            table.enu("obs", [null, "Atestado", "Falta", "Folga", "Feriado", "Compensado", "DSR"])
         })
 };
 

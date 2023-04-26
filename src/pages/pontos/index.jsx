@@ -373,13 +373,13 @@ export default function Ponto({ session, data, totalPags }) {
                                             {OrdeByTable("Ent. 1", "entrada1")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Sai. 1", "saida1")}
+                                            {OrdeByTable("Saí. 1", "saida1")}
                                         </ThForm>
                                         <ThForm maxwidth="120px">
                                             {OrdeByTable("Ent. 2", "entrada2")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Sai. 2", "saida2")}
+                                            {OrdeByTable("Saí. 2", "saida2")}
                                         </ThForm>
                                         <ThForm maxwidth="9999px">
                                             {OrdeByTable("H. T.", "dif_total")}
@@ -395,7 +395,7 @@ export default function Ponto({ session, data, totalPags }) {
                                                 <TdForm maxwidth="130px">{horaForm(data.saida1)}</TdForm>
                                                 <TdForm maxwidth="120px">{horaForm(data.entrada2)}</TdForm>
                                                 <TdForm maxwidth="130px">{horaForm(data.saida2)}</TdForm>
-                                                <TdForm maxwidth="9999px">{data.contabilizar == 'Sim' ? horaForm(data.dif_total) : ""}</TdForm>
+                                                <TdForm maxwidth="9999px">{data.dif_total ? horaForm(data.dif_total) : data.obs}</TdForm>
                                             </tr>
                                         )
                                     }))}
@@ -550,35 +550,12 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.contabilizar == 'Sim' ? horaForm(dataVW.dif_total) : ""}
+                                                {dataVW.dif_total ? horaForm(dataVW.dif_total) : dataVW.obs}
                                             </span>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Contabilizar
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.contabilizar}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <span className="span-th-vw">
-                                                Obs
-                                            </span>
-                                        </th>
-                                        <td>
-                                            <span className="span-td-vw">
-                                                {dataVW.msg_contabilizar}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {!!dataVW.calendario_folga || !!dataVW.calendario_feriado &&
+
+                                    {dataVW.calendario_texto &&
                                         <tr>
                                             <th>
                                                 <span className="span-th-vw">
