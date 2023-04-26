@@ -171,6 +171,10 @@ const TableVW = styled.div`
                     overflow: hidden;
                     word-break: break-word;
                 }
+                .h4-titulo{
+                    font-size: 14px;
+                    font-weight: bold;
+                }
             }
             th{
                 max-width: 200px;

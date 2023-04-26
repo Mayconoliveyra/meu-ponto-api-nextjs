@@ -410,7 +410,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <h4>1º TURNO</h4>
+                                            <h4 className="h4-titulo">1º TURNO</h4>
                                         </td>
                                     </tr>
                                     <tr>
@@ -451,7 +451,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <h4>2º TURNO</h4>
+                                            <h4 className="h4-titulo">2º TURNO</h4>
                                         </td>
                                     </tr>
                                     <tr>
@@ -492,7 +492,7 @@ export default function Ponto({ session, data, totalPags }) {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <h4></h4>
+                                            <h4 className="h4-titulo"></h4>
                                         </td>
                                     </tr>
                                     <tr>
