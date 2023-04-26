@@ -17,6 +17,17 @@ export function horaFormatada(date) {
     return moment(date).format('HH:mm:ss DD/MM/YY')
 }
 
+export function horaForm(hr) {
+    if (!hr) return ""
+    const tamanho = hr.length
+
+
+    if (tamanho == 9) return hr.slice(0, 6)
+    if (tamanho == 8) return hr.slice(0, 5)
+
+    return hr
+}
+
 import { TituloForm } from "../../components/formulario/titulo/components"
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../components/formulario/tabela/components";
 
@@ -380,11 +391,11 @@ export default function Ponto({ session, data, totalPags }) {
                                         return (
                                             <tr key={data.id} onClick={() => handleShow(data)}>
                                                 <TdForm maxwidth="120px">{moment(data.data).format('DD/MM/YY')}</TdForm>
-                                                <TdForm maxwidth="120px">{data.entrada1 && data.entrada1.slice(0, 5)}</TdForm>
-                                                <TdForm maxwidth="130px">{data.saida1 && data.saida1.slice(0, 5)}</TdForm>
-                                                <TdForm maxwidth="120px">{data.entrada2 && data.entrada2.slice(0, 5)}</TdForm>
-                                                <TdForm maxwidth="130px">{data.saida2 && data.saida2.slice(0, 5)}</TdForm>
-                                                <TdForm maxwidth="9999px">{data.dif_total && data.contabilizar == 'Sim' ? data.dif_total.slice(0, 5) : ""}</TdForm>
+                                                <TdForm maxwidth="120px">{horaForm(data.entrada1)}</TdForm>
+                                                <TdForm maxwidth="130px">{horaForm(data.saida1)}</TdForm>
+                                                <TdForm maxwidth="120px">{horaForm(data.entrada2)}</TdForm>
+                                                <TdForm maxwidth="130px">{horaForm(data.saida2)}</TdForm>
+                                                <TdForm maxwidth="9999px">{data.contabilizar == 'Sim' ? horaForm(data.dif_total) : ""}</TdForm>
                                             </tr>
                                         )
                                     }))}
@@ -443,7 +454,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.entrada1}
+                                                {horaForm(dataVW.entrada1)}
                                             </span>
                                         </td>
                                     </tr>
@@ -455,7 +466,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.saida1}
+                                                {horaForm(dataVW.saida1)}
                                             </span>
                                         </td>
                                     </tr>
@@ -467,7 +478,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.e1_s1}
+                                                {horaForm(dataVW.e1_s1)}
                                             </span>
                                         </td>
                                     </tr>
@@ -479,7 +490,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.entrada2}
+                                                {horaForm(dataVW.entrada2)}
                                             </span>
                                         </td>
                                     </tr>
@@ -491,7 +502,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.saida2}
+                                                {horaForm(dataVW.saida2)}
                                             </span>
                                         </td>
                                     </tr>
@@ -503,7 +514,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.e2_s2}
+                                                {horaForm(dataVW.e2_s2)}
                                             </span>
                                         </td>
                                     </tr>
@@ -515,7 +526,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.acrescentar_hrs}
+                                                {horaForm(dataVW.acrescentar_hrs)}
                                             </span>
                                         </td>
                                     </tr>
@@ -527,7 +538,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.subtrair_hrs}
+                                                {horaForm(dataVW.subtrair_hrs)}
                                             </span>
                                         </td>
                                     </tr>
@@ -539,7 +550,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.contabilizar == 'Sim' ? dataVW.dif_total : ""}
+                                                {dataVW.contabilizar == 'Sim' ? horaForm(dataVW.dif_total) : ""}
                                             </span>
                                         </td>
                                     </tr>

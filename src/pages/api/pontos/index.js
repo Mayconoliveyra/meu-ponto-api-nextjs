@@ -63,6 +63,7 @@ export default async function handler(req, res) {
         try {
             /* formata 'dataHoraAtual', para retornar apenas yyyy-mmm-dd(ano-mes-dia) */
             const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+            const horaFormat = moment(dataHoraAtual()).format('HH:mm:00') /* Segundos ta fixo 00 */
 
             /* Verifica se tem algum ponto em aberto. (se ponto_saida = null, significa que ta em aberto.) */
             const ponto = await knex("vw_cadastro_pontos")
@@ -73,7 +74,7 @@ export default async function handler(req, res) {
 
             if (!ponto.entrada1) {
                 await knex("cadastro_pontos")
-                    .update({ entrada1: dataHoraAtual() })
+                    .update({ entrada1: horaFormat })
                     .where({ id: ponto.id })
                     .then(() => res.status(204).send())
                     .catch((error) => {
@@ -84,7 +85,7 @@ export default async function handler(req, res) {
             } else
                 if (!ponto.saida1) {
                     await knex("cadastro_pontos")
-                        .update({ saida1: dataHoraAtual() })
+                        .update({ saida1: horaFormat })
                         .where({ id: ponto.id })
                         .then(() => res.status(204).send())
                         .catch((error) => {
@@ -95,7 +96,7 @@ export default async function handler(req, res) {
                 } else
                     if (!ponto.entrada2) {
                         await knex("cadastro_pontos")
-                            .update({ entrada2: dataHoraAtual() })
+                            .update({ entrada2: horaFormat })
                             .where({ id: ponto.id })
                             .then(() => res.status(204).send())
                             .catch((error) => {
@@ -106,7 +107,7 @@ export default async function handler(req, res) {
                     } else
                         if (!ponto.saida2) {
                             await knex("cadastro_pontos")
-                                .update({ saida2: dataHoraAtual() })
+                                .update({ saida2: horaFormat })
                                 .where({ id: ponto.id })
                                 .then(() => res.status(204).send())
                                 .catch((error) => {

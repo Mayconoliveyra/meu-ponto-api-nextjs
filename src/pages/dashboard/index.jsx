@@ -139,7 +139,7 @@ export default function Dashboard({ session, pDiario }) {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            setHoraAtual(moment(dataHoraAtual()).add(3, 'hours').format('HH:mm:ss'))
+            setHoraAtual(moment(dataHoraAtual()).add(3, 'hours').format('HH:mm'))
         }, 1000)
 
         return () => clearInterval(intervalId);

@@ -11,10 +11,9 @@ exports.up = function (knex) {
             table.time('saida2').nullable()
 
             table.time('acrescentar_hrs').nullable()
-            table.string("msg_acrescentar")
-
             table.time('subtrair_hrs').nullable()
-            table.string("msg_subtrair")
+
+            table.string("motivo_solicitacao", 255)
 
             table.enu("contabilizar", ["Sim", "Não"]).notNull().defaultTo('Sim')
             table.string("msg_contabilizar")
@@ -22,18 +21,6 @@ exports.up = function (knex) {
             table.timestamp("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP"));
         })
 };
-
-/* table.date('data_old').nullable() */
-/* table.time('h_entrada').nullable()
-table.time('h_saida').nullable() */
-/* table.time('h_entrada').nullable()
-table.time('h_saida').nullable() */
-/* table.enu("tipo_alteracao", ["Selecione", "Data", "Hora", "Data e Hora", "Outras"]).defaultTo('Selecione') */
-/* table.timestamp("solicitado_em").nullable(); */
-/* table.integer('id_user_alt')  */
-/* table.string("nome_user_alt")  */
-/* table.timestamp('created_at').nullable();
-table.timestamp("deleted_at").nullable(); */
 
 exports.down = function (knex) {
     return knex.schema.dropTable("cadastro_pontos");

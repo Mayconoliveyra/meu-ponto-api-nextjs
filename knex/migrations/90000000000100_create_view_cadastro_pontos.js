@@ -10,10 +10,9 @@ exports.up = function (knex) {
 	saida1,  
 	entrada2, 
 	saida2,
-	IF(acrescentar_hrs IS NULL, cast('00:00:00' as time), acrescentar_hrs) AS acrescentar_hrs,
-	msg_acrescentar,
-	IF(subtrair_hrs IS NULL, cast('00:00:00' as time), subtrair_hrs) AS subtrair_hrs,
-	msg_subtrair,
+	acrescentar_hrs,
+	subtrair_hrs,
+	motivo_solicitacao,
 	SEC_TO_TIME(TIME_TO_SEC(saida1) - TIME_TO_SEC(entrada1)) AS "e1_s1",  # Diferença (entrada1 - saida1) #
 	SEC_TO_TIME(TIME_TO_SEC(saida2) - TIME_TO_SEC(entrada2)) AS "e2_s2",  # Diferença (entrada2 - saida2) #
 	SEC_TO_TIME( 

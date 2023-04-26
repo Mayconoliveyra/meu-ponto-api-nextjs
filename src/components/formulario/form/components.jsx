@@ -122,6 +122,31 @@ const GroupOneSC = styled.div`
             opacity: 1;
         }
     }
+    textarea {
+        border-color:${({ error }) => error && "#d00 !important;"};
+        box-shadow:${({ error }) => error && "0 0 0 0.2rem rgb(221 0 0 / 15%) inset !important;"};
+
+        margin-top: 2px;
+        display: block;
+        width: 100%;
+        padding: 6px 12px;
+        font-size: 13px;
+        color: #555555;
+        background-color: #ffffff;
+        background-image: none;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+
+        &:focus{
+            border-color: #0C1B25 !important;
+        }
+        &:disabled {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+    }
 
     small {
         margin-left: 3px;
@@ -192,6 +217,43 @@ const GroupOne = ({ name, label, type = "text", required = false, autocomplete =
                         </Field>
                     )
                 }
+                <small>
+                    <ErrorMessage name={name} />
+                </small>
+            </GroupOneSC>
+        </Col >
+    );
+};
+
+const GroupTextarea = ({ name, label, required = false, autocomplete = "off", maxlength = 255, error = false, placeholder, disabled = false, xs, sm, md, lg, xl, xxl, rowstxt = 5, colstxt = 15 }) => {
+    const propsGroup = {
+        xs,
+        sm,
+        md,
+        lg,
+        xl,
+        xxl,
+    };
+    return (
+        < Col id="Col"  {...propsGroup} >
+            <GroupOneSC required={required} error={error} >
+                <label htmlFor={name}>{label}</label>
+                <Field name={name}>
+                    {({ field }) => (
+                        <textarea
+                            {...field}
+                            id={name}
+                            maxLength={maxlength}
+                            autoComplete={autocomplete}
+                            placeholder={placeholder}
+                            disabled={disabled == true || disabled == "true" || disabled == "1" || disabled == 1 ? true : false}
+                            required={required}
+                            value={field.value != undefined ? field.value : ""}
+                            rows={rowstxt}
+                            cols={colstxt}
+                        />
+                    )}
+                </Field>
                 <small>
                     <ErrorMessage name={name} />
                 </small>
@@ -273,4 +335,4 @@ const GroupSelectOne = ({ name, label, required = false, data = [], xs, sm, md, 
     );
 };
 
-export { FormOne, GroupOne, GroupMoney, GroupSelectOne }
+export { FormOne, GroupOne, GroupTextarea, GroupMoney, GroupSelectOne }

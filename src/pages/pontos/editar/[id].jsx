@@ -10,7 +10,7 @@ import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
 import { TituloForm } from "../../../components/formulario/titulo/components";
-import { FormOne, GroupOne, GroupSelectOne } from "../../../components/formulario/form/components";
+import { FormOne, GroupOne, GroupTextarea } from "../../../components/formulario/form/components";
 
 import { FormatObjNull } from "../../../../global";
 
@@ -76,10 +76,14 @@ export default function Editar({ data, session }) {
     const [btnDisabled, setBtnDisabled] = useState(false);
 
     const scheme = Yup.object().shape({
-        tipo_alteracao: Yup.string().label("Tipo de ajuste").nullable().required().trim(),
         data: Yup.string().nullable().label("Data").required(),
-        h_entrada: Yup.string().nullable().label("Entrada").required(),
-        h_saida: Yup.string().nullable().label("Saída").required(),
+        entrada1: Yup.string().nullable().label("Entrada 1").required(),
+        saida1: Yup.string().nullable().label("Saída 1").required(),
+        entrada2: Yup.string().nullable().label("Entrada 2").required(),
+        saida2: Yup.string().nullable().label("Saída 2").required(),
+       /*  acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas").required(),
+        subtrair_hrs: Yup.string().nullable().label("Subtrair horas").required(), */
+        motivo_solicitacao: Yup.string().label("Motivo da solicitação").nullable().required().trim(),
     });
 
     return (
@@ -112,54 +116,70 @@ export default function Editar({ data, session }) {
                 >
                     {({ errors, touched, values, dirty }) => (
                         <FormOne>
-                            <GroupSelectOne
-                                label="Tipo de alteração"
-                                required
-                                name="tipo_alteracao"
-                                data={[
-                                    { value: "Selecione", name: "Selecione" },
-                                    { value: "Data", name: "1 - Data" },
-                                    { value: "Hora", name: "2 - Hora" },
-                                    { value: "Data e Hora", name: "3 - Data e Hora" },
-                                    { value: "Outras", name: "4 - Outras" },
-                                ]}
-                                md={12}
-                            />
-
                             <GroupOne
                                 error={!!errors.data && touched.data}
                                 label="Data"
                                 name="data"
                                 type="date"
-                                required
-                                disabled={values.tipo_alteracao != "Data" && values.tipo_alteracao != "Data e Hora"}
+                                disabled
+                                md={12}
+                            />
+                            <GroupOne
+                                error={!!errors.entrada1 && touched.entrada1}
+                                label="Entrada 1"
+                                name="entrada1"
+                                type="time"
                                 md={6}
                             />
                             <GroupOne
-                                error={!!errors.h_entrada && touched.h_entrada}
-                                label="Entrada"
-                                name="h_entrada"
+                                error={!!errors.saida1 && touched.saida1}
+                                label="Saída 1"
+                                name="saida1"
                                 type="time"
-                                required
-                                disabled={values.tipo_alteracao != "Hora" && values.tipo_alteracao != "Data e Hora"}
                                 md={6}
                             />
                             <GroupOne
-                                error={!!errors.h_saida && touched.h_saida}
-                                label="Saída"
-                                name="h_saida"
+                                error={!!errors.entrada2 && touched.entrada2}
+                                label="Entrada 2"
+                                name="entrada2"
                                 type="time"
-                                required
-                                disabled={values.tipo_alteracao != "Hora" && values.tipo_alteracao != "Data e Hora"}
                                 md={6}
                             />
+                            <GroupOne
+                                error={!!errors.saida2 && touched.saida2}
+                                label="Saída 2"
+                                name="saida2"
+                                type="time"
+                                md={6}
+                            />
+                            <GroupOne
+                                error={!!errors.acrescentar_hrs && touched.acrescentar_hrs}
+                                label="Acrescentar horas"
+                                name="acrescentar_hrs"
+                                type="time"
+                                md={6}
+                            />
+                            <GroupOne
+                                error={!!errors.subtrair_hrs && touched.subtrair_hrs}
+                                label="Subtrair horas"
+                                name="subtrair_hrs"
+                                type="time"
+                                md={6}
+                            />
+                            <GroupTextarea
+                                error={!!errors.motivo_solicitacao && touched.motivo_solicitacao}
+                                label="Motivo da solicitação"
+                                name="motivo_solicitacao"
+                                rowstxt={3}
+                                sm={12}
+                            />
+
                             <div className="div-btn-salvar">
                                 <button disabled={btnDisabled || !dirty} className="btn-salvar" type="submit">Solicitar</button>
                             </div>
                         </FormOne>
                     )}
                 </Formik>
-
             </Main>
         </>
     );
