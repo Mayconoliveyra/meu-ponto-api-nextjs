@@ -77,10 +77,10 @@ export default function Editar({ data, session }) {
 
     const scheme = Yup.object().shape({
         data: Yup.string().nullable().label("Data").required(),
-        entrada1: Yup.string().nullable().label("Entrada 1").required(),
-        saida1: Yup.string().nullable().label("Saída 1").required(),
-        entrada2: Yup.string().nullable().label("Entrada 2").required(),
-        saida2: Yup.string().nullable().label("Saída 2").required(),
+        entrada1: Yup.string().nullable().label("Entrada 1"),
+        saida1: Yup.string().nullable().label("Saída 1"),
+        entrada2: Yup.string().nullable().label("Entrada 2"),
+        saida2: Yup.string().nullable().label("Saída 2"),
        /*  acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas").required(),
         subtrair_hrs: Yup.string().nullable().label("Subtrair horas").required(), */
         motivo_solicitacao: Yup.string().label("Motivo da solicitação").nullable().required().trim(),
