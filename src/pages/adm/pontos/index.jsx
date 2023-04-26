@@ -27,13 +27,13 @@ export function horaForm(hr) {
     return hr
 }
 
-import { TituloForm } from "../../components/formulario/titulo/components"
-import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../components/formulario/tabela/components";
+import { TituloForm } from "../../../components/formulario/titulo/components"
+import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
-import { api } from "../../../global";
+import { api } from "../../../../global";
 
 const prefix = "ponto"
-const prefixRouter = "/pontos"
+const prefixRouter = "/adm/pontos"
 const pageDefault = { _sort: "data", _order: "ASC", _page: 1, _limit: 31, _dinicial: moment().subtract(7, 'days').format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD') }
 
 const Main = styled.div`
@@ -108,7 +108,7 @@ const ModalAcoes = styled.div`
     .div-acoes{
         height: 65px;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
         padding: 16px;
         max-width: 600px;
@@ -222,7 +222,7 @@ const CabecalhoFiltros = styled.div`
         }
     }
 `
-export default function Ponto({ session, data, totalPags }) {
+export default function AdmPonto({ session, data, totalPags }) {
     const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
     const [pageTotalPags, setPageTotalPags] = useState(totalPags); /* Armazena total de pags */
     const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
@@ -233,15 +233,41 @@ export default function Ponto({ session, data, totalPags }) {
     const [dInicial, setDInicial] = useState(pageDefault._dinicial);
     const [dFinal, setDFinal] = useState(pageDefault._dfinal);
 
+    const [btnExcluir, setBtnExcluir] = useState(10);
+
     /* MODAL */
     const [show, setShow] = useState(false);
     const handleClose = () => {
+        setBtnExcluir(10)
         setDataVW({})
         setShow(false);
     }
     const handleShow = (data) => {
         setDataVW(data)
         setShow(true);
+    }
+
+    const handleExcluir = async (id) => {
+        setBtnDisabled(true)
+        const axios = await api(session);
+        await axios.delete(`${prefixRouter}?_id=${id}`)
+            .then(async () => {
+                router.reload()
+            })
+            .catch(res => {
+                setBtnDisabled(false)
+                /* Se status 400, significa que o erro foi tratado. */
+                if (res && res.response && res.response.status == 400) {
+                    /* Se data=500, será exibido no toast */
+                    if (res.response.data && res.response.data[500]) {
+                        toast.error(res.response.data[500])
+                    } else {
+                        toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                    }
+                } else {
+                    toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                }
+            })
     }
 
     const handlePageFilter = async () => {
@@ -534,6 +560,14 @@ export default function Ponto({ session, data, totalPags }) {
                                 </tbody>
                             </table>
                         </TableVW>
+                        <div className="div-acoes">
+                            {btnExcluir >= 1 ?
+                                <button onClick={() => setBtnExcluir(9)} disabled={btnExcluir != 10} className="btn-excluir-1" type="button">Excluir({btnExcluir}s)</button>
+                                :
+                                <button disabled={btnDisabled} className="btn-excluir" onClick={() => handleExcluir(dataVW.id)} type="button">EXCLUIR</button>
+                            }
+                            <Link className="btn-editar" href={`${prefixRouter}/editar/${dataVW.id}`}>Editar </Link>
+                        </div>
                     </ModalAcoes>
                 </Modal>
             </Main>
@@ -541,7 +575,7 @@ export default function Ponto({ session, data, totalPags }) {
     );
 }
 
-import { getKnex } from "../../../knex";
+import { getKnex } from "../../../../knex";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })

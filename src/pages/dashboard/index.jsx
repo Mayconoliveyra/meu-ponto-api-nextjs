@@ -129,7 +129,7 @@ const ModalPonto = styled.div`
 
     }
 `
-export default function Dashboard({ session, pDiario }) {
+export default function AdmDashboard({ session, pDiario }) {
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);

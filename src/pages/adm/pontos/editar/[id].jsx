@@ -9,10 +9,10 @@ import * as Yup from "yup";
 import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
-import { TituloForm } from "../../../components/formulario/titulo/components";
-import { FormOne, GroupOne, GroupTextarea } from "../../../components/formulario/form/components";
+import { TituloForm } from "../../../../components/formulario/titulo/components";
+import { FormOne, GroupOne, GroupTextarea } from "../../../../components/formulario/form/components";
 
-import { FormatObjNull } from "../../../../global";
+import { FormatObjNull } from "../../../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/pontos"
@@ -72,7 +72,7 @@ const Main = styled.div`
     }
 `
 
-export default function Editar({ data, session }) {
+export default function AdmEditar({ data, session }) {
     const [btnDisabled, setBtnDisabled] = useState(false);
 
     const scheme = Yup.object().shape({
@@ -81,8 +81,8 @@ export default function Editar({ data, session }) {
         saida1: Yup.string().nullable().label("Saída 1"),
         entrada2: Yup.string().nullable().label("Entrada 2"),
         saida2: Yup.string().nullable().label("Saída 2"),
-       /*  acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas").required(),
-        subtrair_hrs: Yup.string().nullable().label("Subtrair horas").required(), */
+        /*  acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas").required(),
+         subtrair_hrs: Yup.string().nullable().label("Subtrair horas").required(), */
         motivo_solicitacao: Yup.string().label("Motivo da solicitação").nullable().required().trim(),
     });
 
@@ -185,7 +185,7 @@ export default function Editar({ data, session }) {
     );
 }
 
-import { getKnex } from "../../../../knex";
+import { getKnex } from "../../../../../knex";
 export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
