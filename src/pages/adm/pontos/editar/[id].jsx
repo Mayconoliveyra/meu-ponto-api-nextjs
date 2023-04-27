@@ -190,7 +190,7 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
-    if (session && session.id) {
+    if (session && session.id && session.adm) {
         const knex = getKnex()
         const { id } = context.params;
 

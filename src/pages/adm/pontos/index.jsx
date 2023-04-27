@@ -226,7 +226,7 @@ export default function AdmPonto({ session, data, totalPags }) {
     const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
     const [pageTotalPags, setPageTotalPags] = useState(totalPags); /* Armazena total de pags */
     const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
-    const [pageHanDisble, setPageHanDisble] = useState(false); /* Desabilita os filtros até a pagina terminad e ser carregada. */
+    const [loadPage, setLoadPage] = useState(false); /* Desabilita os filtros até que os dados seja retornados do backend */
 
     const [dataVW, setDataVW] = useState({}); /* Amazena o registro para ser exibido no modal */
 
@@ -234,18 +234,20 @@ export default function AdmPonto({ session, data, totalPags }) {
     const [dFinal, setDFinal] = useState(pageDefault._dfinal);
 
     const [btnExcluir, setBtnExcluir] = useState(10);
+    const [btnDisabled, setBtnDisabled] = useState(false);
 
     /* MODAL */
     const [show, setShow] = useState(false);
-    const handleClose = () => {
-        setBtnExcluir(10)
-        setDataVW({})
-        setShow(false);
-    }
     const handleShow = (data) => {
+        setBtnExcluir(10)
         setDataVW(data)
         setShow(true);
     }
+    const handleClose = () => {
+        setDataVW({})
+        setShow(false);
+    }
+
 
     const handleExcluir = async (id) => {
         setBtnDisabled(true)
@@ -271,8 +273,8 @@ export default function AdmPonto({ session, data, totalPags }) {
     }
 
     const handlePageFilter = async () => {
-        if (!pageHanDisble) {
-            setPageHanDisble(true)
+        if (loadPage) {
+            setLoadPage(false)
 
             const axios = await api(session);
             const params = `?_page=${pageHandle._page}&_limit=${pageHandle._limit}&_sort=${pageHandle._sort}&_order=${pageHandle._order}&_dinicial=${pageHandle._dinicial}&_dfinal=${pageHandle._dfinal}`
@@ -280,7 +282,7 @@ export default function AdmPonto({ session, data, totalPags }) {
             setPageData(data)
             setPageTotalPags(totalPags)
 
-            setPageHanDisble(false)
+            setLoadPage(true)
         }
     };
 
@@ -310,10 +312,25 @@ export default function AdmPonto({ session, data, totalPags }) {
         )
     }
 
+    /* Conta 10s antes de habilitar o btn vermelho de excluir */
+    useEffect(() => {
+        let intervalId = null
+        if (btnExcluir <= 9 && btnExcluir > 0) {
+            intervalId = setTimeout(() => {
+                setBtnExcluir(btnExcluir - 1)
+            }, 1000)
+        }
+
+        return () => clearInterval(intervalId);
+    }, [btnExcluir])
 
     useEffect(() => {
         handlePageFilter()
     }, [pageHandle])
+
+    useEffect(() => {
+        setLoadPage(true)
+    }, [])
 
     return (
         <>
@@ -430,7 +447,7 @@ export default function AdmPonto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {moment(data.data).format('DD/MM/YY')}
+                                                {moment(dataVW.data).format('DD/MM/YY')}
                                             </span>
                                         </td>
                                     </tr>
@@ -584,14 +601,12 @@ export async function getServerSideProps(context) {
         const knex = getKnex()
 
         const { totalPags } = await knex("vw_cadastro_pontos")
-            .where({ id_usuario: session.id })
             .count({ totalPags: "*" })
             .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
             .first()
 
         const pontos = await knex("vw_cadastro_pontos")
             .select()
-            .where({ id_usuario: session.id })
             .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
             .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
             .orderBy(pageDefault._sort, pageDefault._order)

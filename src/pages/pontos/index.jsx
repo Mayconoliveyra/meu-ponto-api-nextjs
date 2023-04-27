@@ -226,7 +226,7 @@ export default function Ponto({ session, data, totalPags }) {
     const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
     const [pageTotalPags, setPageTotalPags] = useState(totalPags); /* Armazena total de pags */
     const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
-    const [pageHanDisble, setPageHanDisble] = useState(false); /* Desabilita os filtros até a pagina terminad e ser carregada. */
+    const [loadPage, setLoadPage] = useState(false); /* Desabilita os filtros até que os dados seja retornados do backend */
 
     const [dataVW, setDataVW] = useState({}); /* Amazena o registro para ser exibido no modal */
 
@@ -245,8 +245,8 @@ export default function Ponto({ session, data, totalPags }) {
     }
 
     const handlePageFilter = async () => {
-        if (!pageHanDisble) {
-            setPageHanDisble(true)
+        if (loadPage) {
+            setLoadPage(false)
 
             const axios = await api(session);
             const params = `?_page=${pageHandle._page}&_limit=${pageHandle._limit}&_sort=${pageHandle._sort}&_order=${pageHandle._order}&_dinicial=${pageHandle._dinicial}&_dfinal=${pageHandle._dfinal}`
@@ -254,7 +254,7 @@ export default function Ponto({ session, data, totalPags }) {
             setPageData(data)
             setPageTotalPags(totalPags)
 
-            setPageHanDisble(false)
+            setLoadPage(true)
         }
     };
 
@@ -289,6 +289,9 @@ export default function Ponto({ session, data, totalPags }) {
         handlePageFilter()
     }, [pageHandle])
 
+    useEffect(() => {
+        setLoadPage(true)
+    }, [pageHandle])
     return (
         <>
             <Head>
@@ -404,7 +407,7 @@ export default function Ponto({ session, data, totalPags }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {moment(data.data).format('DD/MM/YY')}
+                                                {moment(dataVW.data).format('DD/MM/YY')}
                                             </span>
                                         </td>
                                     </tr>
