@@ -289,7 +289,6 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
 
     const handleInputSearch = (e) => {
         if (e == 'Search' || e.key === 'Enter') {
-            console.log(funcionario)
             if (!dInicial) toast.error("Data inical deve ser informada.")
             if (!dFinal) toast.error("Data final deve ser informada.")
 
