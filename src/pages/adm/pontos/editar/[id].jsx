@@ -10,7 +10,7 @@ import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
 import { TituloForm } from "../../../../components/formulario/titulo/components";
-import { FormOne, GroupOne, GroupTextarea } from "../../../../components/formulario/form/components";
+import { FormOne, GroupOne, GroupTextarea, GroupSelectOne } from "../../../../components/formulario/form/components";
 
 import { FormatObjNull } from "../../../../../global";
 
@@ -81,8 +81,8 @@ export default function AdmEditar({ data, session }) {
         saida1: Yup.string().nullable().label("Saída 1"),
         entrada2: Yup.string().nullable().label("Entrada 2"),
         saida2: Yup.string().nullable().label("Saída 2"),
-        /*  acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas").required(),
-         subtrair_hrs: Yup.string().nullable().label("Subtrair horas").required(), */
+        acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas"),
+        subtrair_hrs: Yup.string().nullable().label("Subtrair horas"),
         motivo_solicitacao: Yup.string().label("Motivo da solicitação").nullable().required().trim(),
     });
 
@@ -165,6 +165,20 @@ export default function AdmEditar({ data, session }) {
                                 name="subtrair_hrs"
                                 type="time"
                                 md={6}
+                            />
+                            <GroupSelectOne
+                                label="Obs"
+                                name="obs"
+                                data={[
+                                    { value: null, name: null },
+                                    { value: "Atestado", name: "Atestado" },
+                                    { value: "Falta", name: "Falta" },
+                                    { value: "Folga", name: "Folga" },
+                                    { value: "Feriado", name: "Feriado" },
+                                    { value: "Compensado", name: "Compensado" },
+                                    { value: "DSR", name: "DSR" },
+                                ]}
+                                md={12}
                             />
                             <GroupTextarea
                                 error={!!errors.motivo_solicitacao && touched.motivo_solicitacao}

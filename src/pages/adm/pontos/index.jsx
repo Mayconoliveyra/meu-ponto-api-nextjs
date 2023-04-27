@@ -34,7 +34,7 @@ import { api } from "../../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/adm/pontos"
-const pageDefault = { _sort: "data", _order: "ASC", _page: 1, _limit: 31, _dinicial: moment().subtract(7, 'days').format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD') }
+const pageDefault = { _sort: "data", _order: "ASC", _page: 1, _limit: 31, _dinicial: moment().subtract(7, 'days').format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD'), _funcionario: "Selecione" }
 
 const Main = styled.div`
     flex: 1;
@@ -222,7 +222,7 @@ const CabecalhoFiltros = styled.div`
         }
     }
 `
-export default function AdmPonto({ session, data, totalPags }) {
+export default function AdmPonto({ session, data, totalPags, usuarios }) {
     const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
     const [pageTotalPags, setPageTotalPags] = useState(totalPags); /* Armazena total de pags */
     const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
@@ -232,6 +232,7 @@ export default function AdmPonto({ session, data, totalPags }) {
 
     const [dInicial, setDInicial] = useState(pageDefault._dinicial);
     const [dFinal, setDFinal] = useState(pageDefault._dfinal);
+    const [funcionario, setFuncionario] = useState(pageDefault._funcionario);
 
     const [btnExcluir, setBtnExcluir] = useState(10);
     const [btnDisabled, setBtnDisabled] = useState(false);
@@ -277,7 +278,7 @@ export default function AdmPonto({ session, data, totalPags }) {
             setLoadPage(false)
 
             const axios = await api(session);
-            const params = `?_page=${pageHandle._page}&_limit=${pageHandle._limit}&_sort=${pageHandle._sort}&_order=${pageHandle._order}&_dinicial=${pageHandle._dinicial}&_dfinal=${pageHandle._dfinal}`
+            const params = `?_page=${pageHandle._page}&_limit=${pageHandle._limit}&_sort=${pageHandle._sort}&_order=${pageHandle._order}&_dinicial=${pageHandle._dinicial}&_dfinal=${pageHandle._dfinal}&_funcionario=${pageHandle._funcionario}`
             const { data, totalPags } = await axios.get(`${prefixRouter}${params} `).then((res) => res.data)
             setPageData(data)
             setPageTotalPags(totalPags)
@@ -288,16 +289,17 @@ export default function AdmPonto({ session, data, totalPags }) {
 
     const handleInputSearch = (e) => {
         if (e == 'Search' || e.key === 'Enter') {
+            console.log(funcionario)
             if (!dInicial) toast.error("Data inical deve ser informada.")
             if (!dFinal) toast.error("Data final deve ser informada.")
 
-            setPageHandle({ ...pageDefault, _dinicial: dInicial, _dfinal: dFinal })
+            setPageHandle({ ...pageDefault, _dinicial: dInicial, _dfinal: dFinal, _funcionario: funcionario })
         }
     };
 
     const OrdeByTable = (nomeExibir, columnDb) => {
         return (
-            <button type="button" onClick={() => setPageHandle({ ...pageDefault, _sort: columnDb, _order: pageHandle._order == "DESC" ? "ASC" : "DESC", _dinicial: pageHandle._dinicial, _dfinal: pageHandle._dfinal })}>
+            <button type="button" onClick={() => setPageHandle({ ...pageDefault, _sort: columnDb, _order: pageHandle._order == "DESC" ? "ASC" : "DESC", _dinicial: pageHandle._dinicial, _dfinal: pageHandle._dfinal, _funcionario: pageHandle._funcionario })}>
                 {pageHandle._sort == columnDb &&
                     <>
                         {pageHandle._order == "DESC" ?
@@ -360,6 +362,21 @@ export default function AdmPonto({ session, data, totalPags }) {
                             <Form.Label>Data final</Form.Label>
                             <Form.Control value={dFinal} onChange={(e) => setDFinal(e.target.value)} type="date" />
                         </Form.Group>
+
+                        <Form.Group controlId="funcionario">
+                            <Form.Label>Funcionário</Form.Label>
+                            <Form.Select onChange={(e) => setFuncionario(e.target.value)} type="select">
+                                <option>Selecione</option>
+                                {usuarios && usuarios.length > 0 && (
+                                    usuarios.map(data => {
+                                        return (
+                                            <option key={data.id} value={data.id}>{data.nome} (Cód. {data.id})</option>
+                                        )
+                                    })
+                                )
+                                }
+                            </Form.Select>
+                        </Form.Group>
                     </div>
                     <div className="div-filtro">
                         <button type="button" onClick={() => handleInputSearch('Search')}>Pesquisar</button>
@@ -375,16 +392,13 @@ export default function AdmPonto({ session, data, totalPags }) {
                                             {OrdeByTable("Data", "data")}
                                         </ThForm>
                                         <ThForm maxwidth="120px">
-                                            {OrdeByTable("Ent. 1", "entrada1")}
-                                        </ThForm>
-                                        <ThForm maxwidth="130px">
-                                            {OrdeByTable("Saí. 1", "saida1")}
+                                            {OrdeByTable("Nome", "nome")}
                                         </ThForm>
                                         <ThForm maxwidth="120px">
-                                            {OrdeByTable("Ent. 2", "entrada2")}
+                                            {OrdeByTable("1º Turno", "e1_s1")}
                                         </ThForm>
                                         <ThForm maxwidth="130px">
-                                            {OrdeByTable("Saí. 2", "saida2")}
+                                            {OrdeByTable("2º Turno", "e2_s2")}
                                         </ThForm>
                                         <ThForm maxwidth="9999px">
                                             {OrdeByTable("H. T.", "dif_total")}
@@ -396,10 +410,9 @@ export default function AdmPonto({ session, data, totalPags }) {
                                         return (
                                             <tr key={data.id} onClick={() => handleShow(data)}>
                                                 <TdForm maxwidth="120px">{moment(data.data).format('DD/MM/YY')}</TdForm>
-                                                <TdForm maxwidth="120px">{horaForm(data.entrada1)}</TdForm>
-                                                <TdForm maxwidth="130px">{horaForm(data.saida1)}</TdForm>
-                                                <TdForm maxwidth="120px">{horaForm(data.entrada2)}</TdForm>
-                                                <TdForm maxwidth="130px">{horaForm(data.saida2)}</TdForm>
+                                                <TdForm maxwidth="120px">{horaForm(data.nome.split(' ')[0])}</TdForm>
+                                                <TdForm maxwidth="120px">{horaForm(data.e1_s1)}</TdForm>
+                                                <TdForm maxwidth="130px">{horaForm(data.e2_s2)}</TdForm>
                                                 <TdForm maxwidth="9999px">{data.dif_total ? horaForm(data.dif_total) : data.obs}</TdForm>
                                             </tr>
                                         )
@@ -454,7 +467,24 @@ export default function AdmPonto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Entrada 1
+                                                Nome
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                {dataVW.nome}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="h4-titulo">1º TURNO</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Entrada
                                             </span>
                                         </th>
                                         <td>
@@ -466,7 +496,7 @@ export default function AdmPonto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Saída 1
+                                                Saída
                                             </span>
                                         </th>
                                         <td>
@@ -478,7 +508,7 @@ export default function AdmPonto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Hrs 1
+                                                Total
                                             </span>
                                         </th>
                                         <td>
@@ -488,9 +518,14 @@ export default function AdmPonto({ session, data, totalPags }) {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td>
+                                            <h4 className="h4-titulo">2º TURNO</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Entrada 2
+                                                Entrada
                                             </span>
                                         </th>
                                         <td>
@@ -502,7 +537,7 @@ export default function AdmPonto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Saída 2
+                                                Saída
                                             </span>
                                         </th>
                                         <td>
@@ -514,13 +549,18 @@ export default function AdmPonto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Hrs 2
+                                                Total
                                             </span>
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
                                                 {horaForm(dataVW.e2_s2)}
                                             </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4 className="h4-titulo"></h4>
                                         </td>
                                     </tr>
                                     <tr>
@@ -550,7 +590,7 @@ export default function AdmPonto({ session, data, totalPags }) {
                                     <tr>
                                         <th>
                                             <span className="span-th-vw">
-                                                Hrs total
+                                                Total do dia
                                             </span>
                                         </th>
                                         <td>
@@ -597,7 +637,7 @@ export async function getServerSideProps(context) {
     const { req } = context
     const session = await getSession({ req })
 
-    if (session && session.id) {
+    if (session && session.id && session.adm) {
         const knex = getKnex()
 
         const { totalPags } = await knex("vw_cadastro_pontos")
@@ -606,13 +646,18 @@ export async function getServerSideProps(context) {
             .first()
 
         const pontos = await knex("vw_cadastro_pontos")
-            .select()
+            .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
+            .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
             .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
             .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
             .orderBy(pageDefault._sort, pageDefault._order)
 
+        const usuarios = await knex("cadastro_usuarios")
+            .select("id", "nome")
+            .whereNull("deleted_at")
+
         return {
-            props: { session, data: pontos, totalPags: Math.ceil(totalPags / pageDefault._limit) },
+            props: { session, data: pontos, totalPags: Math.ceil(totalPags / pageDefault._limit), usuarios },
         }
     }
 

@@ -82,8 +82,15 @@ export default async function handler(req, res) {
         if (req.method === 'GET') {
             const sortColuns = {
                 id: "id",
+                data: "data",
+                entrada1: "entrada1",
+                saida1: "saida1",
+                entrada2: "entrada2",
+                saida2: "saida2",
+                dif_total: "dif_total",
                 nome: "nome",
-                cpf: "cpf"
+                e1_s1: "e1_s1",
+                e2_s2: "e2_s2",
             }
             const orderColuns = {
                 ASC: "ASC",
@@ -96,6 +103,13 @@ export default async function handler(req, res) {
             const sort = sortColuns[req.query._sort] ? sortColuns[req.query._sort] : 'id';
             const order = orderColuns[req.query._order] ? orderColuns[req.query._order] : 'ASC';
             const search = req.query._search ? req.query._search : null
+
+            const dinicial = req.query._dinicial ? req.query._dinicial : null;
+            const dfinal = req.query._dfinal ? req.query._dfinal : null;
+            const funcionario = req.query._funcionario && req.query._funcionario != 'Selecione' ? `AND id_usuario = ${req.query._funcionario}` : "";
+
+            existOrError(dinicial, "Data inical deve ser informada.")
+            existOrError(dfinal, "Data final deve ser informada.")
 
             /* Se tiver ID retornar o registro especifico. */
             if (id) {
@@ -128,18 +142,19 @@ export default async function handler(req, res) {
 
                     return res.status(200).json({ data: funcionarios, totalPags: Math.ceil(totalPags / limit) })
                 } else {
-                    const { totalPags } = await knex("cadastro_usuarios")
+                    const { totalPags } = await knex("vw_cadastro_pontos")
                         .count({ totalPags: "*" })
-                        .whereNull("deleted_at")
+                        .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
                         .first()
 
-                    const funcionarios = await knex("cadastro_usuarios")
-                        .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
-                        .whereNull("deleted_at")
+                    const pontos = await knex("vw_cadastro_pontos")
+                        .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
+                        .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
+                        .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
                         .limit(limit).offset(page * limit - limit)
                         .orderBy(sort, order)
 
-                    return res.status(200).json({ data: funcionarios, totalPags: Math.ceil(totalPags / limit) })
+                    return res.status(200).json({ data: pontos, totalPags: Math.ceil(totalPags / limit) })
                 }
             }
         }
