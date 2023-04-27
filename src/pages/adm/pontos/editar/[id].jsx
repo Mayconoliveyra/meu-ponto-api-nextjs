@@ -10,12 +10,12 @@ import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
 import { TituloForm } from "../../../../components/formulario/titulo/components";
-import { FormOne, GroupOne, GroupTextarea, GroupSelectOne } from "../../../../components/formulario/form/components";
+import { FormOne, GroupOne, GroupSelectOne } from "../../../../components/formulario/form/components";
 
 import { FormatObjNull } from "../../../../../global";
 
 const prefix = "ponto"
-const prefixRouter = "/pontos"
+const prefixRouter = "/adm/pontos"
 
 const Main = styled.div`
     flex: 1;
@@ -82,8 +82,7 @@ export default function AdmEditar({ data, session }) {
         entrada2: Yup.string().nullable().label("Entrada 2"),
         saida2: Yup.string().nullable().label("Saída 2"),
         acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas"),
-        subtrair_hrs: Yup.string().nullable().label("Subtrair horas"),
-        motivo_solicitacao: Yup.string().label("Motivo da solicitação").nullable().required().trim(),
+        subtrair_hrs: Yup.string().nullable().label("Subtrair horas")
     });
 
     return (
@@ -94,7 +93,7 @@ export default function AdmEditar({ data, session }) {
             <Main>
                 <TituloForm title={`Editar ${prefix}`} icon={<PeopleFill size={25} />}>
                     <li>
-                        <Link href="/dashboard">Início <ChevronRight height={10} /></Link>
+                        <Link href="/adm/dashboard">Início <ChevronRight height={10} /></Link>
                     </li>
                     <li>
                         <Link href={prefixRouter}>{`${prefix[0].toUpperCase() + prefix.substring(1)}s`} <ChevronRight height={10} /></Link>
@@ -180,16 +179,9 @@ export default function AdmEditar({ data, session }) {
                                 ]}
                                 md={12}
                             />
-                            <GroupTextarea
-                                error={!!errors.motivo_solicitacao && touched.motivo_solicitacao}
-                                label="Motivo da solicitação"
-                                name="motivo_solicitacao"
-                                rowstxt={3}
-                                sm={12}
-                            />
 
                             <div className="div-btn-salvar">
-                                <button disabled={btnDisabled || !dirty} className="btn-salvar" type="submit">Solicitar</button>
+                                <button disabled={btnDisabled || !dirty} className="btn-salvar" type="submit">Salvar</button>
                             </div>
                         </FormOne>
                     )}
@@ -210,7 +202,7 @@ export async function getServerSideProps(context) {
 
         const data = await knex("vw_cadastro_pontos")
             .select()
-            .where({ id_usuario: session.id, id: id })
+            .where({ id: id })
             .first()
 
         if (data && data.id) {
