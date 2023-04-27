@@ -471,7 +471,7 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                                         </th>
                                         <td>
                                             <span className="span-td-vw">
-                                                {dataVW.nome}
+                                                {dataVW.nome} {`- (Cód. ${dataVW.id_usuario})`}
                                             </span>
                                         </td>
                                     </tr>

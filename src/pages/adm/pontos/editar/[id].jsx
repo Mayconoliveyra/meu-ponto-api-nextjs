@@ -77,6 +77,7 @@ export default function AdmEditar({ data, session }) {
 
     const scheme = Yup.object().shape({
         data: Yup.string().nullable().label("Data").required(),
+        nome: Yup.string().nullable().label("Nome").required(),
         entrada1: Yup.string().nullable().label("Entrada 1"),
         saida1: Yup.string().nullable().label("Saída 1"),
         entrada2: Yup.string().nullable().label("Entrada 2"),
@@ -109,6 +110,7 @@ export default function AdmEditar({ data, session }) {
                     onSubmit={async (values, setValues) => {
                         setBtnDisabled(true)
                         const valuesFormat = FormatObjNull(values)
+    
                         console.log(valuesFormat)
                         setBtnDisabled(false)
                     }}
@@ -121,7 +123,14 @@ export default function AdmEditar({ data, session }) {
                                 name="data"
                                 type="date"
                                 disabled
-                                md={12}
+                                md={6}
+                            />
+                            <GroupOne
+                                error={!!errors.nome && touched.nome}
+                                label="Nome"
+                                name="nome"
+                                disabled
+                                md={6}
                             />
                             <GroupOne
                                 error={!!errors.entrada1 && touched.entrada1}
@@ -201,11 +210,13 @@ export async function getServerSideProps(context) {
         const { id } = context.params;
 
         const data = await knex("vw_cadastro_pontos")
-            .select()
-            .where({ id: id })
+            .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
+            .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
+            .where({ "vw_cadastro_pontos.id": id })
             .first()
 
         if (data && data.id) {
+            data.nome = `${data.nome} - (Cód. ${data.id_usuario})`
             return {
                 props: { session, data },
             }
