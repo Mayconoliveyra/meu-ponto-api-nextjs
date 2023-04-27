@@ -2,17 +2,19 @@ import Head from "next/head";
 import styled from "styled-components";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
+import router from "next/router"
 import Link from "next/link"
 import { PeopleFill, ChevronRight } from "react-bootstrap-icons"
+import { toast } from "react-toastify";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { pt } from "yup-locale-pt";
 Yup.setLocale(pt);
 
 import { TituloForm } from "../../../../components/formulario/titulo/components";
-import { FormOne, GroupOne, GroupSelectOne } from "../../../../components/formulario/form/components";
+import { FormOne, GroupOne, GroupSelectOne, GroupTextarea } from "../../../../components/formulario/form/components";
 
-import { FormatObjNull } from "../../../../../global";
+import { api, FormatObjNull } from "../../../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/adm/pontos"
@@ -83,7 +85,8 @@ export default function AdmEditar({ data, session }) {
         entrada2: Yup.string().nullable().label("Entrada 2"),
         saida2: Yup.string().nullable().label("Saída 2"),
         acrescentar_hrs: Yup.string().nullable().label("Acrescentar horas"),
-        subtrair_hrs: Yup.string().nullable().label("Subtrair horas")
+        subtrair_hrs: Yup.string().nullable().label("Subtrair horas"),
+        msg_solicitacao: Yup.string().nullable().label("Motivo").required().trim()
     });
 
     return (
@@ -110,8 +113,25 @@ export default function AdmEditar({ data, session }) {
                     onSubmit={async (values, setValues) => {
                         setBtnDisabled(true)
                         const valuesFormat = FormatObjNull(values)
-    
-                        console.log(valuesFormat)
+                        const axios = await api(session);
+                        await axios.put(`${prefixRouter}?_id=${data.id}`, valuesFormat)
+                            .then(async () => {
+                                router.push(prefixRouter)
+                            })
+                            .catch(res => {
+                                /* Se status 400, significa que o erro foi tratado. */
+                                if (res && res.response && res.response.status == 400) {
+                                    /* Se data=500, será exibido no toast */
+                                    if (res.response.data && res.response.data[500]) {
+                                        toast.error(res.response.data[500])
+                                    } else {
+                                        setValues.setErrors(res.response.data)
+                                    }
+                                } else {
+                                    /* Mensagem padrão */
+                                    toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                                }
+                            })
                         setBtnDisabled(false)
                     }}
                 >
@@ -188,6 +208,13 @@ export default function AdmEditar({ data, session }) {
                                 ]}
                                 md={12}
                             />
+                            <GroupTextarea
+                                error={!!errors.msg_solicitacao && touched.msg_solicitacao}
+                                label="Motivo"
+                                name="msg_solicitacao"
+                                md={12}
+                                rowstxt={3}
+                            />
 
                             <div className="div-btn-salvar">
                                 <button disabled={btnDisabled || !dirty} className="btn-salvar" type="submit">Salvar</button>
@@ -217,6 +244,7 @@ export async function getServerSideProps(context) {
 
         if (data && data.id) {
             data.nome = `${data.nome} - (Cód. ${data.id_usuario})`
+            data.msg_solicitacao = "";
             return {
                 props: { session, data },
             }

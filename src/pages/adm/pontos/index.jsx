@@ -108,7 +108,7 @@ const ModalAcoes = styled.div`
     .div-acoes{
         height: 65px;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         padding: 16px;
         max-width: 600px;
@@ -234,43 +234,15 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
     const [dFinal, setDFinal] = useState(pageDefault._dfinal);
     const [funcionario, setFuncionario] = useState(pageDefault._funcionario);
 
-    const [btnExcluir, setBtnExcluir] = useState(10);
-    const [btnDisabled, setBtnDisabled] = useState(false);
-
     /* MODAL */
     const [show, setShow] = useState(false);
     const handleShow = (data) => {
-        setBtnExcluir(10)
         setDataVW(data)
         setShow(true);
     }
     const handleClose = () => {
         setDataVW({})
         setShow(false);
-    }
-
-
-    const handleExcluir = async (id) => {
-        setBtnDisabled(true)
-        const axios = await api(session);
-        await axios.delete(`${prefixRouter}?_id=${id}`)
-            .then(async () => {
-                router.reload()
-            })
-            .catch(res => {
-                setBtnDisabled(false)
-                /* Se status 400, significa que o erro foi tratado. */
-                if (res && res.response && res.response.status == 400) {
-                    /* Se data=500, será exibido no toast */
-                    if (res.response.data && res.response.data[500]) {
-                        toast.error(res.response.data[500])
-                    } else {
-                        toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
-                    }
-                } else {
-                    toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
-                }
-            })
     }
 
     const handlePageFilter = async () => {
@@ -312,18 +284,6 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
             </button>
         )
     }
-
-    /* Conta 10s antes de habilitar o btn vermelho de excluir */
-    useEffect(() => {
-        let intervalId = null
-        if (btnExcluir <= 9 && btnExcluir > 0) {
-            intervalId = setTimeout(() => {
-                setBtnExcluir(btnExcluir - 1)
-            }, 1000)
-        }
-
-        return () => clearInterval(intervalId);
-    }, [btnExcluir])
 
     useEffect(() => {
         handlePageFilter()
@@ -617,11 +577,6 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                             </table>
                         </TableVW>
                         <div className="div-acoes">
-                            {btnExcluir >= 1 ?
-                                <button onClick={() => setBtnExcluir(9)} disabled={btnExcluir != 10} className="btn-excluir-1" type="button">Excluir({btnExcluir}s)</button>
-                                :
-                                <button disabled={btnDisabled} className="btn-excluir" onClick={() => handleExcluir(dataVW.id)} type="button">EXCLUIR</button>
-                            }
                             <Link className="btn-editar" href={`${prefixRouter}/editar/${dataVW.id}`}>Editar </Link>
                         </div>
                     </ModalAcoes>

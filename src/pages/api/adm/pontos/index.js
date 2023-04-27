@@ -1,64 +1,6 @@
 import { getKnex } from "../../../../../knex"
-import { passport, dataHoraAtual } from "../../../../../global"
-import { existOrError, notExistOrErrorDB, existOrErrorDB } from "../../utilities"
-
-const simplify = (text) => {
-    const removeFilter = [
-        "",
-        "a",
-        "e",
-        "i",
-        "o",
-        "u",
-        "ao",
-        "um",
-        "de",
-        "da",
-        "das",
-        "dos",
-        "que",
-        "para",
-        "um",
-        "nas",
-        "ter",
-        "com",
-        "tem",
-        "em",
-        "AND"];
-
-    const search = text
-        .normalize("NFD")
-        .replace(/[^a-zA-Z0-9\s]/g, "")
-        .trim()
-        .toLowerCase()
-        .split(' ');
-
-    const searchArray = search
-    let textAndReturn = ""
-
-    searchArray.map(elemento => {
-        /* Se tiver algum caracteres do removeFilter remover */
-        if (removeFilter.includes(elemento)) return
-
-        if (elemento.slice(-1) == 's') {
-            /* Remove o 's' do final da palavra. ex: lampadas, tintas...*/
-            textAndReturn = `${textAndReturn} 
-                id LIKE '%${elemento.slice(0, elemento.length - 1)}%' OR
-                cpf LIKE '%${elemento.slice(0, elemento.length - 1)}%' OR
-                nome LIKE '%${elemento.slice(0, elemento.length - 1)}%'
-            AND`;
-
-        } else {
-            textAndReturn = `${textAndReturn} 
-                id LIKE '%${elemento}%' OR
-                cpf LIKE '%${elemento}%' OR
-                nome LIKE '%${elemento}%' 
-            AND`;
-        }
-    });
-    /* Remover o AND do final da query */
-    return `(${textAndReturn.slice(0, textAndReturn.length - 3)})`
-}
+import { passport } from "../../../../../global"
+import { existOrError } from "../../utilities"
 
 export default async function handler(req, res) {
     try {
@@ -68,15 +10,13 @@ export default async function handler(req, res) {
 
         const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
         const modelo = {
-            nome: req.body.nome,
-            cpf: req.body.cpf,
-            rg: req.body.rg,
-            data_nasc: req.body.data_nasc,
-            email: req.body.email,
-            contato: req.body.contato,
-            sexo: req.body.sexo,
-            bloqueado: req.body.bloqueado,
-            motivo_bloqueio: req.body.motivo_bloqueio,
+            entrada1: req.body.entrada1 ? req.body.entrada1 : null,
+            saida1: req.body.saida1 ? req.body.saida1 : null,
+            entrada2: req.body.entrada2 ? req.body.entrada2 : null,
+            saida2: req.body.saida2 ? req.body.saida2 : null,
+            acrescentar_hrs: req.body.acrescentar_hrs ? req.body.acrescentar_hrs : null,
+            subtrair_hrs: req.body.subtrair_hrs ? req.body.subtrair_hrs : null,
+            obs: req.body.obs ? req.body.obs : null
         }
 
         if (req.method === 'GET') {
@@ -102,7 +42,6 @@ export default async function handler(req, res) {
             const limit = parseInt(req.query._limit) ? parseInt(req.query._limit) : 20;
             const sort = sortColuns[req.query._sort] ? sortColuns[req.query._sort] : 'id';
             const order = orderColuns[req.query._order] ? orderColuns[req.query._order] : 'ASC';
-            const search = req.query._search ? req.query._search : null
 
             const dinicial = req.query._dinicial ? req.query._dinicial : null;
             const dfinal = req.query._dfinal ? req.query._dfinal : null;
@@ -111,113 +50,69 @@ export default async function handler(req, res) {
             existOrError(dinicial, "Data inical deve ser informada.")
             existOrError(dfinal, "Data final deve ser informada.")
 
-            /* Se tiver ID retornar o registro especifico. */
-            if (id) {
-                await knex("cadastro_usuarios")
-                    .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
-                    .where({ id: id })
-                    .whereNull("deleted_at")
-                    .first()
-                    .then((funcionario) => res.status(200).json(funcionario))
-                    .catch((error) => {
-                        console.log("######## adm.funcionarios.GET ########")
-                        console.log(error)
-                        return res.status(500).send()
-                    });
+            const { totalPags } = await knex("vw_cadastro_pontos")
+                .count({ totalPags: "*" })
+                .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
+                .first()
 
-            } else {
-                /* Se tiver setado texto para pesquisa executa LIKE */
-                if (search) {
-                    const { totalPags } = await knex("cadastro_usuarios")
-                        .whereRaw(simplify(search))
-                        .whereRaw('deleted_at IS NULL')
-                        .count({ totalPags: "*" })
-                        .first()
-                    const funcionarios = await knex("cadastro_usuarios")
-                        .select("id", "nome", "cpf", "rg", "data_nasc", "email", "contato", "sexo", "bloqueado", "motivo_bloqueio", "updated_at", "created_at")
-                        .whereRaw(simplify(search))
-                        .whereRaw('deleted_at IS NULL')
-                        .limit(limit).offset(page * limit - limit)
-                        .orderBy(sort, order)
+            const pontos = await knex("vw_cadastro_pontos")
+                .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
+                .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
+                .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
+                .limit(limit).offset(page * limit - limit)
+                .orderBy(sort, order)
 
-                    return res.status(200).json({ data: funcionarios, totalPags: Math.ceil(totalPags / limit) })
-                } else {
-                    const { totalPags } = await knex("vw_cadastro_pontos")
-                        .count({ totalPags: "*" })
-                        .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
-                        .first()
-
-                    const pontos = await knex("vw_cadastro_pontos")
-                        .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
-                        .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
-                        .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
-                        .limit(limit).offset(page * limit - limit)
-                        .orderBy(sort, order)
-
-                    return res.status(200).json({ data: pontos, totalPags: Math.ceil(totalPags / limit) })
-                }
-            }
-        }
-
-        if (req.method === 'POST') {
-            await notExistOrErrorDB({ table: "cadastro_usuarios", column: 'email', data: modelo.email, id: id }, { email: "Já existe cadastro para o e-mail informado." })
-
-            modelo.created_at = dataHoraAtual()
-            modelo.senha = "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS"  /* Senha padrão= 123456 */
-
-            await knex("cadastro_usuarios")
-                .insert(modelo)
-                .then(() => res.status(204).send())
-                .catch((error) => {
-                    console.log("######## adm.funcionarios.POST ########")
-                    console.log(error)
-                    return res.status(500).send()
-                });
+            return res.status(200).json({ data: pontos, totalPags: Math.ceil(totalPags / limit) })
         }
 
         if (req.method === 'PUT') {
             existOrError(id, { 500: "[id] deve ser informado." })
-            await notExistOrErrorDB({ table: "cadastro_usuarios", column: 'email', data: modelo.email, id: id }, { email: "Já existe cadastro para o e-mail informado." })
-            await existOrErrorDB({ table: "cadastro_usuarios", column: 'id', data: id }, { 500: "Registro não existe ou já foi excluído." })
 
-            modelo.updated_at = dataHoraAtual()
-            delete modelo.email
-
-            await knex("cadastro_usuarios")
-                .update(modelo)
-                .where({ id: id })
-                .whereNull("deleted_at")
-                .then(() => res.status(204).send())
-                .catch((error) => {
-                    console.log("######## adm.funcionarios.PUT ########")
-                    console.log(error)
-                    return res.status(500).send()
-                });
-        }
-
-        if (req.method === 'DELETE') {
-            existOrError(id, { 500: "[id] deve ser informado." })
-            await existOrErrorDB({ table: "cadastro_usuarios", column: 'id', data: id }, { 500: "Registro não existe ou já foi excluído." })
-            const funcionarioDB = await knex("cadastro_usuarios")
-                .where({ id: id })
-                .whereNull("deleted_at")
+            const ponto = await knex("vw_cadastro_pontos")
+                .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
+                .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
+                .where({ "vw_cadastro_pontos.id": id })
                 .first()
-            const modeloDelete = {
-                email: `#[${id}]# - ${funcionarioDB.email}`,
-                deleted_at: dataHoraAtual()
+
+            existOrError(ponto, { 500: "Registro não existe ou já foi excluído." })
+
+            const modelo_edit = {
+                id_ponto: id,
+                entrada1_new: req.body.entrada1,
+                saida1_new: req.body.saida1,
+                entrada2_new: req.body.entrada2,
+                saida2_new: req.body.saida2,
+                acrescentar_hrs_new: req.body.acrescentar_hrs,
+                subtrair_hrs_new: req.body.subtrair_hrs,
+                obs_new: req.body.obs,
+
+                entrada1_old: ponto.entrada1,
+                saida1_old: ponto.saida1,
+                entrada2_old: ponto.entrada2,
+                saida2_old: ponto.saida2,
+                acrescentar_hrs_old: ponto.acrescentar_hrs,
+                subtrair_hrs_old: ponto.subtrair_hrs,
+                obs_old: ponto.obs,
+
+                msg_solicitacao: req.body.msg_solicitacao,
+                adm_id: auth.id,
+                adm_nome: auth.nome,
             }
 
-            await knex("cadastro_usuarios")
-                .update(modeloDelete)
+            await knex("edit_pontos")
+                .insert(modelo_edit)
+
+            await knex("cadastro_pontos")
+                .update(modelo)
                 .where({ id: id })
-                .whereNull("deleted_at")
                 .then(() => res.status(204).send())
                 .catch((error) => {
-                    console.log("######## adm.funcionarios.DELETE ########")
+                    console.log("######## adm.pontos.PUT ########")
                     console.log(error)
                     return res.status(500).send()
                 });
         }
+
     } catch (error) {
         return res.status(400).send(error)
     }
