@@ -20,7 +20,6 @@ export default function App({ Component, pageProps }) {
 
   /* Se showMenu ou showMenuLogin for verdadeiro, remove scroll do tbody */
   useEffect(() => {
-    console.log(pathname)
     const tbody = document.getElementById("idBody");
     tbody.style.overflow = template.showMenu ? "hidden" : 'auto'
   }, [template])

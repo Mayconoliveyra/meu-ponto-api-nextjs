@@ -260,7 +260,7 @@ export default function AdmIndex({ session, data, totalPags }) {
             <Main>
                 <TituloForm title={`Listar ${prefix}s`} icon={<PeopleFill size={25} />}>
                     <li>
-                        <Link href="/adm/dashboard">Início <ChevronRight height={10} /></Link>
+                        <Link href="/dashboard">Início <ChevronRight height={10} /></Link>
                     </li>
                     <li>
                         <Link href={prefixRouter}>{`${prefix[0].toUpperCase() + prefix.substring(1)}s`} <ChevronRight height={10} /></Link>

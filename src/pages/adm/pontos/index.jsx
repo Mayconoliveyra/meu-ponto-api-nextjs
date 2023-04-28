@@ -34,7 +34,7 @@ import { api } from "../../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/adm/pontos"
-const pageDefault = { _sort: "data", _order: "ASC", _page: 1, _limit: 31, _dinicial: moment().subtract(7, 'days').format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD'), _funcionario: "Selecione" }
+const pageDefault = { _sort: "data", _order: "ASC", _page: 1, _limit: 31, _dinicial: moment().format('YYYY-MM-DD'), _dfinal: moment().format('YYYY-MM-DD'), _funcionario: "Selecione" }
 
 const Main = styled.div`
     flex: 1;
@@ -301,7 +301,7 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
             <Main>
                 <TituloForm title={`Listar ${prefix}s`} icon={<PeopleFill size={25} />}>
                     <li>
-                        <Link href="/adm/dashboard">Início <ChevronRight height={10} /></Link>
+                        <Link href="/dashboard">Início <ChevronRight height={10} /></Link>
                     </li>
                     <li>
                         <Link href={prefixRouter}>{`${prefix[0].toUpperCase() + prefix.substring(1)}s`} <ChevronRight height={10} /></Link>
