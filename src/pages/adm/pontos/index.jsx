@@ -595,14 +595,15 @@ export async function getServerSideProps(context) {
         const knex = getKnex()
 
         const { totalPags } = await knex("vw_cadastro_pontos")
+            .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
             .count({ totalPags: "*" })
-            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
+            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}' AND deleted_at IS NULL AND bloqueado = 'Não'`)
             .first()
 
         const pontos = await knex("vw_cadastro_pontos")
             .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
             .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
-            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
+            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}' AND deleted_at IS NULL AND bloqueado = 'Não'`)
             .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
             .orderBy(pageDefault._sort, pageDefault._order)
 

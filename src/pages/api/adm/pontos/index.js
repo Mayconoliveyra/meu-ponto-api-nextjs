@@ -51,14 +51,15 @@ export default async function handler(req, res) {
             existOrError(dfinal, "Data final deve ser informada.")
 
             const { totalPags } = await knex("vw_cadastro_pontos")
+                .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
                 .count({ totalPags: "*" })
-                .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
+                .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario} AND deleted_at IS NULL AND bloqueado = 'Não'`)
                 .first()
 
             const pontos = await knex("vw_cadastro_pontos")
                 .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
                 .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
-                .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario}`)
+                .whereRaw(`DATE(data) BETWEEN '${dinicial}' AND '${dfinal}' ${funcionario} AND deleted_at IS NULL AND bloqueado = 'Não'`)
                 .limit(limit).offset(page * limit - limit)
                 .orderBy(sort, order)
 
