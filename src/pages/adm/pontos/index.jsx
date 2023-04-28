@@ -608,6 +608,7 @@ export async function getServerSideProps(context) {
 
         const usuarios = await knex("cadastro_usuarios")
             .select("id", "nome")
+            .where({ bloqueado: "Não" })
             .whereNull("deleted_at")
 
         return {
