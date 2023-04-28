@@ -134,8 +134,17 @@ export default async function handler(req, res) {
             modelo.created_at = dataHoraAtual()
             modelo.senha = "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS"  /* Senha padrão= 123456 */
 
-            await knex("cadastro_usuarios")
-                .insert(modelo)
+            await knex.transaction(async trans => {
+                const id_usuario = await trans.insert(modelo)
+                    .table("cadastro_usuarios")
+                    .returning('id')
+                    .then((id) => id[0])
+
+                await trans.raw(`
+                INSERT INTO cadastro_pontos ( data, id_usuario )
+                SELECT calendario.data, ${id_usuario} AS id_usuario
+                FROM calendario;`)
+            })
                 .then(() => res.status(204).send())
                 .catch((error) => {
                     console.log("######## adm.funcionarios.POST ########")
