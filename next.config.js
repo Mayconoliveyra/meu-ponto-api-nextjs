@@ -1,5 +1,4 @@
 require("./schedule/calendario")
-require("./schedule")
 
 module.exports = {
   reactStrictMode: true,

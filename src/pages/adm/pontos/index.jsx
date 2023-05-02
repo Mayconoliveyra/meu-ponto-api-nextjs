@@ -6,17 +6,17 @@ import { getSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, ExclamationTriangle } from "react-bootstrap-icons"
+import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, ExclamationTriangle, FiletypePdf } from "react-bootstrap-icons"
 import moment from "moment/moment";
 import 'moment/locale/pt-br'
 moment.locale('pt-br')
 
-export function horaFormatada(date) {
-    if (!date) return ""
-    return moment(date).format('HH:mm:ss DD/MM/YY')
-}
+import { TituloForm } from "../../../components/formulario/titulo/components"
+import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
-export function horaForm(hr) {
+import { api } from "../../../../global";
+
+function horaForm(hr) {
     if (!hr) return ""
     const tamanho = hr.length
 
@@ -26,11 +26,6 @@ export function horaForm(hr) {
 
     return hr
 }
-
-import { TituloForm } from "../../../components/formulario/titulo/components"
-import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
-
-import { api } from "../../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/adm/pontos"
@@ -178,7 +173,13 @@ const CabecalhoFiltros = styled.div`
     }
     .div-filtro{
         margin-top: 1rem;
-        text-align: end;
+        display: flex;
+        justify-content: space-between;
+        .btn-pdf{
+            padding: 0px 7px;
+            background-color: transparent;
+            color: red;
+        }
     }
     label {
         color: #333333 !important;
@@ -338,6 +339,7 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                         </Form.Group>
                     </div>
                     <div className="div-filtro">
+                        <Link target="_blank" className="btn-pdf" type="button" href={"/api/pdf"}><FiletypePdf size={25} /> </Link>
                         <button type="button" onClick={() => handleInputSearch('Search')}>Pesquisar</button>
                     </div>
                 </CabecalhoFiltros>

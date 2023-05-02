@@ -1,19 +1,9 @@
-const fonts = {
-    Helvetica: {
-        normal: 'Helvetica',
-        bold: 'Helvetica-Bold',
-        italics: 'Helvetica-Oblique',
-        bolditalics: 'Helvetica-BoldOblique'
-    },
-};
-var PdfPrinter = require('pdfmake');
-var printer = new PdfPrinter(fonts);
-
-import { getKnex } from "../../../../knex"
-import moment from "moment/moment"
+/* const { getKnex } = require("../../../../knex") */
+const moment = require("moment/moment")
+const pdfMake = require('pdfmake/build/pdfmake');
+const pdfFonts = require('pdfmake/build/vfs_fonts');
 
 const dias = ["domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
-
 function formatDia(str) {
     const dataf = moment(str).format('L')
     var partes = dataf.split('/').map(Number);
@@ -32,11 +22,14 @@ function horaForm(hr) {
 
     return hr
 }
-export default async function handler(req, res) {
-    const knex = getKnex()
+
+async function pontosPDF(pontos) {
+    pdfMake.vfs = pdfFonts.pdfMake.vfs
+
+    /* const knex = getKnex() */
 
     const tbody = []
-    const pontos = await knex('vw_cadastro_pontos').select()
+   /*  const pontos = await knex('vw_cadastro_pontos').select()
         .where({ id_usuario: 1 })
         .whereRaw(`DATE(data) BETWEEN '2023-05-01' AND '2023-05-31'`)
         .orderBy('data', 'asc')
@@ -46,7 +39,7 @@ export default async function handler(req, res) {
         SEC_TO_TIME(SUM(TIME_TO_SEC(vw_cadastro_pontos.acrescentar_hrs))) AS banco_add,
         SEC_TO_TIME(SUM(TIME_TO_SEC(vw_cadastro_pontos.subtrair_hrs))) AS banco_subtrair
         FROM vw_cadastro_pontos WHERE id_usuario = 1 AND DATE(data) BETWEEN '2023-05-01' AND '2023-05-31'
-        `)
+        `) */
 
     for await (let ponto of pontos) {
         const rows = [];
@@ -159,7 +152,7 @@ export default async function handler(req, res) {
                             {},
                             {},
                         ],
-                        [
+                        /* [
                             { text: horaForm(tfoot[0][0].banco_horas), colSpan: 4, margin: [0, 3, 0, 0] },
                             {},
                             {},
@@ -170,14 +163,14 @@ export default async function handler(req, res) {
                             { text: horaForm(tfoot[0][0].banco_subtrair), colSpan: 3, margin: [0, 3, 0, 0] },
                             {},
                             {},
-                        ],
+                        ], */
                     ],
 
                 }
             },
         ],
         defaultStyle: {
-            font: 'Helvetica',
+            /* font: 'Helvetica', */
             fontSize: 8,
             alignment: 'center',
             lineHeight: 1.3
@@ -191,7 +184,12 @@ export default async function handler(req, res) {
         }
     };
 
-    const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+    pdfMake.createPdf(docDefinition).download();
+
+
+
+    /* const pdfDoc = printer.createPdfKitDocument(docDefinition);
 
     const chunks = [];
     pdfDoc.on("data", chunk => {
@@ -203,5 +201,7 @@ export default async function handler(req, res) {
         return res.end(result)
     })
 
-    pdfDoc.end();
+    pdfDoc.end(); */
 }
+
+export default pontosPDF;
