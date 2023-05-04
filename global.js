@@ -1,4 +1,3 @@
-const { SECRET_KEY_SERVER } = require("./credentials")
 const axios = require("axios")
 const jwt = require("jwt-simple")
 const moment = require("moment")
@@ -16,7 +15,7 @@ function api(session = {}) {
     return axios.create({
         baseURL: "/api/",
         headers: {
-            "Authorization": `${jwt.encode(payload, SECRET_KEY_SERVER)}`,
+            "Authorization": `${jwt.encode(payload, process.env.NEXT_PUBLIC_SECRET_KEY_SERVER)}`,
             "Access-Control-Allow-Origin": "*",
         },
     })
@@ -25,7 +24,7 @@ function api(session = {}) {
 function passport(req) {
     try {
         if (!req.headers || !req.headers.authorization) throw "[1] Autenticação inválida"
-        const body = jwt.decode(req.headers.authorization, SECRET_KEY_SERVER);
+        const body = jwt.decode(req.headers.authorization, process.env.NEXT_PUBLIC_SECRET_KEY_SERVER);
 
         if (body && body.id) {
             return body
