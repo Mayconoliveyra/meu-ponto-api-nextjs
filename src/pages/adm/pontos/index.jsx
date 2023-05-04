@@ -7,14 +7,20 @@ import { toast } from "react-toastify";
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { ArrowUp, ArrowDown, PeopleFill, ChevronRight, ExclamationTriangle, FiletypePdf } from "react-bootstrap-icons"
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { pt } from "yup-locale-pt";
+Yup.setLocale(pt);
 import moment from "moment/moment";
 import 'moment/locale/pt-br'
 moment.locale('pt-br')
 
+import { FormOne, GroupOne, GroupSelectOne } from "../../../components/formulario/form/components"
 import { TituloForm } from "../../../components/formulario/titulo/components"
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
 import { api } from "../../../../global";
+import pontosPDF from "../../api/pdf/pontos";
 
 function horaForm(hr) {
     if (!hr) return ""
@@ -156,6 +162,24 @@ const ModalAcoes = styled.div`
         }
     }
 `
+const ModalPDF = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    form {
+        margin-bottom: 0px !important;
+    }
+    .modal-header{
+        height: 53px !important;
+        div,
+        .btn-close{
+            font-size: 16px !important;
+        }
+        .btn-close{
+            padding: 0 10px !important;
+        }
+    }
+`
 const CabecalhoFiltros = styled.div`
     display: flex;
     flex-direction: column;
@@ -235,8 +259,14 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
     const [dFinal, setDFinal] = useState(pageDefault._dfinal);
     const [funcionario, setFuncionario] = useState(pageDefault._funcionario);
 
+    const scheme = Yup.object().shape({
+        mes: Yup.string().nullable().label("Mês").required(),
+        funcionario: Yup.string().nullable().label("Funcionário").required(),
+    });
+
     /* MODAL */
     const [show, setShow] = useState(false);
+    const [show1, setShow1] = useState(false);
     const handleShow = (data) => {
         setDataVW(data)
         setShow(true);
@@ -245,6 +275,13 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
         setDataVW({})
         setShow(false);
     }
+    const handleShow1 = () => {
+        setShow1(true);
+    }
+    const handleClose1 = () => {
+        setShow1(false);
+    }
+    /* ---- */
 
     const handlePageFilter = async () => {
         if (loadPage) {
@@ -285,6 +322,11 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
             </button>
         )
     }
+
+    const handlePDF = async () => {
+        await pontosPDF(data)
+    }
+
 
     useEffect(() => {
         handlePageFilter()
@@ -330,7 +372,7 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                                 {usuarios && usuarios.length > 0 && (
                                     usuarios.map(data => {
                                         return (
-                                            <option key={data.id} value={data.id}>{data.nome} (Cód. {data.id})</option>
+                                            <option key={data.value} value={data.value}>{data.name}</option>
                                         )
                                     })
                                 )
@@ -339,7 +381,7 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                         </Form.Group>
                     </div>
                     <div className="div-filtro">
-                        <Link target="_blank" className="btn-pdf" type="button" href={"/api/pdf"}><FiletypePdf size={25} /> </Link>
+                        <button onClick={() => handleShow1()} className="btn-pdf" type="button" ><FiletypePdf size={25} /> </button>
                         <button type="button" onClick={() => handleInputSearch('Search')}>Pesquisar</button>
                     </div>
                 </CabecalhoFiltros>
@@ -583,6 +625,44 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                         </div>
                     </ModalAcoes>
                 </Modal>
+
+                <Modal size="md" show={show1} onHide={handleClose1} animation={false}>
+                    <ModalPDF>
+                        <Modal.Header className="modal-header" closeButton>
+                            <Modal.Title>Gerar PDF</Modal.Title>
+                        </Modal.Header>
+                        <Formik
+                            validationSchema={scheme}
+                            initialValues={{ mes: "", funcionario: "" }}
+                            onSubmit={async (values, setValues) => {
+                                console.log(values)
+                            }}
+                        >
+                            {({ errors, touched, values, dirty }) => (
+                                <FormOne>
+                                    <GroupOne
+                                        error={!!errors.mes && touched.mes}
+                                        label="Mês"
+                                        name="mes"
+                                        type="month"
+                                        md={12}
+                                    />
+                                    <GroupSelectOne
+                                        error={!!errors.funcionario && touched.funcionario}
+                                        label="Funcionário"
+                                        name="funcionario"
+                                        md={12}
+                                        data={usuarios}
+                                    />
+
+                                    <div className="div-btn-salvar">
+                                        <button disabled={!dirty} className="btn-salvar" type="submit">GERAR</button>
+                                    </div>
+                                </FormOne>
+                            )}
+                        </Formik>
+                    </ModalPDF>
+                </Modal>
             </Main>
         </>
     );
@@ -610,7 +690,7 @@ export async function getServerSideProps(context) {
             .orderBy(pageDefault._sort, pageDefault._order)
 
         const usuarios = await knex("cadastro_usuarios")
-            .select("id", "nome")
+            .select("id as value", knex.raw('CONCAT(nome," (Cód. ", id,")") as "name"'))
             .where({ bloqueado: "Não" })
             .whereNull("deleted_at")
 

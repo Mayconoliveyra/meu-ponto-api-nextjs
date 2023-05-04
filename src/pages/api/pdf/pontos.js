@@ -185,7 +185,7 @@ async function pontosPDF(pontos) {
     };
 
 
-    pdfMake.createPdf(docDefinition).download();
+    pdfMake.createPdf(docDefinition).open();
 
 
 

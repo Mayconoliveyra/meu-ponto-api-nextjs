@@ -197,11 +197,11 @@ export default async function handler(req, res) {
     pdfDoc.on("data", chunk => {
         chunks.push(chunk)
     })
+    pdfDoc.end()
+
 
     pdfDoc.on("end", () => {
         const result = Buffer.concat(chunks);
         return res.end(result)
     })
-
-    pdfDoc.end();
 }

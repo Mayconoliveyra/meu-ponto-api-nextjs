@@ -321,6 +321,7 @@ const GroupSelectOne = ({ name, label, required = false, data = [], xs, sm, md, 
                             required={required}
                             value={field.value != undefined ? field.value : ""}
                         >
+                            <option>Selecione</option>
                             {data.map((item, key) => {
                                 return <option key={key} value={item.value}>{item.name}</option>
                             })}
