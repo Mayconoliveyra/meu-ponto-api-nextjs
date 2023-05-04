@@ -20,7 +20,6 @@ import { TituloForm } from "../../../components/formulario/titulo/components"
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
 import { api } from "../../../../global";
-import pontosPDF from "../../../../relatorios/pontos"
 
 function horaForm(hr) {
     if (!hr) return ""
@@ -91,6 +90,75 @@ const Main = styled.div`
         }
     }
 `
+
+const CabecalhoFiltros = styled.div`
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0px 1px 15px 1px rgb(69 65 78 / 8%);
+    padding: 10px 14px;
+    .div-inputs{
+        @media (min-width: 720px){
+            display: flex;
+            div{
+                flex: 1;
+                margin: 0 5px;
+            }
+        }
+    }
+    .div-filtro{
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        .btn-pdf{
+            padding: 0px 7px;
+            background-color: transparent;
+            color: red;
+        }
+    }
+    label {
+        color: #333333 !important;
+        font-size: 12px !important;
+        font-weight: bold;
+        white-space: nowrap;
+        margin-bottom: 0px;
+    }
+    input, select {
+        margin-top: 2px;
+        display: block;
+        width: 100%;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 13px;
+        color: #555555;
+        background-color: #ffffff;
+        background-image: none;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+
+        &:focus{
+            border-color: #0C1B25 !important;
+        }
+        &:disabled {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+    }
+    button{
+        font-size: 0.8rem;
+        color: #ffffff;
+        padding: 0.45rem 1rem;
+        background-color: #212529;
+        border-color: #212529;
+        &:hover{
+            background-color: #424649;
+            border-color: #373b3e;
+        }
+    }
+`
+/* VISUALIZAR */
 const ModalAcoes = styled.div`
     display: flex;
     flex-direction: column;
@@ -162,6 +230,13 @@ const ModalAcoes = styled.div`
         }
     }
 `
+
+/* PDF */
+import { pontosPDF, pontosAssinaturaPDF } from "../../../../relatorios/pontos"
+const schemePDF = Yup.object().shape({
+    mes: Yup.string().nullable().label("Mês").required(),
+    funcionario: Yup.string().nullable().label("Funcionário").required(),
+});
 const ModalPDF = styled.div`
     display: flex;
     flex-direction: column;
@@ -180,93 +255,20 @@ const ModalPDF = styled.div`
         }
     }
 `
-const CabecalhoFiltros = styled.div`
-    display: flex;
-    flex-direction: column;
-    background: #fff;
-    box-shadow: 0px 1px 15px 1px rgb(69 65 78 / 8%);
-    padding: 10px 14px;
-    .div-inputs{
-        @media (min-width: 720px){
-            display: flex;
-            div{
-                flex: 1;
-                margin: 0 5px;
-            }
-        }
-    }
-    .div-filtro{
-        margin-top: 1rem;
-        display: flex;
-        justify-content: space-between;
-        .btn-pdf{
-            padding: 0px 7px;
-            background-color: transparent;
-            color: red;
-        }
-    }
-    label {
-        color: #333333 !important;
-        font-size: 12px !important;
-        font-weight: bold;
-        white-space: nowrap;
-        margin-bottom: 0px;
-    }
-    input, select {
-        margin-top: 2px;
-        display: block;
-        width: 100%;
-        height: 34px;
-        padding: 6px 12px;
-        font-size: 13px;
-        color: #555555;
-        background-color: #ffffff;
-        background-image: none;
-        border: 1px solid #cccccc;
-        border-radius: 4px;
-        box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
-        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 
-        &:focus{
-            border-color: #0C1B25 !important;
-        }
-        &:disabled {
-            background-color: #e9ecef;
-            opacity: 1;
-        }
-    }
-    button{
-        font-size: 0.8rem;
-        color: #ffffff;
-        padding: 0.45rem 1rem;
-        background-color: #212529;
-        border-color: #212529;
-        &:hover{
-            background-color: #424649;
-            border-color: #373b3e;
-        }
-    }
-`
 export default function AdmPonto({ session, data, totalPags, usuarios }) {
     const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
     const [pageTotalPags, setPageTotalPags] = useState(totalPags); /* Armazena total de pags */
     const [pageHandle, setPageHandle] = useState(pageDefault); /* Armazena os atributos para filtro(_page, _limit,  _search...) */
     const [loadPage, setLoadPage] = useState(false); /* Desabilita os filtros até que os dados seja retornados do backend */
 
-    const [dataVW, setDataVW] = useState({}); /* Amazena o registro para ser exibido no modal */
-
     const [dInicial, setDInicial] = useState(pageDefault._dinicial);
     const [dFinal, setDFinal] = useState(pageDefault._dfinal);
     const [funcionario, setFuncionario] = useState(pageDefault._funcionario);
 
-    const scheme = Yup.object().shape({
-        mes: Yup.string().nullable().label("Mês").required(),
-        funcionario: Yup.string().nullable().label("Funcionário").required(),
-    });
-
-    /* MODAL */
+    /* VISUALIZAR */
+    const [dataVW, setDataVW] = useState({}); /* Amazena o registro para ser exibido no modal */
     const [show, setShow] = useState(false);
-    const [show1, setShow1] = useState(false);
     const handleShow = (data) => {
         setDataVW(data)
         setShow(true);
@@ -275,13 +277,16 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
         setDataVW({})
         setShow(false);
     }
+
+    /* PDF */
+    const [show1, setShow1] = useState(false);
     const handleShow1 = () => {
         setShow1(true);
     }
     const handleClose1 = () => {
         setShow1(false);
     }
-    /* ---- */
+
 
     const handlePageFilter = async () => {
         if (loadPage) {
@@ -627,8 +632,8 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                             <Modal.Title>Gerar PDF</Modal.Title>
                         </Modal.Header>
                         <Formik
-                            validationSchema={scheme}
-                            initialValues={{ mes: pageDefault._dinicial.slice(0, 7), funcionario: "" }}
+                            validationSchema={schemePDF}
+                            initialValues={{ mes: pageDefault._dinicial.slice(0, 7), funcionario: "", modelo: 1 }}
                             onSubmit={async (values, setValues) => {
                                 if (loadPage) {
                                     setLoadPage(false)
@@ -636,7 +641,11 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                                     const params = `?_pdf=true&_mes=${values.mes}&_funcionario=${values.funcionario}`
                                     await axios.get(`${prefixRouter}${params} `)
                                         .then((res) => {
-                                            pontosPDF(res.data)
+                                            if (values.modelo === 1) {
+                                                pontosPDF(res.data)
+                                            } else {
+                                                pontosAssinaturaPDF(res.data)
+                                            }
                                             handleClose1()
                                         })
                                         .catch(res => {
@@ -672,6 +681,17 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                                         name="funcionario"
                                         md={12}
                                         data={usuarios}
+                                    />
+                                    <GroupSelectOne
+                                        error={!!errors.modelo && touched.modelo}
+                                        label="Modelo"
+                                        name="modelo"
+                                        md={12}
+                                        defaultSelecione={false}
+                                        data={[
+                                            { value: 1, name: "Padrão" },
+                                            { value: 2, name: "Com assinatura" },
+                                        ]}
                                     />
 
                                     <div className="div-btn-salvar">
