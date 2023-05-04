@@ -1,7 +1,7 @@
-/* const { getKnex } = require("../../../../knex") */
 const moment = require("moment/moment")
 const pdfMake = require('pdfmake/build/pdfmake');
 const pdfFonts = require('pdfmake/build/vfs_fonts');
+pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 const dias = ["domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
 function formatDia(str) {
@@ -23,25 +23,9 @@ function horaForm(hr) {
     return hr
 }
 
-async function pontosPDF(pontos) {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs
-
-    /* const knex = getKnex() */
-
+async function pontosPDF(data) {
     const tbody = []
-   /*  const pontos = await knex('vw_cadastro_pontos').select()
-        .where({ id_usuario: 1 })
-        .whereRaw(`DATE(data) BETWEEN '2023-05-01' AND '2023-05-31'`)
-        .orderBy('data', 'asc')
-
-    const tfoot = await knex.raw(`SELECT 
-        SEC_TO_TIME(SUM(TIME_TO_SEC(vw_cadastro_pontos.dif_total))) AS banco_horas,
-        SEC_TO_TIME(SUM(TIME_TO_SEC(vw_cadastro_pontos.acrescentar_hrs))) AS banco_add,
-        SEC_TO_TIME(SUM(TIME_TO_SEC(vw_cadastro_pontos.subtrair_hrs))) AS banco_subtrair
-        FROM vw_cadastro_pontos WHERE id_usuario = 1 AND DATE(data) BETWEEN '2023-05-01' AND '2023-05-31'
-        `) */
-
-    for await (let ponto of pontos) {
+    for await (let ponto of data.tbody) {
         const rows = [];
 
         rows.push({ text: formatDia(ponto.data), alignment: 'left', margin: [5, 3, 0, 0] })
@@ -73,8 +57,26 @@ async function pontosPDF(pontos) {
     }
 
     const docDefinition = {
+        info: {
+            title: `${data.thead.mes} ${data.thead.funcionario.toUpperCase()}`,
+        },
+        pageSize: 'A4',
+        pageMargins: [10, 10, 10, 10],
         content: [
-            { text: 'Registro de Frequência', style: 'header' },
+            { text: 'Registro de Frequência', style: 'headerTitulo' },
+            {
+                style: { lineHeight: 3, fontSize: 8 },
+                columns: [
+                    {
+                        width: '*',
+                        text: `Mês: ${data.thead.mes}`
+                    },
+                    {
+                        width: '*',
+                        text: `Funcionário: ${data.thead.funcionario}`
+                    },
+                ]
+            },
             {
                 table: {
                     widths: [40, 45, 45, 30, 45, 45, 30, 45, 45, '*'],
@@ -152,56 +154,38 @@ async function pontosPDF(pontos) {
                             {},
                             {},
                         ],
-                        /* [
-                            { text: horaForm(tfoot[0][0].banco_horas), colSpan: 4, margin: [0, 3, 0, 0] },
+                        [
+                            { text: horaForm(data.tfoot.banco_horas), colSpan: 4, margin: [0, 3, 0, 0] },
                             {},
                             {},
                             {},
-                            { text: horaForm(tfoot[0][0].banco_add), colSpan: 3, margin: [0, 3, 0, 0] },
+                            { text: horaForm(data.tfoot.banco_add), colSpan: 3, margin: [0, 3, 0, 0] },
                             {},
                             {},
-                            { text: horaForm(tfoot[0][0].banco_subtrair), colSpan: 3, margin: [0, 3, 0, 0] },
+                            { text: horaForm(data.tfoot.banco_subtrair), colSpan: 3, margin: [0, 3, 0, 0] },
                             {},
                             {},
-                        ], */
+                        ],
                     ],
 
                 }
             },
         ],
         defaultStyle: {
-            /* font: 'Helvetica', */
-            fontSize: 8,
+            fontSize: 7,
             alignment: 'center',
             lineHeight: 1.3
         },
         styles: {
-            header: {
-                fontSize: 10,
+            headerTitulo: {
+                fontSize: 9,
                 alignment: 'center',
-                lineHeight: 3
+                lineHeight: 2
             },
         }
     };
 
-
     pdfMake.createPdf(docDefinition).open();
-
-
-
-    /* const pdfDoc = printer.createPdfKitDocument(docDefinition);
-
-    const chunks = [];
-    pdfDoc.on("data", chunk => {
-        chunks.push(chunk)
-    })
-
-    pdfDoc.on("end", () => {
-        const result = Buffer.concat(chunks);
-        return res.end(result)
-    })
-
-    pdfDoc.end(); */
 }
 
 export default pontosPDF;

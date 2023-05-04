@@ -9,6 +9,7 @@ export default async function handler(req, res) {
         existOrError(auth.adm, { 500: "Usuário logado não é ADM." })
 
         const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
+        const isPDF = req.query._pdf ? req.query._pdf : null;
         const modelo = {
             entrada1: req.body.entrada1 ? req.body.entrada1 : null,
             saida1: req.body.saida1 ? req.body.saida1 : null,
@@ -17,6 +18,42 @@ export default async function handler(req, res) {
             acrescentar_hrs: req.body.acrescentar_hrs ? req.body.acrescentar_hrs : null,
             subtrair_hrs: req.body.subtrair_hrs ? req.body.subtrair_hrs : null,
             obs: req.body.obs ? req.body.obs : null
+        }
+
+        /* GET PARA GERAR PDF */
+        if (isPDF) {
+            const mes = req.query._mes ? req.query._mes : null;
+            const funcionario = req.query._funcionario ? req.query._funcionario : null;
+
+            existOrError(mes, { mes: "Mês deve ser informada." })
+            existOrError(funcionario && funcionario != 'Selecione', { funcionario: "Funcionário deve ser informada." })
+            const yyyy = mes.slice(0, 4);
+            const mm = mes.slice(5, 7);
+
+            const tbody = await knex("vw_cadastro_pontos")
+                .select()
+                .whereRaw(`YEAR(data) = '${yyyy}' AND MONTH(data) = '${mm}' AND id_usuario = ${funcionario}`)
+                .orderBy("data", "asc")
+
+            const tfoot = await knex.raw(`SELECT 
+                SEC_TO_TIME(SUM(TIME_TO_SEC(IF(dif_total IS NULL, '00:00', dif_total)))) AS banco_horas,
+                SEC_TO_TIME(SUM(TIME_TO_SEC(IF(acrescentar_hrs IS NULL, '00:00', acrescentar_hrs)))) AS banco_add,
+                SEC_TO_TIME(SUM(TIME_TO_SEC(IF(subtrair_hrs IS NULL, '00:00', subtrair_hrs)))) AS banco_subtrair
+                FROM vw_cadastro_pontos WHERE 
+                YEAR(data) = '${yyyy}' AND MONTH(data) = '${mm}' AND id_usuario = ${funcionario}
+            `)
+
+            const funcionarios = await knex("cadastro_usuarios")
+                .select(knex.raw('CONCAT(nome," (Cód. ", id,")") as "nome"'))
+                .where({ id: funcionario })
+                .first()
+
+            const thead = {
+                funcionario: funcionarios.nome,
+                mes: `${mm}/${yyyy}`
+            }
+
+            return res.status(200).json({ thead, tbody, tfoot: tfoot[0][0] })
         }
 
         if (req.method === 'GET') {

@@ -20,7 +20,7 @@ import { TituloForm } from "../../../components/formulario/titulo/components"
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
 import { api } from "../../../../global";
-import pontosPDF from "../../api/pdf/pontos";
+import pontosPDF from "../../../../relatorios/pontos"
 
 function horaForm(hr) {
     if (!hr) return ""
@@ -322,11 +322,6 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
             </button>
         )
     }
-
-    const handlePDF = async () => {
-        await pontosPDF(data)
-    }
-
 
     useEffect(() => {
         handlePageFilter()
@@ -633,12 +628,36 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                         </Modal.Header>
                         <Formik
                             validationSchema={scheme}
-                            initialValues={{ mes: "", funcionario: "" }}
+                            initialValues={{ mes: pageDefault._dinicial.slice(0, 7), funcionario: "" }}
                             onSubmit={async (values, setValues) => {
-                                console.log(values)
+                                if (loadPage) {
+                                    setLoadPage(false)
+                                    const axios = await api(session);
+                                    const params = `?_pdf=true&_mes=${values.mes}&_funcionario=${values.funcionario}`
+                                    await axios.get(`${prefixRouter}${params} `)
+                                        .then((res) => {
+                                            pontosPDF(res.data)
+                                            handleClose1()
+                                        })
+                                        .catch(res => {
+                                            /* Se status 400, significa que o erro foi tratado. */
+                                            if (res && res.response && res.response.status == 400) {
+                                                /* Se data=500, será exibido no toast */
+                                                if (res.response.data && res.response.data[500]) {
+                                                    toast.error(res.response.data[500])
+                                                } else {
+                                                    setValues.setErrors(res.response.data)
+                                                }
+                                            } else {
+                                                /* Mensagem padrão */
+                                                toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+                                            }
+                                        })
+                                    setLoadPage(true)
+                                }
                             }}
                         >
-                            {({ errors, touched, values, dirty }) => (
+                            {({ errors, touched, dirty }) => (
                                 <FormOne>
                                     <GroupOne
                                         error={!!errors.mes && touched.mes}
@@ -656,7 +675,7 @@ export default function AdmPonto({ session, data, totalPags, usuarios }) {
                                     />
 
                                     <div className="div-btn-salvar">
-                                        <button disabled={!dirty} className="btn-salvar" type="submit">GERAR</button>
+                                        <button disabled={!loadPage || !dirty} className="btn-salvar" type="submit">GERAR</button>
                                     </div>
                                 </FormOne>
                             )}
