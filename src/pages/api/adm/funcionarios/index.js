@@ -67,6 +67,8 @@ export default async function handler(req, res) {
         existOrError(auth.adm, { 500: "Usuário logado não é ADM." })
 
         const id = parseInt(req.query._id) ? parseInt(req.query._id) : null;
+        const redefinirSenha = req.query._defaltsenha ? req.query._defaltsenha : null;
+
         const modelo = {
             nome: req.body.nome,
             cpf: req.body.cpf,
@@ -77,6 +79,25 @@ export default async function handler(req, res) {
             sexo: req.body.sexo,
             bloqueado: req.body.bloqueado,
             motivo_bloqueio: req.body.motivo_bloqueio,
+        }
+
+        /* REDEFINE SENHA PARA PADRAO sT123456 */
+        if (redefinirSenha) {
+            existOrError(id, "[id] deve ser informado.")
+
+            await knex("cadastro_usuarios")
+                .update({
+                    senha: "$2b$11$Gugk6YdJ/dOd1VSXBfSVXuD0fzdKdOTaeZpCRNe0DwMmtnoG5DG6u",
+                    updated_at: dataHoraAtual()
+                })
+                .where({ id: id })
+                .whereNull("deleted_at")
+                .then(() => res.status(204).send())
+                .catch((error) => {
+                    console.log("######## adm.funcionarios.PUT ########")
+                    console.log(error)
+                    return res.status(500).send()
+                });
         }
 
         if (req.method === 'GET') {
@@ -132,7 +153,7 @@ export default async function handler(req, res) {
             await notExistOrErrorDB({ table: "cadastro_usuarios", column: 'email', data: modelo.email, id: id }, { email: "Já existe cadastro para o e-mail informado." })
 
             modelo.created_at = dataHoraAtual()
-            modelo.senha = "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS"  /* Senha padrão= 123456 */
+            modelo.senha = "$2b$11$Gugk6YdJ/dOd1VSXBfSVXuD0fzdKdOTaeZpCRNe0DwMmtnoG5DG6u"  /* Senha padrão= sT123456 */
 
             await knex.transaction(async trans => {
                 const id_usuario = await trans.insert(modelo)
@@ -171,6 +192,7 @@ export default async function handler(req, res) {
                     console.log(error)
                     return res.status(500).send()
                 });
+
         }
 
         if (req.method === 'DELETE') {

@@ -27,7 +27,7 @@ exports.up = function (knex) {
                 {
                     nome: "Maycon Deyvid Brito de Oliveira",
                     email: "dev@softconnect.com",
-                    senha: "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS",
+                    senha: "$2b$11$Gugk6YdJ/dOd1VSXBfSVXuD0fzdKdOTaeZpCRNe0DwMmtnoG5DG6u",
                     adm: true
                 }
             ])

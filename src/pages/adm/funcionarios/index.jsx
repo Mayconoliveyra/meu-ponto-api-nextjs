@@ -142,6 +142,13 @@ const ModalAcoes = styled.div`
             }
         }
     }
+    .btn-redefinir-senha{
+        background-color: red;
+        padding: 3px 5px;
+        border-radius: 3px;
+        color: white;
+        font-weight: bold;
+    }
 `
 export default function AdmIndex({ session, data, totalPags }) {
     const [pageData, setPageData] = useState(data); /* Armazena todos dados a ser exibido na tabela */
@@ -233,6 +240,18 @@ export default function AdmIndex({ session, data, totalPags }) {
         )
     }
 
+    const handleRedefiniSenha = async (id) => {
+        setBtnDisabled(true)
+        const axios = await api(session);
+        await axios.put(`${prefixRouter}?_id=${id}&_defaltsenha=true`)
+            .then(async () => {
+                toast.success("A senha do funcionário foi redefinida com sucesso.")
+            })
+            .catch(() => {
+                toast.error("Ops... Não possível realizar a operação. Por favor, tente novamente.")
+            })
+        setBtnDisabled(false)
+    }
     /* Conta 10s antes de habilitar o btn vermelho de excluir */
     useEffect(() => {
         let intervalId = null
@@ -480,6 +499,18 @@ export default function AdmIndex({ session, data, totalPags }) {
                                         <td>
                                             <span className="span-td-vw">
                                                 {horaFormatada(dataVW.updated_at)}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span className="span-th-vw">
+                                                Redefinir senha
+                                            </span>
+                                        </th>
+                                        <td>
+                                            <span className="span-td-vw">
+                                                <button disabled={btnDisabled} onClick={() => handleRedefiniSenha(dataVW.id)} className="btn-redefinir-senha" type="button">Redefinir</button>
                                             </span>
                                         </td>
                                     </tr>
