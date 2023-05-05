@@ -77,7 +77,7 @@ const MenuSC = styled.aside`
     }
 `
 
-export default function Menu() {
+export default function Menu({ session }) {
     const { template, setTemplate } = useContext(TemplateContext)
     return (
         <MenuSC>
@@ -103,7 +103,7 @@ export default function Menu() {
                     </li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/">Registrar Ponto</Link></li>
                     <li><Link onClick={() => setTemplate({ ...template, showMenu: false })} href="/pontos">Visualizar Ponto</Link></li>
-                    {!!template.adm &&
+                    {!!session.adm &&
                         <>
                             <li>
                                 <div className="div-titulo">
