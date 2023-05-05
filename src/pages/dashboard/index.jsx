@@ -147,7 +147,6 @@ export default function AdmDashboard({ session, pDiario }) {
 
     const handleRegitrarPonto = async () => {
         setBtnDisabled(true)
-
         const axios = await api(session);
         await axios.post("pontos")
             .then(() => {
@@ -164,6 +163,15 @@ export default function AdmDashboard({ session, pDiario }) {
             })
         setBtnDisabled(false)
     }
+    const teste = async () => {
+        console.log("oi")
+        navigator.geolocation.getCurrentPosition((p) => {
+            console.log(p.coords.latitude)
+            console.log(p.coords.longitude)
+        })
+        /*  navigator.geolocation */
+
+    }
     return (
         <>
             <Head>
@@ -173,6 +181,9 @@ export default function AdmDashboard({ session, pDiario }) {
                 <div className="div-registrar">
                     <button type="button" disabled={pDiario.saida2} className="btn-registrar" onClick={() => handleShow()}>
                         REGISTRAR PONTO
+                    </button>
+                    <button type="button" className="btn-registrar" onClick={() => teste()}>
+                        teste
                     </button>
                 </div>
                 <div className="div-historico">
