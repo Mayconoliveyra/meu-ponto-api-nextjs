@@ -197,6 +197,7 @@ export default function AdmEditar({ data, session }) {
                             <GroupSelectOne
                                 label="Obs"
                                 name="obs"
+                                defaultSelecione={false}
                                 data={[
                                     { value: null, name: null },
                                     { value: "Atestado", name: "Atestado" },

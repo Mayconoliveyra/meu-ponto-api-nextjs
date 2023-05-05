@@ -199,7 +199,6 @@ export default function AdmEditar({ data, session }) {
                                 label="Sexo"
                                 name="sexo"
                                 data={[
-                                    { value: "Selecione", name: "Selecione" },
                                     { value: "Masculino", name: "Masculino" },
                                     { value: "Feminino", name: "Feminino" },
                                 ]}
@@ -215,6 +214,7 @@ export default function AdmEditar({ data, session }) {
                             <GroupSelectOne
                                 label="Bloqueado"
                                 name="bloqueado"
+                                defaultSelecione={false}
                                 data={[
                                     { value: "Sim", name: "Sim" },
                                     { value: "Não", name: "Não" },
