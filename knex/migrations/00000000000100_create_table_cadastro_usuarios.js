@@ -26,7 +26,7 @@ exports.up = function (knex) {
             return knex("cadastro_usuarios").insert([
                 {
                     nome: "Maycon Deyvid Brito de Oliveira",
-                    email: "fabrica@softcomtecnologia.com.br",
+                    email: "dev@softconnect.com",
                     senha: "$2b$11$017rUZjZbbkbHxDQCuFgIu8YnaP2HNbaFwInqMl/YswEzcEziIoSS",
                     adm: true
                 }
