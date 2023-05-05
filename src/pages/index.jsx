@@ -28,14 +28,29 @@ const Main = styled.main`
         }
 
         .d-exibir{
-            padding-top: 2rem;
             margin: auto;
             max-width: 30rem;
             .f-form{
                 display: flex;
                 flex-direction: column;
+
+                .div-logo{
+                    background-color: #232F3E;
+                        padding: 1.2rem 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    
+                }
+                @media (min-width:1000px){
+                    .div-logo{
+                        display: none;
+                    }
+                }
+               
                 h1{
                     text-align:center;
+                    padding-top: 2rem;
                     margin-bottom: 4rem;
                     font-weight: bold;
                     color: #111;
@@ -212,6 +227,9 @@ export default function Home() {
                         >
                             {({ setFieldValue, values, errors, touched, dirty }) => (
                                 <Form className="f-form" action="">
+                                    <div className="div-logo">
+                                        <Image src={'/assets/images/logo.png'} width={200} height={50} alt="logo" quality={100} priority={true} />
+                                    </div>
                                     <h1>FAZER LOGIN</h1>
                                     <GroupSC error={!!errors.email && touched.email}>
                                         <div className="d-label">
