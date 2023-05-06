@@ -98,11 +98,17 @@ const ModalPonto = styled.div`
             font-weight: bold;
         }
     }
+    #map { 
+        height: 180px;
+        max-width: 400px;
+        margin: 1.3rem auto;
+    }
     .div-hr{
         display: flex;
         justify-content: center;
-        margin: 3rem 0;
+        margin: 1.3rem 0;
         p{
+            margin-bottom: 0.9rem;
             font-size: 2rem;
             font-style: italic;
         }
@@ -129,11 +135,17 @@ const ModalPonto = styled.div`
 
     }
 `
+
+/* utilizada no mapa */
+var map;
 export default function AdmDashboard({ session, pDiario }) {
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleShow = () => {
+        getLocalidade()
+        setShow(true)
+    };
 
     const [horaAtual, setHoraAtual] = useState()
 
@@ -163,27 +175,47 @@ export default function AdmDashboard({ session, pDiario }) {
             })
         setBtnDisabled(false)
     }
-    const teste = async () => {
-        console.log("oi")
-        navigator.geolocation.getCurrentPosition((p) => {
-            console.log(p.coords.latitude)
-            console.log(p.coords.longitude)
-        })
-        /*  navigator.geolocation */
 
+    const getLocalidade = () => {
+        function success(p) {
+            if (map === undefined) {
+                map = L.map('map').setView([p.coords.latitude, p.coords.longitude], 6)
+            } else {
+                map.remove()
+                map = L.map('map').setView([p.coords.latitude, p.coords.longitude], 6);
+            }
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 6 }).addTo(map);
+
+            L.marker([p.coords.latitude, p.coords.longitude]).addTo(map)
+                .openPopup();
+
+            setBtnDisabled(false)
+        }
+
+        function error() {
+            router.reload()
+        }
+
+        setBtnDisabled(true)
+        navigator.geolocation.getCurrentPosition(success, error)
     }
+
     return (
         <>
             <Head>
                 <title>Dashboard - Softconnect Tecnologia</title>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+                    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+                    crossOrigin="" />
+                <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+                    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+                    crossOrigin=""></script>
             </Head>
             <Main>
                 <div className="div-registrar">
                     <button type="button" disabled={pDiario.saida2} className="btn-registrar" onClick={() => handleShow()}>
                         REGISTRAR PONTO
-                    </button>
-                    <button type="button" className="btn-registrar" onClick={() => teste()}>
-                        teste
                     </button>
                 </div>
                 <div className="div-historico">
@@ -255,11 +287,13 @@ export default function AdmDashboard({ session, pDiario }) {
                             <div className="div-marcacao">
                                 <h1>Marcação de Ponto</h1>
                             </div>
+
                             <div className="div-hr">
                                 <p>
                                     {horaAtual}
                                 </p>
                             </div>
+                            <div id="map"></div>
                             <div className="div-btn-ponto">
                                 <button disabled={btnDisabled} type="button" className="btn-registrar" onClick={() => handleRegitrarPonto()}>
                                     CONFIRMAR
