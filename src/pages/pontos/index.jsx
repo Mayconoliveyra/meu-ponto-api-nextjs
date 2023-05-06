@@ -30,7 +30,7 @@ export function horaForm(hr) {
 import { TituloForm } from "../../components/formulario/titulo/components"
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../components/formulario/tabela/components";
 
-import { api } from "../../../global";
+import { api, dataHoraAtual } from "../../../global";
 
 const prefix = "ponto"
 const prefixRouter = "/pontos"
@@ -566,17 +566,19 @@ export async function getServerSideProps(context) {
 
     if (session && session.id) {
         const knex = getKnex()
+        const gsDataHoraInicial = moment(dataHoraAtual()).subtract(7, 'days').format('YYYY-MM-DD')
+        const gsDataHoraFinal = moment(dataHoraAtual()).format('YYYY-MM-DD')
 
         const { totalPags } = await knex("vw_cadastro_pontos")
             .where({ id_usuario: session.id })
             .count({ totalPags: "*" })
-            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
+            .whereRaw(`DATE(data) BETWEEN '${gsDataHoraInicial}' AND '${gsDataHoraFinal}'`)
             .first()
 
         const pontos = await knex("vw_cadastro_pontos")
             .select()
             .where({ id_usuario: session.id })
-            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}'`)
+            .whereRaw(`DATE(data) BETWEEN '${gsDataHoraInicial}' AND '${gsDataHoraFinal}'`)
             .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
             .orderBy(pageDefault._sort, pageDefault._order)
 

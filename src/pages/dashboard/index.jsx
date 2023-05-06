@@ -316,11 +316,11 @@ export async function getServerSideProps(context) {
 
     if (session && session.id) {
         const knex = getKnex();
-        const dataAtualFormat = moment(dataHoraAtual()).format('YYYY-MM-DD');
+        const getServerDataHora = moment(dataHoraAtual()).format('YYYY-MM-DD')
 
         const pDiario = await knex("vw_cadastro_pontos")
             .select()
-            .where({ id_usuario: session.id, data: dataAtualFormat })
+            .where({ id_usuario: session.id, data: getServerDataHora })
             .first()
 
         return {
