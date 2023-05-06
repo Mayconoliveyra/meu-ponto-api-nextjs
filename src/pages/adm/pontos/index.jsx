@@ -19,7 +19,7 @@ import { FormOne, GroupOne, GroupSelectOne } from "../../../components/formulari
 import { TituloForm } from "../../../components/formulario/titulo/components"
 import { TabelaForm, ThForm, TdForm, VazioForm, PaginadorForm, TableVW } from "../../../components/formulario/tabela/components";
 
-import { api } from "../../../../global";
+import { api, dataHoraAtual } from "../../../../global";
 
 function horaForm(hr) {
     if (!hr) return ""
@@ -714,17 +714,18 @@ export async function getServerSideProps(context) {
 
     if (session && session.id && session.adm) {
         const knex = getKnex()
+        const getServerDataHora = moment(dataHoraAtual()).format('YYYY-MM-DD')
 
         const { totalPags } = await knex("vw_cadastro_pontos")
             .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
             .count({ totalPags: "*" })
-            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}' AND deleted_at IS NULL AND bloqueado = 'Não'`)
+            .whereRaw(`DATE(data) BETWEEN '${getServerDataHora}' AND '${getServerDataHora}' AND deleted_at IS NULL AND bloqueado = 'Não'`)
             .first()
 
         const pontos = await knex("vw_cadastro_pontos")
             .select("vw_cadastro_pontos.*", "cadastro_usuarios.nome")
             .join('cadastro_usuarios', 'vw_cadastro_pontos.id_usuario', '=', 'cadastro_usuarios.id')
-            .whereRaw(`DATE(data) BETWEEN '${pageDefault._dinicial}' AND '${pageDefault._dfinal}' AND deleted_at IS NULL AND bloqueado = 'Não'`)
+            .whereRaw(`DATE(data) BETWEEN '${getServerDataHora}' AND '${getServerDataHora}' AND deleted_at IS NULL AND bloqueado = 'Não'`)
             .limit(pageDefault._limit).offset(pageDefault._page * pageDefault._limit - pageDefault._limit)
             .orderBy(pageDefault._sort, pageDefault._order)
 
