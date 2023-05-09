@@ -136,6 +136,9 @@ const ModalPonto = styled.div`
     }
 `
 
+import axios from "axios";
+
+
 /* utilizada no mapa */
 var map;
 export default function AdmDashboard({ session, pDiario }) {
@@ -201,6 +204,13 @@ export default function AdmDashboard({ session, pDiario }) {
         navigator.geolocation.getCurrentPosition(success, error)
     }
 
+    const teste = async () => {
+        console.log("teste")
+        await axios.get("www.softconnectdeveloper.shop:3030/token")
+            .then(res => console.log(res.data))
+            .catch(err => console.log(err))
+
+    }
     return (
         <>
             <Head>
@@ -216,6 +226,9 @@ export default function AdmDashboard({ session, pDiario }) {
                 <div className="div-registrar">
                     <button type="button" disabled={pDiario.saida2} className="btn-registrar" onClick={() => handleShow()}>
                         REGISTRAR PONTO
+                    </button>
+                    <button type="button" className="btn-registrar" onClick={() => teste()}>
+                        teste
                     </button>
                 </div>
                 <div className="div-historico">
