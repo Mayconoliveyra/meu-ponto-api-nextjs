@@ -42,7 +42,7 @@ function dataHoraAtual() {
     date.setHours(date.getHours() - 3)
     return date;
 }
-
+ 
 /* Formata em ex:"08/04/2023 13:39:02" */
 function horaFormatada(date) {
     if (!date) return ""
