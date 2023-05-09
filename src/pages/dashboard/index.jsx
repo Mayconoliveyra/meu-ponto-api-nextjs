@@ -205,10 +205,9 @@ export default function AdmDashboard({ session, pDiario }) {
     }
 
     const teste = async () => {
-        console.log("teste")
         axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
         axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
-        await axios.get("http://softconnectdeveloper.shop:3030/token")
+        await axios.get("https://softconnectdeveloper.shop:3030/token")
             .then(res => console.log(res.data))
             .catch(err => console.log(err))
 
