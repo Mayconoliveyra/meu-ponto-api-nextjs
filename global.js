@@ -35,7 +35,7 @@ function passport(req) {
         throw error
     }
 }
-
+ 
 /* Ultiliza no updated_at, created_at, deleted_at */
 function dataHoraAtual() {
     const date = new Date();
